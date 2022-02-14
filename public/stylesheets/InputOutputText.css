@@ -49,10 +49,10 @@
 }
 
 .displayText + .hoverable>p:hover{
-    background-color: lightcoral;
+    background-color: yellow;
     cursor: pointer;
 }
-ol{
+/* ol{
     list-style-type: decimal-leading-zero;
     list-style-position: outside;
     margin-top: 5px;
@@ -65,17 +65,17 @@ ol>li{
     font-size: 20px;
     padding-left:-10px;
     width:auto;
-    /* overflow:hidden; */
+    /* overflow:hidden; 
     
 }
 li:hover{
     background-color: lightcoral;
     cursor: pointer;
     
-}
+} */
 #InputText{
     display:grid;
-    grid-template-columns: 10% auto;
+    grid-template-columns: 10% 90%;
     overflow-y: scroll;
 }
 #OutputText{
@@ -94,3 +94,41 @@ li:hover{
     background-color: lightcoral;
     cursor: pointer;
 } */
+.overflowText{
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    pointer-events: none;
+}
+
+/* .overflowText:after{
+    content: '';
+    display: inline-block;
+    position: relative;
+    top: 0;
+    right: 0;
+    width: 20;
+    height: 15;
+    z-index: 1;
+    pointer-events: initial;
+}
+.overflowText:hover:after{
+    cursor: pointer;
+} */
+/* .tooltip {
+    
+    position: relative;
+    top: 10;
+    left: 0;
+    background-color: #fff;
+    padding: 10px;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .overflowText:hover + .tooltip {
+    
+    transition: opacity 0.5s ease;
+    opacity: 1;
+    background-color: gray;
+  } */

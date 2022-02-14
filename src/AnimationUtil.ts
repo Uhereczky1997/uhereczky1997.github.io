@@ -1,5 +1,8 @@
+import { getHtmlElement } from "./Tools";
+
 export const sleepFor = (ms:number):Promise <any> => new Promise(resolve => setTimeout(resolve,ms));
 
+let speedBTN = getHtmlElement("speed") as HTMLButtonElement;
 export const checkIfPaused= async():Promise <any> => {
     while (true) {
         if (aniControl.play){
@@ -115,12 +118,16 @@ export class AnimationControl{
     }
 
     setSpeed=()=>{
-        this.speed*=4;
+        this.speed*=2;
         if(this.speed==256){
             this.speed=16;
         }
+        this.updateSpeedDisplay();
         console.log(this.speed);
         //this.updateBaseFrameTime();
+    }
+    updateSpeedDisplay(){
+        speedBTN.innerText="speed"+(this.speed==16?"":": "+this.speed/16+"x");
     }
     updateBaseFrameTime=()=>{
         this.baseFrameTime=1000/this.speed;

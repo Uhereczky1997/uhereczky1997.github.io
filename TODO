@@ -4,7 +4,7 @@
 [] proper CSS
 [] media queries //Font-size, ...
 
-[] autotonom sequenzing & translating at animationstart:    [x] stop at errors
+[x] autotonom sequenzing & translating at animationstart:    [x] stop at errors
                                                             [x] SymbolArray in Projectwindow (OPTIONAL) 
 
 Input & Output-window : [] proper Labeling

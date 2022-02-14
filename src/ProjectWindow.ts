@@ -120,13 +120,16 @@ export class ProjectWindow{
             e=this.inputLines[i];
             if(e !=null){
                 InputID.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span></p>`;
-                InputLines.innerHTML+=`<p><span class="hoverable maxwidth">${e.inputLineToString()}</span></p>`;
+                // InputLines.innerHTML+=`<p><span class="hoverable maxwidth">${e.inputLineToString()}</span></p>`;
+                InputLines.innerHTML+=`<p><span>${(e.getLabel()==""?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;":e.getLabel()+":")} ${e.commandLinetoString()}${e.getCommentary()==""?"":";"+e.getCommentary()}</span></p>`;
+                // InputLines.innerHTML+=`<p><span class="overflowText">${(e.getLabel()==""?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;":e.getLabel()+":")} ${e.commandLinetoString()}${e.getCommentary()==""?"":";"+e.getCommentary()}</span><span class="tooltip">${e.getCommentary()}</span></p>`;
                 // inputTextDiv.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span>  |<span class="hoverable maxwidth">${e.inputLineToString()}</span></p>`;
             }
             else{
                 InputID.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span></p>`;
-                InputLines.innerHTML+=`<p><span class="hoverable maxwidth">${this.inputstrings[i]}</span></p>`;
-                //inputTextDiv.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span>  |<span class="hoverable maxwidth">${this.inputstrings[i]}</span></p>`;
+                // InputLines.innerHTML+=`<p><span class="overflowText">${this.inputstrings[i]}</span><span class="tooltip">${this.inputstrings[i]}</span></p>`;
+                InputLines.innerHTML+=`<p><span>${this.inputstrings[i]}</span></p>`;
+                // inputTextDiv.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span>  |<span class="hoverable maxwidth">${this.inputstrings[i]}</span></p>`;
             }
         }
 
@@ -336,29 +339,38 @@ export class ProjectWindow{
         console.log(aniControl);
     }
     public toggleStop=async()=>{
-        try {
-            if(!aniControl.start){
-                aniControl.setStart();
-                await this.play();
+        if(this.inputstrings.length>0){
+            try {
+                if(!aniControl.start){
+                    aniControl.setStart();
+                    await this.play();
+                }
+                else{
+                    aniControl.setPlaying();
+                }
+            } catch (e) {
+                console.log(e);
+                await this.reset();
             }
-            else{
-                aniControl.toggle();
-            }
-        } catch (e) {
-            console.log(e);
-            await this.reset();
+        }else{
+            console.log("no Input");
         }
     }
     public play=async()=>{
-        while(!aniControl.end){
-            try{
-                await this.testCycling();
-                await sleepUntilNextStep();
+        if(this.inputstrings.length>0){
+            while(!aniControl.end){
+                try{
+                    await this.testCycling();
+                    await sleepUntilNextStep();
+                }
+                catch(e){
+                    console.log(e);
+                    break;
+                }
             }
-            catch(e){
-                console.log(e);
-                break;
-            }
+        }
+        else{
+            console.log("no Input");
         }
     }
     public pause=()=>{
@@ -368,24 +380,34 @@ export class ProjectWindow{
         aniControl.setSpeed();
     }
     public reset=async()=>{
-        aniControl.setReset();
-        await sleepFor(10);
-        this.partialReset();
-        this.refreshInputListItems();
+        if(this.inputstrings.length>0){
+            aniControl.setReset();
+            await sleepFor(10);
+            this.partialReset();
+            this.refreshInputListItems();
+        }
+        else{
+            console.log("no Input");
+        }
     }
     public skipToFinish=async()=>{
-        await this.reset();
-        while(this.inputLines.length>=this.elementDisplayed){
-            try{
-                await this.testCycling();
+        if(this.inputstrings.length>0){
+            await this.reset();
+            while(this.inputLines.length>=this.elementDisplayed){
+                try{
+                    await this.testCycling();
+                }
+                catch(e){
+                    console.log(e);
+                    return;
+                }
             }
-            catch(e){
-                console.log(e);
-                return;
-            }
+            aniControl.setEnd();
         }
-        aniControl.setEnd();
-        console.log(this.iWindow);
+        else{
+            console.log("no Input");
+        }
+        // console.log(this.iWindow);
     }
 
 
@@ -406,7 +428,7 @@ export class ProjectWindow{
     public createListeners=()=>{
         try{
             this.iWindow.createEventListeners();
-            createClickListener('testButton',this.testCycling);
+            // createClickListener('testButton',this.testCycling);
             createClickListener('CloseOutputWindow',this.openOutputWindow);
             createClickListener('TranslateWindow',this.openOutputWindow);
             createClickListener('play',this.toggleStop);
