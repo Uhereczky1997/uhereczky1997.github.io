@@ -23,6 +23,17 @@ export class InputWindow{
         this.InputTextAreaElement=getHtmlElement('InputTextArea')as HTMLTextAreaElement;
         this.pWindow=p;
     }
+    public displaySummary(i:InputLine){
+        console.log(i);
+        let ss:string[]=i.getDescriptionLine();
+        console.log(ss.find(e=>{return e.includes("error")}));
+        if(ss.find(e=>{return e.includes("error")})==undefined){
+            errorDescriptionDiv.innerHTML += `<div class="backgroundNoError"><p>${i.commandLinetoString()}:</p><p>${ss[ss.length-2]}</p><p>${ss[ss.length-1]}</p></div>`
+        }
+        else{
+            errorDescriptionDiv.innerHTML += `<div class="backgroundError"><p>${i.commandLinetoString()}:</p><p>${ss.find(e=>e.includes("error"))}</p></div>`
+        }
+    }
     public openEditWindow =()=>{
         try{
             aniControl.setPaused();
@@ -43,7 +54,8 @@ export class InputWindow{
         errorDescriptionDiv.innerHTML="";
         let inputs:InputLine[] = this.inputcontrol.getInputLines();
         for(let i=0;i<inputs.length;i++){
-            await this.pushPreview(inputs[i],10);
+            // await this.pushPreview(inputs[i],10);
+            this.displaySummary(inputs[i]);
         }
     }
     private pushPreview = async (e:InputLine,n:number) =>{
@@ -54,7 +66,6 @@ export class InputWindow{
         console.log(e.getTranslation());
     }
     private addLinetoTextArea=(s:string[])=>{
-        console.log("meh");
         this.InputTextAreaElement.value="";
         s.forEach(e => {
             this.InputTextAreaElement.value+=e+"\n";

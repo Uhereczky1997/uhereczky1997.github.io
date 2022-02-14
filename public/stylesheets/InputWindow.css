@@ -71,3 +71,24 @@
     grid-row:span 4;
     overflow-y: scroll;
 }
+.backgroundNoError{
+    background-color: rgb(115, 238, 115);
+    color: black;
+    border: 1px solid black;
+}
+.backgroundNoError>p{
+    margin: 0 0;
+    padding: 5 0 5 5;
+}
+.backgroundError{
+    background-color: #fd6565;
+    color: black;
+    border: 1px solid black;
+}
+.backgroundError>p{
+    margin: 0 0;
+    padding: 5 0 5 5;
+}
+.backgroundError>p>span.errorRed{
+    color: white !important;
+}
