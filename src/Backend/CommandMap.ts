@@ -1175,7 +1175,7 @@ export class CommandMap{
                 }
             }
             else{
-                i.saveDescriptionLine(`${new_commands[0]} ist kein gültiger Operand!`);
+                i.saveDescriptionLine(this.formatErrorMassage(`${new_commands[0]} ist kein gültiger Operand!`));
                 return false;
             }
         }

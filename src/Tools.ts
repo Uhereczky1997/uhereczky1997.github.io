@@ -5,7 +5,7 @@ export const createClickListener = (id:string,f: (this: HTMLElement, ev: MouseEv
             if(a!=null){
             a.addEventListener("click",f);
         }
-        else throw new Error("Element #EditWindowOpenButton is null!");
+        else throw new Error("Element "+id+" is null!");
 
     }catch(e){
         console.log(e);

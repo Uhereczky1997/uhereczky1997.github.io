@@ -8,6 +8,9 @@ import { aniControl, sleepFor, sleepUntilNextStep } from "./AnimationUtil";
 
 let errorDescriptionDiv:HTMLElement = getHtmlElement('ErrorDescription');
 let inputWindowContainer:HTMLElement = getHtmlElement('InputWindowContainter');
+let errorOnlyCheckBox:HTMLInputElement = getHtmlElement('errorOnlyCheckbox') as HTMLInputElement;
+let previewType:HTMLInputElement = getHtmlElement('previewType') as HTMLInputElement;
+
 const sleepFor500 = ():Promise <any> =>new Promise(resolve => setTimeout(resolve, 500));
 
 
@@ -28,10 +31,12 @@ export class InputWindow{
         let ss:string[]=i.getDescriptionLine();
         console.log(ss.find(e=>{return e.includes("error")}));
         if(ss.find(e=>{return e.includes("error")})==undefined){
-            errorDescriptionDiv.innerHTML += `<div class="backgroundNoError"><p>${i.commandLinetoString()}:</p><p>${ss[ss.length-2]}</p><p>${ss[ss.length-1]}</p></div>`
+            if(!errorOnlyCheckBox.checked){
+                errorDescriptionDiv.innerHTML += `<div class="backgroundNoError"><p>${i.commandLinetoString()}:</p><p>${ss[ss.length-2]}</p><p>${ss[ss.length-1]}</p></div>`
+            }
         }
         else{
-            errorDescriptionDiv.innerHTML += `<div class="backgroundError"><p>${i.commandLinetoString()}:</p><p>${ss.find(e=>e.includes("error"))}</p></div>`
+            errorDescriptionDiv.innerHTML += `<div class="backgroundError"><p>${i.commandLinetoString()}:</p><p>${ss.filter(e=>{if(e.includes("gefunden")||e.includes("error")) return e;}).join("</p><p>")}</p></div>`; //<p>${ss.find(e=>e.includes("error"))}</p>
         }
     }
     public openEditWindow =()=>{
@@ -54,9 +59,14 @@ export class InputWindow{
         errorDescriptionDiv.innerHTML="";
         let inputs:InputLine[] = this.inputcontrol.getInputLines();
         for(let i=0;i<inputs.length;i++){
+            previewType.checked?await this.pushPreview(inputs[i],10):this.displaySummary(inputs[i]);
             // await this.pushPreview(inputs[i],10);
-            this.displaySummary(inputs[i]);
+            // this.displaySummary(inputs[i]);
         }
+    }
+    private setChecked(){
+        errorOnlyCheckBox.checked=(!errorOnlyCheckBox.checked);
+        console.log(errorOnlyCheckBox.checked);
     }
     private pushPreview = async (e:InputLine,n:number) =>{
         await sleepFor(n);
@@ -128,11 +138,11 @@ export class InputWindow{
             }
             else throw new Error("Element #EditWindowOpenButton is null!");
         
-            const b= document.getElementById('Translate');
+            /* const b= document.getElementById('Translate');
             if(b!=null){
                 b.addEventListener("click",this.translate);
             }
-            else throw new Error("Element #Translate is null!");
+            else throw new Error("Element #Translate is null!"); */
             
             const c=document.getElementById('Submit');
             if(c!=null){
@@ -146,6 +156,7 @@ export class InputWindow{
         createClickListener('Preview',this.previewTranslation);
         createClickListener('GenerateDummy',this.generateDummy);
         createClickListener('CloseInputWindow',this.openEditWindow);
+        //errorOnlyCheckBox.addEventListener('change',this.setChecked);
     }
 
     public translate = ():void=>{

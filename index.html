@@ -83,13 +83,16 @@
         </div>
         <div id ="InputWindowContainter" class="backgroundContainer hidden">
             <div id="InputWindow" class="boxBorder inoutputbox">
-                <textarea name="InputTextArea" id="InputTextArea" placeholder="Schreib dein Assemblercode hier her!"></textarea>
+                <textarea name="InputTextArea" id="InputTextArea" placeholder="Hier können Sie den Quellcode eingeben"></textarea>
                 <div id="ErrorDescription" class="noScrollbar">Errors and Such!</div>
                 <button id="Submit">Los</button>
-                <button id="Translate">Übersetzen</button>
                 <button id="Preview">Preview</button>
                 <button id="GenerateDummy"> GenerateDummy </button>
                 <button id="CloseInputWindow"> Schließen </button>
+                <div style="display: inline-flexbox;">
+                    <input type="checkbox" id="errorOnlyCheckbox" name="errorOnlyCheckbox" /><label>error boxes only</label>
+                    <input type="checkbox" id="previewType" name="previewType" /><label>PreviewType</label>
+                </div>
 
             </div>
         </div>
