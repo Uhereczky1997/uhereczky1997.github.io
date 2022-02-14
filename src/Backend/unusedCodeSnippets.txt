@@ -1,0 +1,1214 @@
+mapInputLine(i:InputLine):boolean{
+        let commands:string[] = Manipulator.splitStringHalf(i.getCommandLine()," ");
+        let matches:MnemoCommand[]=[];
+        let consolestring:string="";
+        commands=commands.filter(e=>{
+            if(!/^[\s+]/g.test(e) && e!=""){return e;}
+        });
+        //console.log(commands);
+        
+        if(commands.length>0){      // IF YES => LENGTH > 0
+            i.saveDescriptionLine(`Erwartet: Labeldefinition, MnemoCode oder Konstante (+EQU)`);
+            if(i.getLabel() != ""){
+                i.saveDescriptionLine(`Gefunden Label "${i.getLabel()}"`);
+                i.saveDescriptionLine(`Erwartet MnemoCode`);
+                
+            }
+            if(this.mCodes.includes(commands[0].toUpperCase())){
+                commands[0]=commands[0].toUpperCase();
+                //.saveDescriptionLine(`Gefunden MnemoCode ${commands[0]}`);
+                i.saveDescriptionLine(this.formatGefunden("MnemoCode",commands[0]));
+
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==commands[0]});
+                //matches.forEach(e=>{console.log(e.toString())});
+                i.setFirstPart(commands[0].toUpperCase());
+                
+                if(commands.length>1){  // IF YES => LENGTH > 1
+
+                    consolestring=this.getDests(matches).join(", ");
+                    i.saveDescriptionLine(`Erwartet ${consolestring}`);
+                    commands=Manipulator.splitStringHalf(commands[1],","); // Splitting second part by ","
+                    //console.log(commands)
+
+
+                    commands=commands.filter(e=>{if(!/^[\s+]/g.test(e) && e!=""){return e;}});
+                    if(this.getDests(matches).includes(commands[0].toUpperCase())&&this.Regs.includes(commands[0].toUpperCase())){ // Matched with Register from Array & MnemoCommands
+                        //i.saveDescriptionLine(`Register ${commands[0].toUpperCase()} gefunden`);
+                        i.saveDescriptionLine(this.formatGefunden("Register",commands[0]));
+                        matches=matches.filter(e=>{     //Filtering down the matches
+                            if(e.getDestination() ==commands[0].toUpperCase()){
+                                return e;
+                            }
+                        });
+                        //matches.forEach(e=>{console.log(e.toString())});
+
+                        i.setSecondPart(commands[0].toUpperCase())    //Identified second part is Registered in the inputline
+
+                        if(commands.length>1){ ///IF YES -> Length >2
+
+                            consolestring=this.getScources(matches).join(", ");
+                            i.saveDescriptionLine(`Erwartet -> ${consolestring}`);
+                            //console.log(commands);
+
+                            if(this.getScources(matches).includes(commands[1].toUpperCase())&&this.Regs.includes(commands[1].toUpperCase())){
+                                //i.saveDescriptionLine(`Gefunden Register => ${commands[1].toUpperCase()}`);
+                                i.saveDescriptionLine(this.formatGefunden("Register",commands[1].toUpperCase()));
+
+                                matches=matches.filter(e=>{
+                                        if(commands[1].toUpperCase()==e.getSource()){
+                                            return e;
+                                        }
+                                });
+                                matches.forEach(e=>{console.log(e.toString())});
+                                if(matches.length<1){
+                                    i.saveDescriptionLine(`${i.getCommandLine()} is an Incorrect Input, please check again!`);
+                                    i.setValid(false);
+                                    return false;
+                                }
+                                else if(matches.length==1){
+                                                                                        // MATCH FOUND
+                                    i.setThirdPart(commands[1].toUpperCase());
+                                    i.setType(InputLineType.TRANSLATED);
+                                    i.setLength(matches[0].getSize());
+                                    i.setHCode(matches[0].getHexCode())
+                                    i.setValid(true);
+                                    //console.log(matches[0].toString());
+                                    return true;
+                                }
+                                else{
+                                    i.saveDescriptionLine(`oopsie and error occured`);
+                                    return false;
+                                }
+                            }else if(this.getDataType(commands[1]) != DataType.NONE){
+                                let type:DataType=this.getDataType(commands[1]);
+                                switch(type){
+                                    case DataType.dat_8:case DataType.dat_16:
+                                            if(consolestring.includes("dat_8")&&type==DataType.dat_8){
+                                                //i.saveDescriptionLine(`Gefunden -> 'dat_8'`);
+                                                i.saveDescriptionLine(this.formatGefunden("",`'dat_8'`));
+
+                                                matches=matches.filter(e=>{
+                                                if(e.getSource()=="dat_8"){
+                                                    return e;
+                                                }
+                                                });
+                                                i.setThirdPart(Manipulator.formatHextoDat8(commands[1]));
+                                                break;
+                                            }
+                                            else if(consolestring.includes("dat_16")){
+                                                //i.saveDescriptionLine(`Gefunden -> 'dat_16'`);
+                                                i.saveDescriptionLine(this.formatGefunden("",`'dat_16'`));
+                                                matches=matches.filter(e=>{
+                                                if(e.getSource()=="dat_16"){
+                                                    return e;
+                                                }
+                                                });
+                                                i.setThirdPart(Manipulator.formatHextoDat16(commands[1]));
+                                                break;
+                                            }
+                                            else if(consolestring.includes("dat_8")){
+                                                i.saveDescriptionLine(`Erwartet war 'dat_8' ${commands[1]} ist ein unerwarteter Befehl`);
+                                                i.setValid(false);
+                                                return false;
+                                            }
+                                            else{
+                                                i.saveDescriptionLine(`${commands[1]} ist ein unerwartetter Befehl!`);
+                                                i.setValid(false);
+                                                return false;
+                                            }
+                                        break;
+
+                                    case DataType.CONSTANT:
+                                        
+                                        if(!consolestring.includes("dat_8")||!consolestring.includes("dat_16")){
+                                            i.saveDescriptionLine(`${commands[0]} ist ein unerwartetter Befehl!`);
+                                            i.setValid(false);
+                                            return false;
+                                        }
+                                        let value = this.symbollist.getSpecificConstantByName(commands[1])?.getValue()
+                                        //i.saveDescriptionLine(`Gefunden Constante mit dem Wert ${value}`);
+                                        i.saveDescriptionLine(this.formatGefunden("Konstante",commands[1]+" mit dem Wert "+value));
+                                        if(value==undefined){
+                                            i.saveDescriptionLine(`ERROR!`);
+                                            return false;
+                                        }
+                                        type = this.getDataType(value)
+                                        if(consolestring.includes("dat_8")&&type==DataType.dat_8){ //Konstante hat Datentyp 'dat_8'
+                                            i.saveDescriptionLine(`Größe von ${commands[1]} ist 'dat_8'`);
+                                            matches=matches.filter(e=>{
+                                            if(e.getSource()=="dat_8"){
+                                                return e;
+                                            }
+                                            });
+                                            //i.setThirdPart(Manipulator.formatHextoDat8(commands[1]));
+                                            i.setThirdPart(commands[1]);
+                                            break;
+                                        }
+                                        else if(consolestring.includes("dat_16")){ //Konstante hat Datentyp 'dat_16'
+                                            i.saveDescriptionLine(`Größe von ${commands[1]} ist 'dat_16'`);
+                                            matches=matches.filter(e=>{
+                                            if(e.getSource()=="dat_16"){
+                                                return e;
+                                            }
+                                            });
+                                            //i.setThirdPart(Manipulator.formatHextoDat16(commands[1]));
+                                            i.setThirdPart(commands[1]);
+                                            break;
+                                        }
+                                        else if(consolestring.includes("dat_8")){
+                                            i.saveDescriptionLine(`Erwartet war 'dat_8' ${commands[1]} ist ein unerwarteter Befehl`);
+                                            i.setValid(false);
+                                            return false;
+                                        }
+                                        else{
+                                            i.saveDescriptionLine(`${commands[1]} ist ein unerwartetter Befehl!`);
+                                            return false;
+                                        }
+                                        break;
+                                    case DataType.LABEL:
+                                        if(!consolestring.includes("label")){
+                                            i.saveDescriptionLine(`${commands[1]} ist ein unerwartetter Befehl!`);
+                                            i.setValid(false);
+                                            return false;
+                                        }
+                                        //i.saveDescriptionLine(`Gefunden 'label'\n ${commands[1]} ist ein bereits existierender 'label'`);
+                                        let value1 = this.symbollist.getSpecificLabelByName(commands[1]);
+                                        i.saveDescriptionLine(this.formatGefunden("Label",`'${value1?.getName()}'`));
+                                        i.setThirdPart(commands[1]);
+                                        matches=matches.filter(e=>{
+                                            if(e.getSource()=="label"){
+                                                return e;
+                                            }
+                                        })
+                                        break;
+                                    case DataType.ELLIGIBLE:
+                                        if(!consolestring.includes("label")){
+                                            i.saveDescriptionLine(`${commands[1]} ist ein unerwartetter Befehl!`);
+                                            i.setValid(false);
+                                            return false;
+                                        }
+                                        i.saveDescriptionLine(`Gefunden 'label'\n ${commands[1]} als neue 'label' definiert`);
+                                        i.saveDescriptionLine(this.formatGefunden("Label",`'${value1?.getName()}'`));
+                                        this.symbollist.setLabelWithoutPosition(commands[1]);
+                                        i.setThirdPart(commands[1]);
+                                        matches=matches.filter(e=>{
+                                            if(e.getSource()=="label"){
+                                                return e;
+                                            }
+                                        })
+                                        break;
+                                    default: 
+                                        i.saveDescriptionLine("Semothing went wrong!");
+                                        return false;
+                                }
+                                if(matches.length<1){
+                                    i.saveDescriptionLine(`${commands[1]} ist ein unerwarter Befehl!\n${commands[1]} ist nicht in ${consolestring} erhalten!`);
+                                    //console.log(`${i.getCommandLine()} is an Incorrect Input, please check again!`);
+                                    i.setValid(false);
+                                    return false;
+                                }
+                                else if(matches.length==1){
+                                                                                        // MATCH FOUND
+                                    i.setType(InputLineType.TRANSLATED);
+                                    i.setLength(matches[0].getSize());
+                                    i.setHCode(matches[0].getHexCode())
+                                    i.setValid(true);
+                                    //console.log(matches[0].toString());
+                                    return true;
+                                }
+                                else{
+                                    i.saveDescriptionLine(`oopsie and error occured`);
+                                    return false;
+                                }
+                            }
+                            else{
+                                i.saveDescriptionLine(`${commands[1]} ist ein unbekannter Befehl!`);
+                                i.setValid(false);
+                                return false;
+                            }
+                        }
+                        else{
+                            if(matches.length<1){
+                                i.saveDescriptionLine(`${i.getCommandLine()} is an Incorrect Input, please check again!`);
+                                i.setValid(false);
+                                return false;
+                            }
+                            else if(matches.length==1){
+                                                                                    // MATCH FOUND
+                                i.setType(InputLineType.TRANSLATED);
+                                i.setLength(matches[0].getSize());
+                                i.setHCode(matches[0].getHexCode())
+                                i.setValid(true);
+                                //console.log(matches[0].toString());
+                                return true;
+                            }
+                            else{
+                                i.saveDescriptionLine(`oopsie and error occured`);
+                                return false;
+                            }
+                        }
+                    }else if(this.getDataType(commands[0]) != DataType.NONE){ //Second part is matched with Existing Labels/Constants & Eligibilty & Valid dat_8 or dat_16
+                        let type:DataType=this.getDataType(commands[0]);
+                        switch(type){
+                            case DataType.dat_8:
+                                    if(!consolestring.includes("dat_8")){
+                                        i.saveDescriptionLine(`${commands[0]} ist ein unerwartetter Befehl!`);
+                                        i.setValid(false);
+                                        return false;
+                                    }
+                                    i.setSecondPart(Manipulator.formatHextoDat8(commands[0]));
+                                    i.saveDescriptionLine(`Gefunden -> 'dat_8'`);
+                                    matches=matches.filter(e=>{
+                                        if(e.getDestination()=="dat_8"){
+                                            return e;
+                                        }
+                                    });
+                                break;
+                            case DataType.dat_16:
+                                i.saveDescriptionLine(`${commands[0]} als dat_16 identifiziert ist zu groß\n Erwartet war -> 'dat_8' oder ein 'label'`);
+                                return false;
+                                break;
+                            case DataType.CONSTANT: // 2 Versionen => Constante wird eingesetzt || Zahlenwert der Constante wird eingesetzt
+                                /* 
+                                i.setSecondPart(commands[0]);
+                                matches=matches.filter(e=>{
+                                    if(e.getDestination()=="dat_8"){
+                                        return e;
+                                    }
+                                })
+                                */
+                                if(!consolestring.includes("dat_8")){
+                                    i.saveDescriptionLine(`${commands[0]} ist ein unerwartetter Befehl!`);
+                                    i.setValid(false);
+                                    return false;
+                                }
+                                let value = this.symbollist.getSpecificConstantByName(commands[0])?.getValue();
+                                i.saveDescriptionLine(`Gefunden Constante der Größe 'dat_8' mit dem Wert ${value}`);
+                                /* if(value!=undefined){
+                                    i.setSecondPart(Manipulator.formatHextoDat8(value));
+                                } 
+                                else*/ i.setSecondPart(commands[0]);
+                                matches=matches.filter(e=>{
+                                    if(e.getDestination()=="dat_8"){
+                                        return e;
+                                    }
+                                });
+                                break;
+                            case DataType.LABEL:
+                                if(!consolestring.includes("label")){
+                                    i.saveDescriptionLine(`${commands[0]} ist ein unerwartetter Befehl!`);
+                                    i.setValid(false);
+                                    return false;
+                                }
+                                i.saveDescriptionLine(`Gefunden 'label'\n ${commands[0]} ist ein bereits existierender 'label'`);
+                                i.setSecondPart(commands[0]);
+                                matches=matches.filter(e=>{
+                                    if(e.getDestination()=="label"){
+                                        return e;
+                                    }
+                                })
+                                break;
+                            case DataType.ELLIGIBLE:
+                                if(!consolestring.includes("label")){
+                                    i.saveDescriptionLine(`${commands[0]} ist ein unerwartetter Befehl!`);
+                                    i.setValid(false);
+                                    return false;
+                                }
+                                i.saveDescriptionLine(`Gefunden 'label'\n ${commands[0]} als neue 'label' definiert`);
+                                i.setSecondPart(commands[0]);
+                                this.symbollist.setLabelWithoutPosition(commands[0]);
+                                matches=matches.filter(e=>{
+                                    if(e.getDestination()=="label"){
+                                        return e;
+                                    }
+                                })
+                                break;
+                            default: 
+                                i.saveDescriptionLine("Semothing went wrong!");
+                                return false;
+                        }
+                        if(matches.length<1){
+                            i.saveDescriptionLine("ERROR -> No Matches found!");
+                            return false;
+                        }
+                        //matches.forEach(e=>{console.log(e.toString())});
+                        if(commands.length>1){ ///IF YES -> Length >2
+
+                            consolestring=this.getScources(matches).join(", ");
+                            i.saveDescriptionLine(`Erwartet -> ${consolestring}`);
+                            commands[1] = commands[1].toUpperCase();
+
+                            if(this.getScources(matches).includes(commands[1])&&this.Regs.includes(commands[1].toUpperCase())){
+                                i.saveDescriptionLine(`Gefunden Register => ${commands[1]}`);
+                                matches=matches.filter(e=>{
+                                    if(e.getSource()==commands[1].toUpperCase()){
+                                        return e;
+                                    }
+                                });
+                                //matches.forEach(e=>{console.log(e.toString())});
+                                if(matches.length<1){
+                                    i.saveDescriptionLine(`${i.getCommandLine()} is an Incorrect Input, please check again!`);
+                                    i.setValid(false);
+                                    return false;
+                                }
+                                else if(matches.length==1){
+                                                                                        // MATCH FOUND
+                                    i.setThirdPart(commands[1].toUpperCase());
+                                    i.setType(InputLineType.TRANSLATED);
+                                    i.setLength(matches[0].getSize());
+                                    i.setHCode(matches[0].getHexCode())
+                                    i.setValid(true);
+                                    //console.log(matches[0].toString());
+                                    return true;
+                                }
+                                else{
+                                    i.saveDescriptionLine(`oopsie and error occured`);
+                                    return false;
+                                }
+                            }
+                            else{
+                                i.saveDescriptionLine(`${commands[1]} ist ein unbekannter Befehl!`);
+                                i.setValid(false);
+                                return false;
+                            }
+                        }
+                        else{
+                            if(matches.length<1){
+                                i.saveDescriptionLine(`${i.getCommandLine()} is an Incorrect Input, please check again!`);
+                                i.setValid(false);
+                                return false;
+                            }
+                            else if(matches.length==1){
+                                                                                    // MATCH FOUND
+                                i.setType(InputLineType.TRANSLATED);
+                                i.setLength(matches[0].getSize());
+                                i.setHCode(matches[0].getHexCode())
+                                i.setValid(true);
+                                //console.log(matches[0].toString());
+                                return true;
+                            }
+                            else{
+                                i.saveDescriptionLine(`oopsie and error occured`);
+                                return false;
+                            }
+                        }
+                    }
+                    else{
+                        i.saveDescriptionLine(`${commands[0]} ist ein unbekannter Befehl!`);
+                        i.setValid(false);
+                        return false;
+                    }
+                }
+                else{
+                    if(matches.length<1){
+                        i.saveDescriptionLine(`${i.getCommandLine()} is an Incorrect Input, please check again!`);
+                        i.setValid(false);
+                        return false;
+                    }
+                    else if(matches.length==1){
+                                                                            // MATCH FOUND
+                        i.setFirstPart(matches[0].getMCode());
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setLength(matches[0].getSize());
+                        i.setHCode(matches[0].getHexCode())
+                        i.setValid(true);
+                        //console.log(matches[0].toString());
+                        return true;
+                    }
+                    else{
+                        i.saveDescriptionLine(`oopsie and error occured`);
+                        return false;
+                    }
+                }
+            }
+            else if(this.pseudoMCodes.includes(commands[0].toUpperCase())){
+                commands[0]=commands[0].toUpperCase();
+                i.setFirstPart(commands[0].toUpperCase());
+                i.saveDescriptionLine(`Gefunden Pseudo-MnemoCode ${commands[0]}`);
+                                                                            /// needs finishing
+                switch(commands[0]){
+                    case 'RS':
+                        i.saveDescriptionLine("Erwartet 'dat_8'");
+                        if(Manipulator.isDat_8(commands[1])){
+                            i.setSecondPart(Manipulator.formatHextoDat8(commands[1]));
+                            i.setLength(Manipulator.formatHextoDat8(commands[1]));
+                            i.setType(InputLineType.TRANSLATED);
+                            let Hcode="";
+                            for(let i=0;i<Manipulator.hexToDec(commands[1]);i++){
+                                Hcode+='00';
+                            }
+                            i.setHCode(Hcode);
+                            i.setValid(true);
+                            return true;
+                        }
+                        else{
+                            i.saveDescriptionLine(`${commands[1]} ist kein dat_8!`);
+                            return false;
+                        }
+                        break;
+
+                    case 'DW':
+                        i.saveDescriptionLine("Erwartet 'dat_16' Oder OFFSET 'label'");
+                        return false;
+                        break;
+
+                    case 'DB':
+                        i.saveDescriptionLine("Erwartet 'dat_8'");
+                        return false;
+                        break;
+
+                    case 'ORG':
+                        i.saveDescriptionLine("Erwartet 'dat_16'");
+                        if(Manipulator.isDat_16(commands[1])){
+                            i.saveDescriptionLine(`Gefunden 'dat_16'`)
+                            i.setLength(Manipulator.hexToDec(commands[1]));
+                            i.setSecondPart(Manipulator.formatHextoDat16(commands[1]));
+                            i.setValid(true);
+                            return true;
+                        }
+                        else{
+                            i.saveDescriptionLine(`${commands[1]} is kein 'dat_16'!`);
+                            return false;
+                        }
+                        break;
+
+                    case 'EXT':
+                        i.saveDescriptionLine(`Command 'EXT' is not defined yet!`);
+                        i.setFirstPart('EXT');
+                        return false;
+                        break;
+
+                    case 'ENT':
+                        i.saveDescriptionLine(`Command 'ENT' is not defined yet!`);
+                        i.setFirstPart('ENT');
+                        return false;
+                        break;
+
+                    default: 
+                        i.saveDescriptionLine("semothing went wrong :( ");
+                        break;
+                }
+                return false;
+            }
+            else if(this.symbollist.isEligible(commands[0])&&!this.symbollist.isConst(commands[0])&&!this.symbollist.isLabel(commands[0]) && i.getLabel() ==""){
+                i.saveDescriptionLine(`Gefunden Konstante\n Erwartet EQU`);
+
+                let new_commands=Manipulator.splitStringHalf(commands[1]," ");
+                new_commands=new_commands.filter(e=>{
+                    if(!/^[\s+]/g.test(e) && e!=""){return e;}
+                });
+
+                i.setFirstPart(commands[0]);
+
+                if(new_commands[0].toUpperCase()=="EQU"){
+                    i.saveDescriptionLine(`Gefunden EQU!\n Erwartet -> 'dat_8' oder 'dat_16'`);
+
+                    if(new_commands.length>1){
+                        let type=this.getDataType(new_commands[1]);
+                        if(type ==DataType.dat_8){
+                            i.saveDescriptionLine(`${new_commands[1]} ist '${type}'`);
+                            i.setSecondPart(new_commands[0]);
+                            i.setThirdPart(Manipulator.formatHextoDat8(new_commands[1]));
+                            i.setValid(true);
+                            this.symbollist.setConst(commands[0],new_commands[1]);
+                            return true;
+                        }
+                        else if(type ==DataType.dat_16){
+                            i.saveDescriptionLine(`${new_commands[1]} ist '${type}'`);
+                            i.setSecondPart(new_commands[0]);
+                            i.setThirdPart(Manipulator.formatHextoDat16(new_commands[1]));
+                            i.setValid(true);
+                            this.symbollist.setConst(commands[0],new_commands[1]);
+                            return true;
+                        }
+                        else{
+                            i.saveDescriptionLine(`${new_commands[1]} ist kein gültiger 'dat_8' oder 'dat_16'`);
+                            return false;
+                        }
+                    }else{
+                        i.saveDescriptionLine(`Kein 'dat_8' oder 'dat_16' gefunden!`);
+                        return false;
+                    }
+                }
+                else{
+                    i.saveDescriptionLine(`${new_commands[0]} ist ein ungültiger Befehl!`);
+                    return false;
+                }
+            }
+            else{
+                i.saveDescriptionLine(`${commands[0]} ist ein ungültiger Befehl!`)
+                return false;
+            }
+        }
+        
+        else{
+            i.saveDescriptionLine("Eintrag ist leer!");
+            return false;
+        }
+    }
+
+/* class Manipulator {
+    constructor(){}
+    static binToHex = (addr:string):string  =>{
+        return parseInt(addr,2).toString(16).toUpperCase()+"h";
+    }
+    static decToHex= (addr:string):string =>{
+            return parseInt(addr,10).toString(16).toUpperCase()+"h";
+    }
+    static hexToDec=(addr:string):number =>{
+            addr=addr.replace(/h/g,"");
+            return Number(parseInt(addr,16).toString(10));
+    }
+    static splitStringHalf(addr:string,ch:string):string[]{
+        let reString:string[]=[];
+        let p:number =addr.indexOf(ch);
+        if(p!=-1){
+            reString[0] = addr.slice(0,p).trim();
+            reString[1] = addr.slice(p+1).trim();
+        }
+        else reString[0]=addr;
+        return reString;
+    }
+    static removeExcessWhiteSpace(addr:string):string{
+        return addr.replace(/\s+/g,' ').trim();
+    }
+    static isHex(addr:string):boolean{
+        let newS:string=addr.replace(/^0+/,'');
+        if(addr.endsWith("h")||addr.endsWith("H")){
+            newS=addr.replace(/h$/i,"");
+            if(!/[^0-9A-F]/i.test(newS)){
+                return true;
+            }
+            else return false;
+        }
+        
+        else return false;
+    }
+    static isDec(addr:string):boolean{
+        if(!/[^0-9]/.test(addr)){
+            return true;
+        }
+        else return false;
+    }
+    static isDat_8(addr:string):boolean{
+        addr =addr.replace(/^0+/,'');
+        if(this.isDec(addr)){
+            if(this.decToHex(addr).length<=3){
+                return true;
+            }
+            else return false;
+        }
+        else if(this.isHex(addr)){
+            if(addr.length<=3){
+                return true;
+            }
+            else return false;
+        }
+        else return false;
+    }
+    static isDat_16(addr:string):boolean{
+        if(this.isDec(addr)){
+            if(this.decToHex(addr).length<=5){
+                return true;
+            }
+            else return false;
+        }
+        else if(this.isHex(addr)){
+            if(addr.length<=5){
+                return true;
+            }
+            else return false;
+        }
+        else return false;
+    }
+    static formatHex(addr:string):string{
+        addr=addr.replace(/^0+/,'');
+        //addr=addr.replace(/^0/,'');
+        if(Manipulator.isDat_8(addr)){
+            if(this.isDec(addr)){
+                addr=Manipulator.decToHex(addr);
+            }
+
+            if(addr.length==2){
+                addr='0'+addr;
+            }
+        }
+        else if(Manipulator.isDat_16(addr)){
+            if(this.isDec(addr)){
+                addr = Manipulator.decToHex(addr);
+            }
+
+            if(addr.length==4){
+                addr='0'+addr;
+            }
+        }
+        return addr;
+    }
+
+    static formatHextoDat8(addr:string):string{
+        addr=addr.replace(/^0+/,'');
+        //addr=addr.replace(/^0/,'');
+        if(Manipulator.isDat_8(addr)){
+            if(this.isDec(addr)){
+                addr=Manipulator.decToHex(addr);
+            }
+
+            if(addr.length==2){
+                addr='0'+addr;
+            }
+        }
+        return addr;
+    }
+    static formatHextoDat8WithoutH(addr:string):string{
+        addr=addr.replace(/^0+/,'');
+        //addr=addr.replace(/^0/,'');
+        if(Manipulator.isDat_8(addr)){
+            if(this.isDec(addr)){
+                addr=Manipulator.decToHex(addr);
+            }
+
+            if(addr.length==2){
+                addr='0'+addr;
+            }
+        }
+        return addr.replace(/h$/,"");
+    }
+    static formatHextoDat16(addr:string):string{
+        addr=addr.replace(/^0+/,'');
+        if(this.isDat_16(addr)){
+            if(this.isDec(addr)){
+                addr=this.decToHex(addr);
+            }
+            switch(addr.length){
+                case 1:
+                    addr="0000"+addr;
+                    break;
+                case 2: addr='000'+addr;
+                    break;
+                case 3: addr='00'+addr;
+                    break;
+                case 4: addr='0'+addr;
+                    break;
+            }
+        }
+        return addr;
+    }
+    static formatHextoDat16WithoutH(addr:string):string{
+        addr=addr.replace(/^0+/,'');
+        if(this.isDat_16(addr)){
+            if(this.isDec(addr)){
+                addr=this.decToHex(addr);
+            }
+            switch(addr.length){
+                case 1:
+                    addr="0000"+addr;
+                    break;
+                case 2: addr='000'+addr;
+                    break;
+                case 3: addr='00'+addr;
+                    break;
+                case 4: addr='0'+addr;
+                    break;
+            }
+        }
+        return addr.replace(/h$/g,"");
+    }
+    static splitDat16InDat8(addr:string):string[]{
+        let r:string[]=[];
+        if(this.isDat_16(addr)){
+            addr=this.formatHextoDat16(addr);
+            r[0]=addr[2]+addr[3];
+            r[1]=addr[0]+addr[1];
+        }
+        return r;
+    }
+} */
+
+
+/* class ProjectWindow{
+    private inputLineControl:InputLineControl=InputLineControl.getInstance();
+    private InputDisplay:HTMLOListElement;
+    private elementDisplayed:number=-1;
+    private elementOfElementDisplayed = -1;
+    private iWindow:InputWindow= new InputWindow(this);
+    private descriptionWindow:DescriptionWindow =new DescriptionWindow(this);
+    private animationControl:AnimationControl=new AnimationControl(this,this.descriptionWindow);
+    private inputLines:InputLine[];
+    private testButton:HTMLButtonElement;
+    
+    constructor(){
+        this.InputDisplay= document.getElementById("InputTextOl") as HTMLOListElement;
+        this.inputLines = this.inputLineControl.getInputLines();
+        this.testButton=getHtmlElement('testButton') as HTMLButtonElement;
+    }
+    getIndexOfDisplayedElement():number{
+        return this.elementDisplayed;
+    }
+    setIndexOfDisplayedElement(i:number){
+        this.elementDisplayed=i;
+    } 
+     displayNextLine(){
+        if(this.elementDisplayed==-1){
+            this.elementDisplayed=0;
+        }
+        let line = this.inputLines[this.elementDisplayed];
+        if(this.elementOfElementDisplayed == -1){
+            this.descriptionWindow.pushNextCurrentLine(line);
+        }
+    } 
+    public consoleThatShit=()=>{
+        console.log(this);
+    }
+    public setNextLine=()=>{
+        if(!this.inputLines){
+            this.elementDisplayed=this.elementDisplayed++;
+            this.descriptionWindow.setCurrentLineDisplayed(this.inputLines[this.elementDisplayed])
+        }
+    }
+    public getFirstLine=()=>{
+        if(!this.inputLines){
+            this.elementDisplayed=0;
+            this.descriptionWindow.setCurrentLineDisplayed(this.inputLines[this.elementDisplayed])
+        }
+    }
+
+    public refreshInputLines=()=>{
+        this.resetInputLines();
+        this.inputLines=this.inputLineControl.getInputLines();
+        this.elementDisplayed=-1;
+        this.descriptionWindow.resetAllDescription();
+        
+    }
+    public displayInputLines=()=>{
+        let listItem;
+        this.inputLines.forEach(e=>{
+            listItem=document.createElement('li');
+            listItem.innerHTML=e.inputLineToString();
+            this.InputDisplay.appendChild(listItem);
+        });
+
+    }
+    public toString=()=>{
+        return "wow";
+    }
+    public resetInputLines=()=>{
+        try{
+            while(this.InputDisplay.firstChild){
+                this.InputDisplay.removeChild(this.InputDisplay.lastChild!);
+            }
+        }catch(e){
+            console.log();
+        }
+    }
+    public createListeners=()=>{
+        try{
+            this.iWindow.createEventListeners();
+            this.animationControl.createEventListeners();
+            this.descriptionWindow.createEventListeners();
+        }catch(e){
+        }
+    } 
+    public setDescriptionWindow=(d:DescriptionWindow)=>{
+        this.descriptionWindow=d;
+    }
+    public setAnimationControl=(a:AnimationControl)=>{
+        this.animationControl=a;
+    }
+
+} */
+
+//////////////////////////
+
+/* class InputWindow{
+    private inputcontrol:InputLineControl=InputLineControl.getInstance();
+    private InputWindowElement:HTMLElement;
+    private InputTextAreaElement:HTMLTextAreaElement;
+    private pWindow:ProjectWindow;
+
+    constructor(p:ProjectWindow){
+        this.InputWindowElement=getHtmlElement('InputWindow');
+        this.InputTextAreaElement=getHtmlElement('InputTextArea')as HTMLTextAreaElement;
+        this.pWindow=p;
+    }
+    public openEditWindow =()=>{
+        try{
+
+            let b =window.getComputedStyle(this.InputWindowElement);
+            if(b.getPropertyValue('visibility')=="hidden"){
+                this.InputWindowElement.style.visibility="visible";
+            }
+            else{
+                this.InputWindowElement.style.visibility="hidden";
+            }
+            console.log(this);
+        }catch(e){
+            console.log(e);
+        }
+    }
+
+    public translateAndGo = ():void=>{
+        try{
+            this.translate();
+            if(!this.inputcontrol.hasInvalid()){
+                this.InputWindowElement.style.visibility="hidden";
+                this.pushInputLines();
+            }
+            else window.alert(`Input has InvalidLines-> ${this.inputcontrol.getInvalidIDs()}`);
+        }catch(e){
+            console.log(e);
+        }
+        
+    }
+    public pushInputLines=():void=>{
+        if(this.pWindow){
+            this.pWindow.refreshInputLines();
+            this.pWindow.displayInputLines();
+        }
+    }
+    
+    public createEventListeners=()=>{
+        try{
+            const a= document.getElementById('EditWindowOpenButton');
+                if(a!=null){
+                a.addEventListener("click",this.openEditWindow);
+            }
+            else throw new Error("Element #EditWindowOpenButton is null!");
+        
+            const b= document.getElementById('Translate');
+            if(b!=null){
+                b.addEventListener("click",this.translate);
+            }
+            else throw new Error("Element #Translate is null!");
+            
+            const c=document.getElementById('Submit');
+            if(c!=null){
+                c.addEventListener("click",this.translateAndGo);
+            }
+            else throw new Error("Element #Submit is null!")
+        }
+        catch(e){
+            console.log(e);
+        }
+    }
+
+    public translate = ():void=>{
+        try{
+            let s:string[]=this.InputTextAreaElement.value.split("\n");
+            s=s.filter(e=>{
+                e=Manipulator.removeExcessWhiteSpace(e);
+                if(e.length>0){
+                    return e;
+                }
+            })
+            if(!(s.length<1)){
+                this.inputcontrol.addInputLines(s);
+            }
+            else{
+                throw new Error('No InputLines!');
+            }
+        }catch(e){
+            console.log(e);
+        }
+    }
+}  */
+
+///////////////////
+ 
+/*class DescriptionWindow{
+    private pWindow: ProjectWindow;
+    private symbolList:SymbolList=SymbolList.getInstance();
+    private currentLine:HTMLElement;
+    private descriptionSymboltableBox:HTMLElement;
+    private description:HTMLElement;
+    private symbolTabelle:HTMLElement;
+    private inputLineControl:InputLineControl=InputLineControl.getInstance();
+    private currentElementofElement:number= -1;
+    private currentLineDisplayed:InputLine;
+    private testButton:HTMLButtonElement;
+    constructor(p:ProjectWindow){
+        this.currentLine= getHtmlElement('currentLine') as HTMLElement;
+        this.descriptionSymboltableBox=getHtmlElement('descriptionSymboltableBox') as HTMLElement;
+        this.testButton=getHtmlElement('testButton') as HTMLButtonElement;
+        console.log(this.testButton);
+        this.pWindow=p;
+        this.description=getHtmlElement('Description') as HTMLElement;
+        this.symbolTabelle=getHtmlElement('SymbolTabelle') as HTMLElement;
+        this.currentLineDisplayed=this.inputLineControl.getInputLines()[0];
+    }
+    public pushNextDescription = ():void=>{
+        try{
+            if(!this.currentLineDisplayed){
+                this.pWindow.getFirstLine();
+            }
+            else if(this.currentElementofElement==-1){
+                this.pushNextCurrentLine();
+            }
+            else{
+                let lines = this.currentLineDisplayed.getDescriptionLine();
+                if(this.currentElementofElement ==lines.length){
+                    this.pWindow.setNextLine();
+                }
+                else{
+                    this.currentElementofElement=this.currentElementofElement++;
+                    this.pushSingleMnomeDescription(this.currentLineDisplayed.getDescriptionLine()[this.currentElementofElement])
+                }
+            }
+        }catch(e){
+            console.log(e);
+        }
+    }
+
+    public resetAllDescription=():void=>{
+        this.resetCurrentLine();
+        this.resetDescription();
+        this.currentElementofElement=-1;
+    }
+
+    public resetDescription=():void=>{
+        this.description.innerHTML="";
+    }
+
+    public resetCurrentLine=():void=>{
+        this.currentLine.innerHTML="";
+    }
+
+    public pushSingleMnomeDescription=(s:string):void=>{
+        this.description.innerHTML += s;
+    }
+
+    public pushSingleSymbolDescription=(s:string[]):void=>{
+        this.symbolTabelle.innerHTML += s;
+    }
+
+    public pushNextCurrentLine=():void=>{
+        this.currentLine.innerHTML=this.currentLineDisplayed.commandLinetoString();
+    }
+
+    public setCurrentLineDisplayed=(i:InputLine):void=>{
+        this.currentLineDisplayed = i;
+        this.resetAllDescription();
+    }
+    
+    public createEventListeners=():void=>{
+        try{
+            this.testButton.addEventListener("click",this.pushNextDescription);
+        }catch(e){console.log(e);}
+    }
+}
+ */
+
+/////////////////////
+
+/* class AnimationControl{
+    private pWindow:ProjectWindow;
+    private descriptionWindow:DescriptionWindow;
+    private play:HTMLButtonElement;
+    private stop:HTMLButtonElement;
+    private speed:HTMLButtonElement;
+    private skip:HTMLButtonElement;
+    private reset:HTMLButtonElement;
+
+    public constructor(p:ProjectWindow,d:DescriptionWindow){
+        this.pWindow=p;
+        this.descriptionWindow=d;
+        this.play=getHtmlElement('play') as HTMLButtonElement;
+        this.stop=getHtmlElement('stop') as HTMLButtonElement;
+        this.speed=getHtmlElement('speed') as HTMLButtonElement;
+        this.skip=getHtmlElement('skip') as HTMLButtonElement;
+        this.reset=getHtmlElement('reset') as HTMLButtonElement;
+        
+    }
+
+    public setProjectWindow=(p:ProjectWindow)=>{
+        this.pWindow=p;
+    }
+
+    public setDescriptionWindow=(d:DescriptionWindow)=>{
+        this.descriptionWindow=d;
+    }
+
+    public playAnimation=()=>{
+
+    }
+
+    public stopAnimation=()=>{
+
+    }
+
+    public speedAnimation=()=>{
+        try{
+            if(!this.descriptionWindow){
+                throw new Error("No DescriptionWindow Defined");
+            }
+            else{
+                this.descriptionWindow.pushNextDescription();
+            }
+        }
+        catch(e){
+            console.log(e);
+        }
+    }
+
+    public skipAninmation =()=>{
+        console.log("fasz");
+    }
+
+    public resetAnimation=()=>{
+
+    }
+
+    public createEventListeners =()=>{
+        try{
+            if(this.play){
+                this.play.addEventListener("click",this.playAnimation);
+            }
+            if(this.stop){
+                this.stop.addEventListener("click",this.stopAnimation);
+            }
+            if(this.speed){
+                this.speed.addEventListener("click",this.speedAnimation);
+            }
+            if(this.skip){
+                this.skip.addEventListener("click",this.skipAninmation);
+            }
+            if(this.reset){
+                this.reset.addEventListener("click",this.resetAnimation);
+            }
+        }catch(e){
+            console.log(e);
+        }
+    }
+} */
+
+
+    /* public eraseAll = () =>{
+        currentLine.innerHTML="";
+        symbolTableLines.innerHTML="";
+        descriptionLines.innerHTML="";
+        addresszahler.innerHTML="0000h";
+        machinenbefehl.innerHTML="";
+        outputText.innerHTML="";
+        this.elementDisplayed = -1;
+        this.idOfDisplayedConstANDLabel =-1;
+        this.elementOfElementDisplayed = -1;
+        this.translationOfElementDisplayed =-1;
+        OutputTextAreaElement.innerHTML="";
+    } */
+
+
+
+    getLabelORConstantString(s:string):string{
+        if(this.symbolliste.isConst(s)){
+            return this.getConstant(s);
+        }
+        else if(this.symbolliste.isLabel(s)){
+            return this.getLabel(s);
+        }
+        else return "kein solcher Label oder Konstante existiert!";
+    }
+    getLabel(s:string):string{
+        let l:Label|undefined=this.symbolliste.getSpecificLabelByName(s);
+        let p;
+        let n="";
+        if(l!=undefined){
+            n=l.getName();
+            p=l.getPosition();
+            if(p!=undefined){
+                return `<span class="gray">Label:</span> &nbsp;&nbsp;&nbsp; ${n} Wert:${this.fHD16(p)} (little endian:${this.getLittleEndianOf(p)})`;
+            }
+            else return "label has no address";
+        }
+        else return "label existiert nicht!";
+    }
+    getConstant(s:string):string{
+        let l:Constant|undefined=this.symbolliste.getSpecificConstantByName(s);
+        let p="";
+        let n="";
+        if(l!=undefined){
+            n=l.getName();
+            p=l.getValue();
+            return `<span class="gray">Konst.:</span> &nbsp;&nbsp; ${n} Wert:${this.fHD16(p)} (little endian:${this.getLittleEndianOf(p)})`;
+        }
+        else return "Konstante existiert nicht!";
+    }
+
+
+        getNameOfUnknownLabel(i:InputLine){
+        let l:string="";
+        let s:string|undefined;
+        if(this.checkTranslationForUnknownLabel(i)){
+            if(this.symbolliste.isLabel(i.getSecondPart())){
+                l=i.getSecondPart();
+                s=this.symbolliste.getPositionOfSpecificLabel(i.getSecondPart());
+            }
+            else if(this.symbolliste.isLabel(i.getThirdPart())){
+                l=i.getThirdPart();
+                s=this.symbolliste.getPositionOfSpecificLabel(i.getThirdPart());
+            }
+            else{
+                return "";
+            }
+            if(s==undefined){
+                return l+":????";
+            }
+            else return l+":"+s;
+        }
+        return "";
+    }
+
+            /* if(this.inputLineControl.checkTranslationForUnknownLabel(e)){
+            s=this.inputLineControl.getNameOfUnknownLabel(e);
+            if(s==""){
+                descriptionLines.innerHTML += `<p>Falsch gesetzter LABEL</p>`;
+            }
+            else{
+                ss=Manipulator.splitStringHalf(s,":");
+                descriptionLines.innerHTML += `<p>Suche Label ${ss[0]} in SymbolTabelle</p>`;
+                if(aniControl.start){
+                    await sleepUntilNextStep();
+                    updateScroll(descriptionLines.id);
+                }
+                if(ss[1]=="????"){
+                    descriptionLines.innerHTML += `<p><span class="errorRed">Label '${ss[0]}' konnte nicht aufgelöst werden!</span></p>`;
+                    updateScroll(descriptionLines.id);
+                    await sleepFor(10);
+                    aniControl.setStop();
+                    throw Error('Stop pressed');
+                }
+                else{
+                    
+                    descriptionLines.innerHTML += `<p>Label '${ss[0]}' in Symboltabelle gefunden, Wert: ${Manipulator.hexToDec(ss[1])+" ("+ss[1]+")"}</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    s=this.inputLineControl.getSpeicherAbbild(e,false);
+                    this.inputLineControl.retranslate(e);
+                    n=this.inputLineControl.getSpeicherAbbild(e,true);
+                    descriptionLines.innerHTML += `<p>Ersetzung im Speicherabbild: ${s}-->${n}</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    this.repushTranslations();
+                }
+            }
+            
+        }
+
+        updateScroll(descriptionLines.id); */
+
+                /* if(array.length!=0){
+            if(array[this.idOfDisplayedConstANDLabel+1]!=null){
+                s=array[this.idOfDisplayedConstANDLabel+1];
+                this.idOfDisplayedConstANDLabel+=1;
+                symbolTableLines.innerHTML+=`<h4>${this.inputLineControl.getLabelORConstantString(s)}</h4>`
+                updateScroll(symbolTableLines.id);
+                return true;
+            }
+        } */

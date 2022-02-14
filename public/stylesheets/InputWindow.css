@@ -1,0 +1,73 @@
+/* #InputWindowContainter{
+    visibility: hidden;
+}
+#OutputWindowContainer{
+    visibility: hidden;
+} */
+.backgroundContainer{
+    grid-row: 1/13;
+    grid-column: 1/11;
+    z-index: 1;
+    display:grid;
+    grid-template-columns: 1fr 80% 1fr;
+    grid-template-rows: 1fr 80% 1fr;
+    background: rgba(0, 0, 0, 0.8);
+}
+#InputWindow{
+    display:grid;
+    grid-template-areas: 
+    "textarea textarea textarea textarea div"
+    "textarea textarea textarea textarea div"
+    "textarea textarea textarea textarea div"
+    "textarea textarea textarea textarea div"
+    "textarea textarea textarea textarea div"
+    "button1 button2 button3 button4 button5";
+    grid-template-columns: 1fr 1fr 1fr 1fr 25%;
+    grid-template-rows: 1fr 1fr 1fr 1fr 10%;
+    background-color: cornsilk;
+}
+#OutputWindow{
+    display:grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr 1fr 1fr 10%;
+    background-color: cornsilk;
+}
+#OutputWindow>textarea{
+    grid-column: span 5;
+    grid-row:span 4;
+    resize: none;
+    font-size: 20px;
+    font-weight: bold;
+}
+.hidden{
+    visibility: hidden;
+}
+.inoutputbox{
+    grid-row: 2/3;
+    grid-column: 2/3;
+}
+#InputWindow>textarea{
+    grid-column: span 4;
+    grid-row:span 4;
+    resize: none;
+    font-size: 20px;
+    font-weight: bold;
+};
+#InputWindow>button{
+    grid-column: span 1;
+    grid-row:5;
+    
+}
+/* #InputWindow>#Translate{
+    grid-column: span 1;
+    grid-row: 5; 
+} */
+#InputWindow>{
+    width: 100%;
+    height: 100%;
+}
+#InputWindow>#ErrorDescription{
+    grid-column: span 1;
+    grid-row:span 4;
+    overflow-y: scroll;
+}

@@ -1,0 +1,26 @@
+
+#translation{
+    grid-column: 4/8;
+    grid-row: 1/8;
+}
+
+#descriptionSymboltableBox{
+    display: flex;
+    flex:1;
+    flex-direction: column;
+    overflow: hidden;
+}
+#descriptionSymboltableBox> div,h2{
+    display: block;
+    text-align: start;
+}
+.overflowY{
+    overflow-y: scroll;
+}
+#descriptionLines{
+    height: auto;
+    overflow-y: scroll;
+}
+#descriptionLines>p{
+    margin: 2px;
+}

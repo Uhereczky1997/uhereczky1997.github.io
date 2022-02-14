@@ -1,0 +1,16 @@
+
+[] proper filler Animations
+[] proper speed adjustment
+[] proper CSS
+[] media queries //Font-size, ...
+
+[] autotonom sequenzing & translating at animationstart:    [x] stop at errors
+                                                            [x] SymbolArray in Projectwindow (OPTIONAL) 
+
+Input & Output-window : [] proper Labeling
+                        [] textoverflow to ...
+                        [] tooltip on ...
+                        [] background inverse on the part of current line
+Outputwindow: [] copy to clipboard
+
+!!! edge case & thorough testing !!!

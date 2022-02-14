@@ -1,0 +1,11 @@
+.gray{
+    color:grey;
+    font-family: 'Courier New', Courier, monospace;
+}
+.errorRed{
+  color:red;
+}
+.eingeruckt{
+  margin: 0 0;
+  padding-left: 1vw;
+}

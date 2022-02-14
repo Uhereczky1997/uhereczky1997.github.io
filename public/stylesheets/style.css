@@ -1,0 +1,325 @@
+
+@import "./InputWindow.css";
+@import "./InputOutputText.css";
+@import "./variables.css";
+@import "./DescriptionTable.css";
+@import "colorSheet.css";
+@import "./SymbolTable.css";
+#body{
+    display:grid;
+    grid-template-columns: repeat(10,1fr);
+    grid-template-rows: repeat(12,1fr);
+    grid-gap: 5px;
+    max-width: 1680px;
+    min-width: 1680px;
+    max-height: 920px; 
+    min-height: 920px;
+    margin: 0 auto;
+}
+.maxwidth{
+    width:100%;
+}
+.alignleft{
+    text-align: left;
+}
+.aligncenter{
+    text-align: center;
+}
+
+/* #body{
+    display:grid;
+    grid-template-columns: repeat(10,1fr);
+    grid-template-rows: repeat(12,1fr);
+    grid-gap: 10px;
+
+    max-width: 1920px;
+    min-width: 1920px;
+
+    max-height: 1080px; 
+    min-height: 1080px; 
+    margin: 0 auto;
+} */
+
+body>* h1{
+    text-align: center;
+}
+
+#toTranslate{
+    grid-column: 1/4;
+    grid-row: 1/13;
+}
+#toTranslate>div{
+    background-color: white;
+}
+
+.noMargin{
+    margin: 0 0;
+}
+/* #SymbolTabelle{
+    grid-column: 4/8;
+    grid-row: 1/12;
+    background: rgb(85, 151, 252); 
+    z-index: 1;
+    visibility: hidden;
+} */
+
+.grid8020{
+    display:grid;
+    grid-template-columns: 80% 20%;
+}
+.grid602020{
+    display: grid;
+    grid-template-columns: 60% 20% 20%;
+}
+.grid2080{
+    display: grid;
+    grid-template-columns: 20% 80%;
+}
+#buttonLeiste{
+    grid-column: 4/8;
+    grid-row: 12/13;
+    display: grid;
+    grid-template-columns: repeat(5,1fr);
+    grid-template-rows: repeat(1,1fr);
+    justify-items: center;
+    background-color: black;
+}
+#translated{
+    grid-column: 8/11;
+    grid-row: 1/13;
+    
+}
+#translatedinfo{
+    display:grid;
+    grid-template-columns: 30% 70%;
+    grid-template-rows: 40% 1px 1fr;
+}
+/* button {
+    width: 100%;
+    height: 100%;
+    padding: 0 0;
+    border: 0;
+    cursor: pointer;
+    background-color: transparent;
+    border-color: rgb(0, 0, 0);
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    outline: 0
+}
+.button1{
+    width: 100%;
+    height: 100%;
+    padding: 0 0;
+    border: 0;
+    cursor: pointer;
+    background-color: transparent;
+    border-color: rgb(0, 0, 0);
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    outline: 0
+}
+.button1:hover{
+    background-color: var(--lightBlue);
+    -webkit-transition: all .1s linear;
+    -o-transition: all .1s linear;
+    transition: all .1s linear
+} */
+/* GRID CONFIG */
+.SideBox{
+    display: grid;
+grid-template-rows: 72px 1fr 72px;
+grid-template-columns: 1fr;
+}
+.bottomDivider{
+    border-top: 2px solid black;
+}
+.leftDivider{
+    border-right: 2px solid black;
+}
+.rightDivider{
+    border-left: 2px solid black;
+}
+.topDivider{
+    border-bottom: 2px solid black;
+}
+.MiddleBoxAlt{
+    display: grid;
+grid-template-rows:72px 50px 1px 40px 1px 1fr 72px;
+grid-template-columns: 1fr;
+}
+
+.MiddleBox{
+    display: grid;
+grid-template-rows:72px minmax(1fr,1fr) 60px;
+grid-template-columns: 1fr;
+}
+
+.Title{
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+.Title>h1{
+    margin-bottom: auto;
+}
+.bottomBox{
+    border-bottom-left-radius: 5px;
+    border-bottom-right-radius:5px;
+}
+.bottomBox>h1{
+    margin-bottom: auto;
+}
+.setHeight10Pro{
+    height:10%;
+}
+/* Hide scrollbar for IE, Edge and Firefox */
+.noScrollbar::-webkit-scrollbar {
+    display: none;
+}
+.noScrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}  
+
+.p10px{
+    padding-left: 10px;
+}
+
+.p5px{
+    padding-left: 5px;
+}
+
+.blr{
+    border-bottom-right-radius: 5px ;
+    }
+.displayFlex{
+    display:flex;
+}
+.alignSelfEnd{
+    align-self: end;
+}
+/* BUTTON CONFIG */
+.boxBorder{
+    border: 3px solid rgb(0, 0, 0);
+    border-radius: 10px;
+}
+.button1{
+    width: 100%;
+    height: 100%;
+    padding: 5px 5px;
+    border-left: 1px solid;
+    border-top:none;
+    border-bottom:none;
+    border-right:  1px solid;
+    border-color: rgb(0,0,0);
+    cursor: pointer;
+    /*  background-color: transparent; */
+  /*  -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+ */
+}
+.button1:hover{
+    background-color: rgb(85, 151, 252);
+    -webkit-transition: all .1s linear;
+    -o-transition: all .1s linear;
+    transition: all .1s linear;
+}
+.buttonLeftSide{
+ border-top-left-radius: 5px;
+ border-bottom-left-radius: 5px;
+}
+/* .buttonMiddle{
+
+} */
+.buttonRightSide{
+border-top-right-radius: 5px;
+border-bottom-right-radius: 5px;
+}
+@media screen and (min-width: 1600px) and (min-height: 900)
+{
+    #body{
+        max-width: 1600px;
+        min-width: 1600px;
+        max-height: 900px; 
+        min-height: 900px;
+    }
+    #body>*h1 or yourdiv element
+    {
+        font-size: 30px;
+    }
+    #body>*h2 or yourdiv element
+    {
+        font-size: 26px;
+    }
+    #body>*h3 or yourdiv element
+    {
+        font-size: 24px;
+    }
+    #body>*h4 or yourdiv element
+    {
+        font-size: 22px;
+    }
+    #body>*p or yourdiv element
+    {
+        font-size: 30px;
+    }
+}
+@media screen and (min-width: 1920px) and (min-height: 1080px)
+{
+    #body{
+        max-width: 1900px;
+        min-width: 1900px;
+        max-height: 1060px; 
+        min-height: 1060px;
+    }
+    h1
+    {
+        margin-top:14px;
+        font-size: 40px;
+    }
+    h2
+    {
+        font-size: 26px;
+    }
+    h3
+    {
+        font-size: 24px;
+    }
+    h4
+    {
+        font-size: 22px;
+    }
+    p
+    {
+        font-size: 20px;
+    }
+}
+
+/* @media screen and (min-width : 1440px) and (max-width: 1680) and (min-height: )
+{
+    body{
+        max-width: 1680px;
+        min-width: 1680px;
+        max-height: 920px; 
+        min-height: 920px;
+    }
+    body>*h1 or yourdiv element
+    {
+        font-size: 30px;
+    }
+    body>*h2 or yourdiv element
+    {
+        font-size: 26px;
+    }
+    body>*h3 or yourdiv element
+    {
+        font-size: 24px;
+    }
+    body>*h4 or yourdiv element
+    {
+        font-size: 22px;
+    }
+    body>*p or yourdiv element
+    {
+        font-size: 30px;
+    }
+} */

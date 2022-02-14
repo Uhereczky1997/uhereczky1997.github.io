@@ -1,0 +1,10 @@
+#SymbolTable{
+    grid-column: 4/8;
+    grid-row: 8/12;
+}
+#symbolTableLines>p{
+    margin: 3px 5px;
+    font-size: 21px;
+    letter-spacing: 0.8px;
+    line-height: 120%;
+}
