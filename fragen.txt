@@ -1,0 +1,19 @@
+1.
+    es gibt schon ein label mit namen x aber zeile ungültiger
+    kann x wieder vorkommen in einem richtigen?
+
+2.
+Label1:Mov d,95h
+Lab1:Mob d,95h
+Mov A,v
+Mov x,ix
+Label2:Mov A:95h
+Label3:Mov A :95h
+IN D, 67h
+IN A, B
+IN D 67h
+AND A
+SHL
+JP Label1
+CALL Label1
+const1 EQU 3434h

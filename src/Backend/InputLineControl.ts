@@ -79,9 +79,14 @@ export class InputLineControl{
             console.log(i.getTranslation());
         }
         else{
+            if(i.getLabel()!=""){
+                this.symbolliste.removeLabel(i.getLabel());
+            }
             this.invalidIDs.push(this.IDcounter);
         }
         this.IDcounter=this.IDcounter +1;
+        //console.log(this.getSpeicherAbbild(i,false));
+        console.log(i.getAll());
 
     }
     getLittleEndianOf(h:string):string{
@@ -116,6 +121,7 @@ export class InputLineControl{
         let h = i.getHCode();
         let l:string|undefined = "";
         let c:Constant;
+        console.log(i.getCommandLine()+" ... "+i.getLength()+" ... "+i.getHCode());
         if(i.getFirstPart()=="RS"){
             return (h.length>4?"0000...("+i.getLength()+"x)":h);
         }
@@ -133,7 +139,10 @@ export class InputLineControl{
         else{
             switch(i.getLength()){
                 case 1:
-                    return (this.fHD8WH(h));
+                    if(i.getFirstPart()=="NOP"){
+                        return '00';
+                    }
+                    return this.fHD8WH(h);
                     break;
                 case 2:
                     if(Manipulator.isDat_8(i.getSecondPart())){
@@ -197,7 +206,7 @@ export class InputLineControl{
             saveInput(i,5);
             if(i.getFirstPart()=="RS"){
                 i.saveDescriptionLine(`<span class="eingeruckt">`+s+" -> "+(h.length>4?"00 ("+i.getLength()+"x)":h)+`</span>`);
-                i.saveDescriptionLine(`<span class="eingeruckt">`+"Anzahl der Bytes "+i.getLength()+`</span>`);
+                i.saveDescriptionLine(`<span class="eingeruckt">`+"Anzahl der Bytes: "+i.getLength()+`</span>`);
             }
             else if(i.getFirstPart()=="ORG"){
                 i.saveDescriptionLine(`<span class="eingeruckt">`+"Addresszähler = "+this.fHD16WH(String(i.getLength()))+`</span>`);
@@ -205,7 +214,7 @@ export class InputLineControl{
             else
             {
                 i.saveDescriptionLine(`<span class="eingeruckt">`+s+" -> "+this.getSpeicherAbbild(i,false)+`</span>`);
-                i.saveDescriptionLine(`<span class="eingeruckt">`+"Anzahl der Bytes "+i.getLength()+`</span>`);
+                i.saveDescriptionLine(`<span class="eingeruckt">`+"Anzahl der Bytes: "+i.getLength()+`</span>`);
             }
         }
     }

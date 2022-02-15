@@ -1212,3 +1212,10 @@ mapInputLine(i:InputLine):boolean{
                 return true;
             }
         } */
+
+        /* 
+const testRegex=(s:string)=>{
+    console.log(/^\d/.test(s));
+}
+testRegex("1abc");
+testRegex("abc1"); */

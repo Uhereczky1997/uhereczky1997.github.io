@@ -36,6 +36,7 @@ export class ProjectWindow{
     private elementOfElementDisplayed = -1;
     private translationOfElementDisplayed =-1;
     private idOfDisplayedConstANDLabel =-1;
+    private linkerAuflosungB:boolean=false;
     private inputLines:InputLine[]=[];
     private inputstrings:string[] =[];
     private symbols:Array<Label|Constant>=[]
@@ -121,14 +122,14 @@ export class ProjectWindow{
             if(e !=null){
                 InputID.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span></p>`;
                 // InputLines.innerHTML+=`<p><span class="hoverable maxwidth">${e.inputLineToString()}</span></p>`;
-                InputLines.innerHTML+=`<p><span>${(e.getLabel()==""?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;":e.getLabel()+":")} ${e.commandLinetoString()}${e.getCommentary()==""?"":";"+e.getCommentary()}</span></p>`;
+                InputLines.innerHTML+=`<p class="overflowElipsis"><span>${(e.getLabel()==""?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;":e.getLabel()+":")} ${e.commandLinetoString()}${e.getCommentary()==""?"":";"+e.getCommentary()}</span></p>`;
                 // InputLines.innerHTML+=`<p><span class="overflowText">${(e.getLabel()==""?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;":e.getLabel()+":")} ${e.commandLinetoString()}${e.getCommentary()==""?"":";"+e.getCommentary()}</span><span class="tooltip">${e.getCommentary()}</span></p>`;
                 // inputTextDiv.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span>  |<span class="hoverable maxwidth">${e.inputLineToString()}</span></p>`;
             }
             else{
                 InputID.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span></p>`;
                 // InputLines.innerHTML+=`<p><span class="overflowText">${this.inputstrings[i]}</span><span class="tooltip">${this.inputstrings[i]}</span></p>`;
-                InputLines.innerHTML+=`<p><span>${this.inputstrings[i]}</span></p>`;
+                InputLines.innerHTML+=`<p class="overflowElipsis"><span>${this.inputstrings[i]}</span></p>`;
                 // inputTextDiv.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span>  |<span class="hoverable maxwidth">${this.inputstrings[i]}</span></p>`;
             }
         }
@@ -164,6 +165,18 @@ export class ProjectWindow{
         return false;
 
     }
+    /* pushToCurrentLine(s:string){
+        let ss:string[]=[];
+        let temp=s;
+        if(s.includes(":")){
+            ss[0]=`<span id="currentLineLabel">${Manipulator.splitStringHalf(temp,":")[0]}</span>`;
+            temp=Manipulator.splitStringHalf(temp,":")[1];
+        }
+        else{
+            ss[0]="";
+        }
+        ss[1]=Manipulator.
+    } */
     public checkInputLine=async(e:InputLine)=>{
         let s:string="";
         let n:string="";
@@ -217,19 +230,21 @@ export class ProjectWindow{
     }
     
     public linkerAuflosung=async ()=>{
-        descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
-        descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
-        descriptionLines.innerHTML += `<p>************************</p>`;
-        descriptionLines.innerHTML += `<p>2.Phase LinkerAuflösung</p>`;
-        descriptionLines.innerHTML += `<p>************************</p>`;
-        descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
-        descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
-        updateScroll(descriptionLines.id);
         this.repushTranslations();
-        for(let i=0;this.inputLines.length;i++){
-            await this.checkInputLine(this.inputLines[i]);
-            if(aniControl.start){
-                await sleepUntilNextStep();
+        if(this.linkerAuflosungB){
+            descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+            descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+            descriptionLines.innerHTML += `<p>************************</p>`;
+            descriptionLines.innerHTML += `<p>2.Phase LinkerAuflösung</p>`;
+            descriptionLines.innerHTML += `<p>************************</p>`;
+            descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+            descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+            updateScroll(descriptionLines.id);
+            for(let i=0;this.inputLines.length;i++){
+                await this.checkInputLine(this.inputLines[i]);
+                if(aniControl.start){
+                    await sleepUntilNextStep();
+                }
             }
         }
     }
@@ -282,6 +297,12 @@ export class ProjectWindow{
                     descriptionLines.innerHTML += `<p>${this.descriptionLinesOfCurrentDisplayedElement[this.elementOfElementDisplayed]}</p>`;
                     updateScroll(descriptionLines.id);
                 }
+                if(e.includes("gefunden: Doppelpunkte")){
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                    }
+                    this.pushNewSymbol(); 
+                }
             }
             else if(this.elementOfElementDisplayed+1==this.descriptionLinesOfCurrentDisplayedElement.length){
                 this.elementOfElementDisplayed+=1;
@@ -291,7 +312,7 @@ export class ProjectWindow{
                         addresszahler.innerHTML= `${this.inputLines[this.elementDisplayed].getEndAddr()}`;
                         machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(this.inputLines[this.elementDisplayed],false)}`;
                     }
-                    this.pushNewSymbol();
+                    
                     this.pushTranslation();
                     
                 }
@@ -304,6 +325,15 @@ export class ProjectWindow{
             }
         }
     }
+    private aufzulosendeLabel=():boolean=>{
+        let b=false;
+        this.inputLines.forEach(e=>{
+            if(e.getTranslation().includes("????")){
+                b=true;
+            }
+        });
+        return b;
+    }
 
     public testPushing =async  () => {
         if(this.inputstrings.length>0){
@@ -315,12 +345,12 @@ export class ProjectWindow{
                 currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${this.inputLines[this.elementDisplayed].commandLinetoString()}</h2>`;
                 machinenbefehl.innerHTML="";
                 this.descriptionLinesOfCurrentDisplayedElement=this.inputLines[this.elementDisplayed].getDescriptionLine();
-                console.log("aniControl.start ="+aniControl.start)
             }
             else if(this.inputLines.length==this.elementDisplayed){
                 if(aniControl.start){
                     this.toggleStop();
                 }
+                this.linkerAuflosungB=this.aufzulosendeLabel();
                 await this.linkerAuflosung();
             }
             else{

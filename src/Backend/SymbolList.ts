@@ -29,6 +29,18 @@ export class SymbolList{
         }
     }
     isEligible(addr:string):boolean{
+        if(addr.length<3){
+            return false;
+        }
+        if(/^\d/.test(addr)){
+            return false;
+        }
+        if(/^\s+/g.test(addr)){
+            return false;
+        }
+        if(!/^[a-zA-Z0-9_]*$/.test(addr)){
+            return false;
+        }
         if(!/^[\W_]/.test(addr)){
             return true;
         }
@@ -86,6 +98,11 @@ export class SymbolList{
             this.Consts.push(new Constant(s,v));
             this.pushValidLabelConst(l);
         }
+    }
+    removeLabel(s:string){
+        this.Labels.filter(e=>{
+            e.getName()!=s;
+        })
     }
     getLabels():Label[]{
         return this.Labels;

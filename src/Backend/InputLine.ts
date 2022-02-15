@@ -12,6 +12,8 @@ export class InputLine{
     private firstPart:string="";
     private secondPart:string="";
     private thirdPart:string="";
+    private error:string="";
+    private rest:string="";
     private commentary:string="";
     private label:string="";
     private translation:string="";
@@ -23,9 +25,13 @@ export class InputLine{
     constructor(init:string,id:number){
         this.initialLine=init.replace(/\s+/g,' ').trim();
         this.id=id;
-        this.label=this.setLabel();
-        this.commentary=this.setCommentary();
         this.commandLine=this.setCommandLine();
+    }
+    setError(s:string){
+        this.error=s;
+    }
+    getError():string{
+        return this.error;
     }
     setStartingAddr(addr:string){this.startingAddr=addr;}
     setLength(n:number|string){
@@ -71,6 +77,12 @@ export class InputLine{
         else{
             this.thirdPart=addr;
         }
+    }
+    getRest():string{
+        return this.rest;
+    }
+    setRest(s:string){
+        this.rest=s;
     }
     setValid(b:boolean){this.valid=b;}
     setType(t:InputLineType){this.type=t;}
@@ -154,12 +166,32 @@ export class InputLine{
     }
 
     setCommandLine=():string=>{
-        let addr:string = this.initialLine.replace(this.label+':','').replace(';'+this.commentary,'');
-        this.label=this.label.trim();
-        this.commentary=this.commentary.trim();
+        let s=Manipulator.splitStringHalf(this.initialLine,":");
+        let ss=Manipulator.splitStringHalf(this.initialLine,";");
+        let addr:string = this.initialLine.replace(s[0]+':','').replace(';'+ss[1],'');
+
+        /* this.label=this.label.trim();
+        this.commentary=this.commentary.trim(); */
         return addr.trim();
     }
-    commandLinetoString=()=>{
+    /* commandLineToCurrentLine=():string=>{
+        if(this.valid){
+            if(this.secondPart.toUpperCase()=="EQU"){
+                this.secondPart = "EQU";
+                return(`${this.firstPart} ${this.secondPart} ${this.thirdPart}`);
+            }
+            else{
+                return (`${(this.firstPart==""?"":this.firstPart)} ${(this.secondPart==""?"":this.secondPart)}${(this.thirdPart==""?"":', '+this.thirdPart)}`);
+            }
+        }
+        else{
+
+        }
+    } */
+    getAll():string[]{
+        return [this.label,this.firstPart,this.secondPart,this.thirdPart,this.error,this.rest];
+    }
+    commandLinetoString=():string=>{
         if(this.valid==true){
             if(this.secondPart.toUpperCase()=="EQU"){
                 this.secondPart = "EQU";

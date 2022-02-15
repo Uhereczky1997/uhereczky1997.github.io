@@ -7,8 +7,8 @@ import { InputLineType, DataType } from "./Enums";
 
 const parse1:string = `<span class="gray">parse Labelfeld/Befehlsfeld ...</span>`;
 const parse2:string = `<span class="gray">parse Befehlsfeld ...</span>`;
-const parse3:string = `<span class="gray">parse Operandenfeld (1)</span>`;
-const parse4:string = `<span class="gray">parse Operandenfeld (2)</span>`;
+const parse3:string = `<span class="gray">parse Operandenfeld (1) ...</span>`;
+const parse4:string = `<span class="gray">parse Operandenfeld (2) ...</span>`;
 const parse5:string = `<span class="gray">gesamter Befehl:</span>`;
 
 export const saveInput=(I:InputLine,n:number)=>{
@@ -213,15 +213,23 @@ export class CommandMap{
         i.saveDescriptionLine(this.formatErwartet(`Labeldefinition, MnemoCode oder Konstante (+EQU)`));
         if(commandLine.includes(":")){
             strings=Manipulator.splitStringHalf(commandLine,":");
-            if(!this.symbollist.setLabelWithoutPosition(strings[0])){
+            if(this.symbollist.isLabel(strings[0])){
                 i.saveDescriptionLine(this.formatErrorMassage(`Label ${strings[0]} ist schon bereits besetzt`))
+                i.setError(strings[0]);
+                i.setRest(strings[1]);
+                return false;
+            }
+            if(!this.symbollist.isEligible(strings[0])){
+                i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} kein gülitger Label`))
+                i.setError(strings[0]);
+                i.setRest(strings[1]);
                 return false;
             }
             else{
                 i.saveDescriptionLine(this.formatGefunden("Doppelpunkte ","Label '"+strings[0]+"'"));
                 i.setLabelTo(strings[0]);
                 saveInput(i,2);
-                i.saveDescriptionLine(this.formatErwartet("MnemoCode"));
+                i.saveDescriptionLine(this.formatErwartet("(Pseudo-)MnemoCode"));
                 commandLine=strings[1];
             }
         }
@@ -237,6 +245,10 @@ export class CommandMap{
         }
         else {
             i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} ist kein gültiger (Pseudo-)MnemoCode oder Label/Konstante`));
+            i.setError(strings[0]);
+            if(strings[1]!=undefined){
+                i.setRest(strings[1]);
+            }
             i.setValid(false);
             return false;
         }        
@@ -270,7 +282,7 @@ export class CommandMap{
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet(consoletostring.replace("dat_8","Wert/Konstante (8-bit)").replace("dat_16","Wert/Konstante (16-bit)")));    //Ausgabe von erwartetten Befehlen
                     if(strings.length<2){
-                        i.saveDescriptionLine(this.formatErrorMassage("gesucht ist ',' aber keine gefunden!")); //ERROR
+                        i.saveDescriptionLine(this.formatErrorMassage("zu wenig Operanden Spezifiziert!")); //ERROR
                         return false;
                     }
 
@@ -327,16 +339,18 @@ export class CommandMap{
                                 }
                                 else if(consoletostring.includes("dat_8")){
                                     i.saveDescriptionLine(this.formatErrorMassage(`erwartet war Wert/Konstante (8-bit), ${strings[1]} ist kein gültiger Operand`));
+                                    i.setError(strings[1]);
                                     i.setValid(false);
                                     return false;
                                 }
                                 else{
                                     i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand`));
+                                    i.setError(strings[1]);
                                     i.setValid(false);
                                     return false;
                                 }
                             case DataType.dat_16:
-                                if(consoletostring.includes("dat_16") && ['HL','SP','IX'].includes(strings[1])){
+                                if(consoletostring.includes("dat_16") && ['HL','SP','IX'].includes(strings[0])){
                                     //i.saveDescriptionLine(`Gefunden -> 'dat_16'`);
                                     i.saveDescriptionLine(this.formatGefunden("Wert/Konstante (16-bit) "+Manipulator.formatHextoDat16(strings[1]),i.getFirstPart()+" "+i.getSecondPart()+", "+Manipulator.formatHextoDat16(strings[1])));
                                     matches=matches.filter(e=>{
@@ -349,6 +363,7 @@ export class CommandMap{
                                 }
                                 else{
                                     i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist ein ungültiger Operand!`));
+                                    i.setError(strings[1]);
                                     i.setValid(false);
                                     return false;
                                 }
@@ -357,6 +372,7 @@ export class CommandMap{
 
                                 if(!consoletostring.includes("dat_8")||!consoletostring.includes("dat_16")){
                                     i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist ein ungülitger Operand!`));
+                                    i.setError(strings[1]);
                                     i.setValid(false);
                                     return false;
                                 }
@@ -364,6 +380,7 @@ export class CommandMap{
                                 //i.saveDescriptionLine(`Gefunden Constante mit dem Wert ${value}`);
                                 if(value==undefined){
                                     i.saveDescriptionLine(this.formatErrorMassage(`Wert für Konstante ${strings[1]} nicht gefunden!`));
+                                    i.setError(strings[1]);
                                     return false;
                                 }
                                 i.saveDescriptionLine(this.formatGefunden("Konstante"+strings[1]+" mit dem Wert "+value,i.getFirstPart()+" "+i.getSecondPart()+", "+strings[1]));
@@ -390,17 +407,20 @@ export class CommandMap{
                                 }
                                 else if(consoletostring.includes("dat_8")){
                                     i.saveDescriptionLine(this.formatErrorMassage(`erwartet war Wert/Konstante (8-bit), ${strings[1]} ist ein ungültiger Operand`));
+                                    i.setError(strings[1]);
                                     i.setValid(false);
                                     return false;
                                 }
                                 else{
                                     i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist ein ungültiger Operand!`));
+                                    i.setError(strings[1]);
                                     return false;
                                 }
                                 break;
                             case DataType.LABEL:
                                 if(!consoletostring.includes("label")){
                                     i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist ein ungültiger Operand!`));
+                                    i.setError(strings[1]);
                                     i.setValid(false);
                                     return false;
                                 }
@@ -417,6 +437,7 @@ export class CommandMap{
                             case DataType.ELLIGIBLE:
                                 if(!consoletostring.includes("label")){
                                     i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist ein ungültiger Operand!`));
+                                    i.setError(strings[1]);
                                     i.setValid(false);
                                     return false;
                                 }
@@ -451,6 +472,7 @@ export class CommandMap{
                     }
                     else{
                         i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} kein gültiger Operand`));
+                        i.setError(strings[1]);
                         return false;
                     }
                 }
@@ -497,11 +519,16 @@ export class CommandMap{
                     }
                     else{
                         i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                        i.setError(strings[1]);
                         return false;
                     }
                 }
                 else{
                     i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} kein gültiger Operand!`));
+                    i.setError(strings[0]);
+                    if(strings[1]!=undefined){
+                        i.setRest(strings[1]);
+                    }
                     return false;
                 }
                 break;
@@ -509,6 +536,7 @@ export class CommandMap{
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='PUSH'});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viele Operanden!"));
+                    i.setError(strings[1]);
                     return false;
                 }
                 else{
@@ -523,6 +551,7 @@ export class CommandMap{
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='POP'});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viele Operanden!"));
+                    i.setError(strings[1]);
                     return false;
                 }
                 else{
@@ -571,12 +600,17 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]}kein gültiger Operand!`));
+                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} kein gültiger Operand!`));
+                        i.setError(strings[1]);
                         return false;
                     }
                 }
                 else{
                     i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} kein gültiger Operand!`));
+                    i.setError(strings[0]);
+                    if(strings[1]!=undefined){
+                        i.setRest(strings[1]);
+                    }
                     return false;
                 }
                 break;
@@ -611,6 +645,7 @@ export class CommandMap{
                     }
                     else{
                         i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                        i.setError(strings[1]);
                         return false;
                     }
                 }
@@ -634,11 +669,13 @@ export class CommandMap{
                     }
                     else{
                         i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                        i.setError(strings[1]);
                         return false;
                     }
                 }
                 else{
                     i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} kein gültiger Operand!`));
+                    i.setError(strings[0]);
                     return false;
                 }
                 break;
@@ -675,6 +712,7 @@ export class CommandMap{
                 }
                 else{
                     i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                    i.setError(strings[1]);
                     return true;
                 }
                 break;
@@ -755,6 +793,7 @@ export class CommandMap{
                 }
                 else{
                     i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                    i.setError(strings[1]);
                     return true;
                 }
                 break;
@@ -835,6 +874,7 @@ export class CommandMap{
                 }
                 else{
                     i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                    i.setError(strings[1]);
                     return true;
                 }
                 break;
@@ -842,6 +882,7 @@ export class CommandMap{
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==i.getFirstPart()});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
+                    i.setError(strings[1]);
                     return false;
                 }
                 if(matches.length==1){
@@ -860,6 +901,7 @@ export class CommandMap{
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==i.getFirstPart()});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
+                    i.setError(strings[1]);
                     return false;
                 }
                 if(matches.length==1){
@@ -910,6 +952,7 @@ export class CommandMap{
                 }
                 else{
                     i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                    i.setError(strings[1]);
                     return false;
                 }
                 break;
@@ -949,6 +992,7 @@ export class CommandMap{
                 }
                 else{
                     i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                    i.setError(strings[1]);
                     return false;
                 }
                 break;
@@ -1005,16 +1049,15 @@ export class CommandMap{
                 }
                 else{
                     i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                    i.setError(strings[1]);
                     return false;
                 }
                 break;
-
-            case 'RET':
-            case 'NOP':
-            case 'HALT':
+            case 'RET':case 'HALT':
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==i.getFirstPart()});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
+                    i.setError(strings[1]);
                     return false;
                 }
                 if(matches.length==1){
@@ -1029,6 +1072,28 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
                     return false;
                 }
+                break;
+            case 'NOP':
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()=="NOP"});
+                if(strings.length>1){
+                    i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
+                    i.setError(strings[1]);
+                    return false;
+                }
+                if(matches.length==1){
+                    i.setType(InputLineType.TRANSLATED);
+                    i.setLength(matches[0].getSize());
+                    i.setHCode(matches[0].getHexCode());
+                    i.setValid(true);
+                    console.log(i.getHCode());
+                    console.log(matches[0].toString());
+                    return true;
+                }
+                else{
+                    i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                    return false;
+                }
+                break;
                 
             default:
                 i.saveDescriptionLine(this.formatErrorMassage(" unknown error occured"));
@@ -1037,6 +1102,7 @@ export class CommandMap{
     }
     parsetoPseudoMnemoCode(i:InputLine,strings:string[]):boolean{
         if(this.pseudoMCodes.includes(strings[0].toUpperCase())){
+            console.log(this.pseudoMCodes);
             strings[0]=strings[0].toUpperCase();
             i.setFirstPart(strings[0]);
             i.saveDescriptionLine(this.formatGefunden(`Pseudo-MnemoCode ${strings[0]}`,strings[0]));
@@ -1047,6 +1113,7 @@ export class CommandMap{
             switch(strings[0]){
                 case 'RS':
                     i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8-bit)"));
+                    save3(i);
                     if(Manipulator.isDat_8(strings[1])){
                         i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
                         i.setLength(Manipulator.formatHextoDat8(strings[1]));
@@ -1061,6 +1128,7 @@ export class CommandMap{
                     }
                     else{
                         i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein Wert/Konstante (8-bit)!`));
+                        i.setError(strings[1]);
                         return false;
                     }
                     break;
@@ -1068,6 +1136,7 @@ export class CommandMap{
                 case 'DW':
                     // i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (16-bit) oder OFFSET Label"));
                     i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8/16-bit)"));
+                    save3(i);
                     if(Manipulator.isDat_16(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (16-bit)`,i.getFirstPart()+" "+Manipulator.formatHextoDat16(strings[1])))
                         i.setLength(2);
@@ -1078,6 +1147,7 @@ export class CommandMap{
                     }
                     else{
                         i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} is keine Konstante (16-bit)!`));
+                        i.setError(strings[1]);
                         return false;
                     }
                     break;
@@ -1085,6 +1155,7 @@ export class CommandMap{
                 case 'DB':
                     // i.saveDescriptionLine(this.formatErwartet("Wert(en)/Konstante(n) (8-bit)"));
                     i.saveDescriptionLine(this.formatErwartet("Konstante (8-bit)"));
+                    save3(i);
                     if(Manipulator.isDat_8(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (8-bit)`,i.getFirstPart()+" "+Manipulator.formatHextoDat8(strings[1])))
                         i.setLength(1);
@@ -1095,12 +1166,14 @@ export class CommandMap{
                     }
                     else{
                         i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} is keine Konstante (8-bit)!`));
+                        i.setError(strings[1]);
                         return false;
                     }
                     break;
 
                 case 'ORG':
                     i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8/16-bit)"));
+                    save3(i);
                     if(Manipulator.isDat_16(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (16-bit)`,i.getFirstPart()+" "+Manipulator.formatHextoDat16(strings[1])))
                         i.setLength(Manipulator.hexToDec(strings[1]));
@@ -1110,6 +1183,7 @@ export class CommandMap{
                     }
                     else{
                         i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} is kein Wert/Konstante (16-bit)!`));
+                        i.setError(strings[1]);
                         return false;
                     }
                     break;
@@ -1127,7 +1201,8 @@ export class CommandMap{
                     break;
 
                 default: 
-                    i.saveDescriptionLine(this.formatErrorMassage("unknown error"));
+                    i.saveDescriptionLine(this.formatErrorMassage("unkown error"));
+                    i.setError(strings[1]);
                     return false;
                     break;
             }
@@ -1135,15 +1210,16 @@ export class CommandMap{
         }
         else if(this.symbollist.isEligible(strings[0])&&!this.symbollist.isConst(strings[0])&&!this.symbollist.isLabel(strings[0]) && i.getLabel() ==""){
             i.saveDescriptionLine(this.formatGefunden(`Konstante ${strings[0]}`,strings[0]));
+            save2(i);
             i.saveDescriptionLine(this.formatErwartet(`EQU`));
 
             let new_commands=Manipulator.splitStringHalf(strings[1]," ");
             new_commands=this.filterForEmtpyStrings(new_commands);
 
             i.setFirstPart(strings[0]);
-
             if(new_commands[0].toUpperCase()=="EQU"){
                 i.saveDescriptionLine(this.formatGefunden("EQU",i.getFirstPart()+" EQU"));
+                i.saveDescriptionLine(`<span class="gray">parse Operandenfeld</span>`);
                 i.saveDescriptionLine(this.formatErwartet(`Wert/Konstante (16-bit)`));
                 i.setSecondPart("EQU");
 
@@ -1167,28 +1243,50 @@ export class CommandMap{
                     }
                     else{
                         i.saveDescriptionLine(this.formatErrorMassage(`${new_commands[1]} ist kein gültiger Wert/Konstante (8 oder 16-bit)`));
+                        i.setError(new_commands[1]);
                         return false;
                     }
                 }else{
-                    i.saveDescriptionLine(this.formatErrorMassage(`kein Wert/Konstante (8 oder 16-bit) gefunden!`));
+                    // i.saveDescriptionLine(this.formatErrorMassage(`kein Wert/Konstante (8 oder 16-bit) gefunden!`));
+                    i.saveDescriptionLine(this.formatErrorMassage(`fehlender Operand!`));
                     return false;
                 }
             }
             else{
                 i.saveDescriptionLine(this.formatErrorMassage(`${new_commands[0]} ist kein gültiger Operand!`));
+                i.setError(new_commands[0]);
+                i.setRest(new_commands[1]);
                 return false;
             }
         }
         else if(this.symbollist.isConst(strings[0]) || this.symbollist.isLabel(strings[0])){
             i.saveDescriptionLine(this.formatErrorMassage("es gibt bereits eine Konstante/Label mit dem Namen "+strings[0]));
+            i.setError(strings[0]);
+            if(strings[1]!=undefined){
+                i.setRest(strings[1]);
+            }
             return false;
         }
-        else if(i.getLabel() ==""){
+        else if(!this.symbollist.isEligible(strings[1])){
+            i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} ist keine gültige Konstante`));
+            i.setError(strings[0]);
+            if(strings[1]!=undefined){
+                i.setRest(strings[1]);
+            }
+            return false;
+        }
+        else if(i.getLabel() !=""){
             i.saveDescriptionLine(this.formatErrorMassage("keine Konstantendefinition nach einem Labeldefinition erlaubt"));
+            i.setError(strings[0]);
+            if(strings[1]!=undefined){
+                i.setRest(strings[1]);
+            }
             return false;
         }
         else{
             i.saveDescriptionLine(this.formatErrorMassage(`unkown error`));
+            i.setError(strings[0]);
+            
             return false;
         }
     }

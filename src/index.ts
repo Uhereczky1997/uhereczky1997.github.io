@@ -1,3 +1,4 @@
+import { SymbolList } from "./Backend/SymbolList";
 import { ProjectWindow } from "./ProjectWindow";
 
 
