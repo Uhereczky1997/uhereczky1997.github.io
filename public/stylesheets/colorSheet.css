@@ -9,3 +9,7 @@
   margin: 0 0;
   padding-left: 1vw;
 }
+.crInvert{
+  background-color: black;
+  color: white;
+}

@@ -27,6 +27,17 @@ let InputLines:HTMLElement=getHtmlElement('InputLines');
 let OutputAddresses:HTMLElement=getHtmlElement('OutputAddresses');
 let OutputLines:HTMLElement=getHtmlElement('OutputLines');
 
+export const removeClassOfAll=(s:string)=>{
+    let elements = Array.from(document.querySelectorAll("."+s+""));
+    for(let elem of elements){
+        elem.classList.remove(s);
+    }
+}
+export const addClassTo=(id:string,cls:string)=>{
+    let elem = getHtmlElement(id);
+    elem.classList.add(cls);
+}
+
 export class ProjectWindow{
     private inputLineControl:InputLineControl=InputLineControl.getInstance();
     private symbolList=SymbolList.getInstance();
@@ -37,6 +48,7 @@ export class ProjectWindow{
     private translationOfElementDisplayed =-1;
     private idOfDisplayedConstANDLabel =-1;
     private linkerAuflosungB:boolean=false;
+    private nextParseID:number=0;
     private inputLines:InputLine[]=[];
     private inputstrings:string[] =[];
     private symbols:Array<Label|Constant>=[]
@@ -95,6 +107,7 @@ export class ProjectWindow{
         symbolTableLines.innerHTML="";
         descriptionLines.innerHTML="";
         addresszahler.innerHTML="0000h";
+        this.nextParseID=0;
         machinenbefehl.innerHTML="";
         OutputAddresses.innerHTML="";
         OutputLines.innerHTML="";
@@ -111,6 +124,51 @@ export class ProjectWindow{
         OutputAddresses.innerHTML="";
         OutputLines.innerHTML="";
 
+    }
+    public nextInverted=async (n:number[])=>{
+        if(aniControl.start){
+            await sleepFor(30);
+        }
+        for(this.nextParseID;this.nextParseID<n.length;this.nextParseID++){
+            if(n[this.nextParseID]==1){
+                this.switchInvertedTo(this.nextParseID)
+                this.nextParseID+=1;
+                break;
+            }
+        }
+
+    }
+    public switchInvertedTo=(n:number)=>{
+        // removeClassOfAll("crInvert");
+        console.log(n);
+       switch(n){
+            case 0:
+                removeClassOfAll("crInvert");
+                addClassTo("crLabel","crInvert");
+                break;
+            case 1:
+                removeClassOfAll("crInvert");
+                addClassTo("crFirst","crInvert");
+                break;
+
+            case 2:
+                removeClassOfAll("crInvert");
+                addClassTo("crSecond","crInvert");
+                break;
+            case 3:
+                removeClassOfAll("crInvert");
+                addClassTo("crThird","crInvert");
+                break;
+            case 4:
+                removeClassOfAll("crInvert");
+                addClassTo("crError","crInvert");
+                break;
+            case 5:
+                //addClassTo("crRest","crInvert");
+                break;
+            default:
+                break;
+        }
     }
     public refreshInputListItems=()=>{
         InputID.innerHTML="";
@@ -144,6 +202,8 @@ export class ProjectWindow{
         this.symbols=this.symbolList.getSequence();
         let s:Constant|Label;
         let n,p;
+        console.log(this.symbols);
+        console.log(this.symbolList);
         if(this.symbols.length!=0){
             if(this.symbols[this.idOfDisplayedConstANDLabel+1]!=null){
                 s=this.symbols[this.idOfDisplayedConstANDLabel+1];
@@ -287,9 +347,14 @@ export class ProjectWindow{
             else if(this.elementOfElementDisplayed+1<this.descriptionLinesOfCurrentDisplayedElement.length){
                 this.elementOfElementDisplayed+=1;
                 e=this.descriptionLinesOfCurrentDisplayedElement[this.elementOfElementDisplayed];
+                if(e.includes("erwarte")){
+                    await this.nextInverted(this.inputLines[this.elementDisplayed].getAllV());
+                }
                 if(e.includes('error')){
                     console.log("error has been found");
+                    await this.nextInverted(this.inputLines[this.elementDisplayed].getAllV());
                     aniControl.setStop();
+                    
                     descriptionLines.innerHTML += `<p>${this.descriptionLinesOfCurrentDisplayedElement[this.elementOfElementDisplayed]}</p>`;
                     updateScroll(descriptionLines.id);
                     throw Error('Stop pressed');
@@ -334,6 +399,36 @@ export class ProjectWindow{
         });
         return b;
     }
+    pushCurrentLine=(ss:string[])=>{
+        this.nextParseID=0;
+        let dsrl=`<h2 style="align-self: end;" class=" noMargin p5px">`;
+        if(ss[0]!=""){
+            dsrl+=`<span id="crLabel">${ss[0]}</span>: `;
+        }
+        if(ss[1]!=""){
+            dsrl+=`<span id="crFirst">${ss[1]}</span> `;
+        }
+        if(ss[2]!="" && this.inputLines[this.elementDisplayed].getSecondPart()=="EQU"){
+            dsrl+=`<span id="crSecond">${ss[2]}</span> `;
+        }
+        else if(ss[2]!="" && this.inputLines[this.elementDisplayed].getSecondPart()!="EQU" && this.inputLines[this.elementDisplayed].getThirdPart()==""){
+            dsrl+=`<span id="crSecond">${ss[2]}</span> `;
+        }
+        else if(ss[2]!=""){
+            dsrl+=`<span id="crSecond">${ss[2]}</span>,`;
+        }
+        if(ss[3]!=""){
+            dsrl+=`<span id="crThird">${ss[3]}</span>`;
+        }
+        if(ss[4]!=""){
+            dsrl+=`<span id="crError">${ss[4]}</span>`;
+        }
+        if(ss[5]!=""){
+            dsrl+=`<span id="crRest">${ss[5]}</span>`;
+        }
+        dsrl+=`</h2>`;
+        currentLine.innerHTML=dsrl;
+    }
 
     public testPushing =async  () => {
         if(this.inputstrings.length>0){
@@ -342,7 +437,8 @@ export class ProjectWindow{
             
             if(this.inputLines.length>this.elementDisplayed){
                 this.elementOfElementDisplayed =-1;
-                currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${this.inputLines[this.elementDisplayed].commandLinetoString()}</h2>`;
+                // currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${this.inputLines[this.elementDisplayed].commandLinetoString()}</h2>`;
+                this.pushCurrentLine(this.inputLines[this.elementDisplayed].getAll());
                 machinenbefehl.innerHTML="";
                 this.descriptionLinesOfCurrentDisplayedElement=this.inputLines[this.elementDisplayed].getDescriptionLine();
             }

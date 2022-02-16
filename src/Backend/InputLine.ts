@@ -191,6 +191,9 @@ export class InputLine{
     getAll():string[]{
         return [this.label,this.firstPart,this.secondPart,this.thirdPart,this.error,this.rest];
     }
+    getAllV():number[]{
+        return [this.label!=""?1:0,this.firstPart!=""?1:0,this.secondPart!=""?1:0,this.thirdPart!=""?1:0,this.error!=""?1:0,this.rest!=""?1:0];
+    }
     commandLinetoString=():string=>{
         if(this.valid==true){
             if(this.secondPart.toUpperCase()=="EQU"){

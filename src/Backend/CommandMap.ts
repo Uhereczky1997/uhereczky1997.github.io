@@ -210,7 +210,7 @@ export class CommandMap{
         if(strings.length>1){
         i.setComment(strings[1].trim());}
         saveInput(i,1);
-        i.saveDescriptionLine(this.formatErwartet(`Labeldefinition, MnemoCode oder Konstante (+EQU)`));
+        i.saveDescriptionLine(this.formatErwartet(`Labeldefinition, Mnemocode oder Konstante (+EQU)`));
         if(commandLine.includes(":")){
             strings=Manipulator.splitStringHalf(commandLine,":");
             if(this.symbollist.isLabel(strings[0])){
@@ -228,23 +228,25 @@ export class CommandMap{
             else{
                 i.saveDescriptionLine(this.formatGefunden("Doppelpunkte ","Label '"+strings[0]+"'"));
                 i.setLabelTo(strings[0]);
+                this.symbollist.setLabelWithoutPosition(strings[0]);
                 saveInput(i,2);
-                i.saveDescriptionLine(this.formatErwartet("(Pseudo-)MnemoCode"));
+                i.saveDescriptionLine(this.formatErwartet("(Pseudo-)Mnemocode"));
                 commandLine=strings[1];
             }
         }
         strings = Manipulator.splitStringHalf(commandLine," ");
         strings = this.filterForEmtpyStrings(strings);
         if(this.mCodes.includes(strings[0].toUpperCase())){
-            i.saveDescriptionLine(this.formatGefunden("MnemoCode",strings[0].toUpperCase()))
-            i.setFirstPart(strings[0].toUpperCase());
+            strings[0] = strings[0].toUpperCase();
+            i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
+            i.setFirstPart(strings[0]);
            return this.parseToMnemoCode(i,strings);
         }
         else if(this.pseudoMCodes.includes(strings[0].toUpperCase()) || this.symbollist.isEligible(strings[0])){
             return this.parsetoPseudoMnemoCode(i,strings);
         }
         else {
-            i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} ist kein gültiger (Pseudo-)MnemoCode oder Label/Konstante`));
+            i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} ist kein gültiger (Pseudo-)Mnemocode oder Label/Konstante`));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
                 i.setRest(strings[1]);
@@ -270,8 +272,8 @@ export class CommandMap{
                 strings=Manipulator.splitStringHalf(strings[1],",");
                 strings = this.filterForEmtpyStrings(strings);
                 if(this.getDests(matches).includes(strings[0].toUpperCase())&&this.Regs.includes(strings[0].toUpperCase())){ // A || B || C || IX || HL || SP
-                    i.saveDescriptionLine(this.formatGefunden("Register"+strings[0],i.getFirstPart()+" "+strings[0]));
                     strings[0] = strings[0].toUpperCase();
+                    i.saveDescriptionLine(this.formatGefunden("Register "+strings[0],i.getFirstPart()+" "+strings[0]));
                     i.setSecondPart(strings[0]);
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() ==strings[0]){
@@ -1105,7 +1107,7 @@ export class CommandMap{
             console.log(this.pseudoMCodes);
             strings[0]=strings[0].toUpperCase();
             i.setFirstPart(strings[0]);
-            i.saveDescriptionLine(this.formatGefunden(`Pseudo-MnemoCode ${strings[0]}`,strings[0]));
+            i.saveDescriptionLine(this.formatGefunden(`Pseudo-Mnemocode ${strings[0]}`,strings[0]));
             if(strings.length<2){
                 i.saveDescriptionLine(this.formatErrorMassage("fehlende Operanden"));
                 return false;
