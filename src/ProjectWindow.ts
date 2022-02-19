@@ -35,7 +35,15 @@ export const removeClassOfAll=(s:string)=>{
 }
 export const addClassTo=(id:string,cls:string)=>{
     let elem = getHtmlElement(id);
-    elem.classList.add(cls);
+    if(elem !=null || elem != undefined){
+        elem.classList.add(cls);
+    }
+}
+const selectPWithSameId=(n:number)=>{
+
+}
+export const getIDOfSelected=(s:string):string=>{
+    return s[0]+s[1];
 }
 
 export class ProjectWindow{
@@ -81,14 +89,14 @@ export class ProjectWindow{
                 i =this.inputLines[this.translationOfElementDisplayed];
                 if(i.getType() == InputLineType.TRANSLATED){
                     OutputAddresses.innerHTML+=`<p><span class="gray">${Manipulator.formatHextoDat16(i.getStartingAddr())}: </span></p>`;
-                    OutputLines.innerHTML+=`<p>${this.inputLineControl.getSpeicherAbbild(i,false)}</p>`;
+                    OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">${this.inputLineControl.getSpeicherAbbild(i,false)}</p>`;
                     
                     // outputText.innerHTML+= `<p><span class="gray">${Manipulator.formatHextoDat16(i.getStartingAddr())}: </span>  |${this.inputLineControl.getSpeicherAbbild(i)}</p>`;
                     OutputTextAreaElement.innerHTML+=":"+i.getTranslation()+"\n";
                 }
                 else{
                     OutputAddresses.innerHTML+=`<p><span class="gray">&nbsp;</span></p>`;
-                    OutputLines.innerHTML+=`<p>&nbsp;&nbsp;&nbsp;</p>`;
+                    OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">&nbsp;&nbsp;&nbsp;</p>`;
                     //outputText.innerHTML+= `<p>&nbsp;&nbsp;&nbsp;</p>`;
                 }
             }
@@ -178,16 +186,16 @@ export class ProjectWindow{
         for(let i=0;i<this.inputstrings.length;i++){
             e=this.inputLines[i];
             if(e !=null){
-                InputID.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span></p>`;
+                InputID.innerHTML+=`<p  class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
                 // InputLines.innerHTML+=`<p><span class="hoverable maxwidth">${e.inputLineToString()}</span></p>`;
-                InputLines.innerHTML+=`<p class="overflowElipsis"><span>${(e.getLabel()==""?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;":e.getLabel()+":")} ${e.commandLinetoString()}${e.getCommentary()==""?"":";"+e.getCommentary()}</span></p>`;
+                InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${(e.getLabel()==""?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;":e.getLabel()+":")} ${e.commandLinetoString()}${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
                 // InputLines.innerHTML+=`<p><span class="overflowText">${(e.getLabel()==""?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;":e.getLabel()+":")} ${e.commandLinetoString()}${e.getCommentary()==""?"":";"+e.getCommentary()}</span><span class="tooltip">${e.getCommentary()}</span></p>`;
                 // inputTextDiv.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span>  |<span class="hoverable maxwidth">${e.inputLineToString()}</span></p>`;
             }
             else{
-                InputID.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span></p>`;
+                InputID.innerHTML+=`<p class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
                 // InputLines.innerHTML+=`<p><span class="overflowText">${this.inputstrings[i]}</span><span class="tooltip">${this.inputstrings[i]}</span></p>`;
-                InputLines.innerHTML+=`<p class="overflowElipsis"><span>${this.inputstrings[i]}</span></p>`;
+                InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP"  class="overflowElipsis">${this.inputstrings[i]}</p>`;
                 // inputTextDiv.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span>  |<span class="hoverable maxwidth">${this.inputstrings[i]}</span></p>`;
             }
         }
@@ -320,17 +328,17 @@ export class ProjectWindow{
                 if(i.getType() == InputLineType.TRANSLATED){
                     OutputAddresses.innerHTML+=`<p><span class="gray">${Manipulator.formatHextoDat16(i.getStartingAddr())}: </span></p>`;
                     if(i.getTranslation().includes("????")){
-                        OutputLines.innerHTML+=`<p>${this.inputLineControl.getSpeicherAbbild(i,false)}</p>`;
+                        OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">${this.inputLineControl.getSpeicherAbbild(i,false)}</p>`;
                     }
                     else{
-                        OutputLines.innerHTML+=`<p>${this.inputLineControl.getSpeicherAbbild(i,true)}</p>`;
+                        OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">${this.inputLineControl.getSpeicherAbbild(i,true)}</p>`;
                     }
                     // outputText.innerHTML+= `<p><span class="gray">${Manipulator.formatHextoDat16(i.getStartingAddr())}: </span>  |${this.inputLineControl.getSpeicherAbbild(i)}</p>`;
                     OutputTextAreaElement.innerHTML+=":"+i.getTranslation()+"\n";
                 }
                 else{
                     OutputAddresses.innerHTML+=`<p><span class="gray">&nbsp;</span></p>`;
-                    OutputLines.innerHTML+=`<p>&nbsp;&nbsp;&nbsp;</p>`;
+                    OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">&nbsp;&nbsp;&nbsp;</p>`;
                     //outputText.innerHTML+= `<p>&nbsp;&nbsp;&nbsp;</p>`;
                 }
             }else{

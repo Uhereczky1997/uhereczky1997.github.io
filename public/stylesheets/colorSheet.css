@@ -12,6 +12,9 @@
   margin: 0 0;
   padding-left: 1vw;
 }
+.highlighted{
+  background-color: yellow;
+}
 .crInvert{
   background-color: black;
   color: white;
