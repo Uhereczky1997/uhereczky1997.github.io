@@ -11,6 +11,12 @@ const parse3:string = `<span class="gray">parse Operandenfeld (1) ...</span>`;
 const parse4:string = `<span class="gray">parse Operandenfeld (2) ...</span>`;
 const parse5:string = `<span class="gray">gesamter Befehl:</span>`;
 
+const addressierungDirekt:string = `erkannt Direkte Adressierung`;
+const addressierungIndirekt:string = `erkannt Indirekte Adressierung`;
+const addressierungEinAusgabe:string = ``;
+const addressierungImmediate:string = `erkannt Immediate Adressierung`;
+
+
 export const saveInput=(I:InputLine,n:number)=>{
     switch(n){
         case 1:
@@ -216,13 +222,13 @@ export class CommandMap{
             if(this.symbollist.isLabel(strings[0])){
                 i.saveDescriptionLine(this.formatErrorMassage(`Label ${strings[0]} ist schon bereits besetzt`))
                 i.setError(strings[0]);
-                i.setRest(strings[1]);
+                i.setRest(": "+strings[1]);
                 return false;
             }
             if(!this.symbollist.isEligible(strings[0])){
                 i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} kein gülitger Label`))
                 i.setError(strings[0]);
-                i.setRest(strings[1]);
+                i.setRest(": "+strings[1]);
                 return false;
             }
             else{
@@ -529,7 +535,7 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} kein gültiger Operand!`));
                     i.setError(strings[0]);
                     if(strings[1]!=undefined){
-                        i.setRest(strings[1]);
+                        i.setRest(", "+strings[1]);
                     }
                     return false;
                 }
@@ -611,7 +617,7 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} kein gültiger Operand!`));
                     i.setError(strings[0]);
                     if(strings[1]!=undefined){
-                        i.setRest(strings[1]);
+                        i.setRest(", "+strings[1]);
                     }
                     return false;
                 }
@@ -1265,7 +1271,7 @@ export class CommandMap{
             i.saveDescriptionLine(this.formatErrorMassage("es gibt bereits eine Konstante/Label mit dem Namen "+strings[0]));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
-                i.setRest(strings[1]);
+                i.setRest(" "+strings[1]);
             }
             return false;
         }
@@ -1273,7 +1279,7 @@ export class CommandMap{
             i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} ist keine gültige Konstante`));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
-                i.setRest(strings[1]);
+                i.setRest(" "+strings[1]);
             }
             return false;
         }
@@ -1281,7 +1287,7 @@ export class CommandMap{
             i.saveDescriptionLine(this.formatErrorMassage("keine Konstantendefinition nach einem Labeldefinition erlaubt"));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
-                i.setRest(strings[1]);
+                i.setRest(" "+strings[1]);
             }
             return false;
         }

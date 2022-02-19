@@ -3,7 +3,10 @@
     font-family: 'Courier New', Courier, monospace;
 }
 .errorRed{
-  color:red;
+  color:rgb(221, 6, 6);
+}
+.labelBlue{
+  color:rgb(1, 169, 224);
 }
 .eingeruckt{
   margin: 0 0;

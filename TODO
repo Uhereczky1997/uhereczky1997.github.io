@@ -15,7 +15,7 @@ Outputwindow: [] copy to clipboard
 
 !!! edge case & thorough testing !!!
 
-register adressierung erkannt-> was für eine adressierung
+register adressierungs art erkannt-> was für eine adressierung
 
 filtern von bibliothek
 
@@ -26,4 +26,4 @@ label: kein ziffer am anfang
         min 3 Zeichen lang
 
 erwarte zeile kennzeichnen was gefunden wurde
-Fr. 15:30 18.02.2022
+14:00 Mo. 21.02.2022

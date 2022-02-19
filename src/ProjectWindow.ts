@@ -427,7 +427,7 @@ export class ProjectWindow{
             dsrl+=`<span id="crRest">${ss[5]}</span>`;
         }
         dsrl+=`</h2>`;
-        currentLine.innerHTML=dsrl;
+        return dsrl;
     }
 
     public testPushing =async  () => {
@@ -438,7 +438,7 @@ export class ProjectWindow{
             if(this.inputLines.length>this.elementDisplayed){
                 this.elementOfElementDisplayed =-1;
                 // currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${this.inputLines[this.elementDisplayed].commandLinetoString()}</h2>`;
-                this.pushCurrentLine(this.inputLines[this.elementDisplayed].getAll());
+                currentLine.innerHTML=this.pushCurrentLine(this.inputLines[this.elementDisplayed].getAll());
                 machinenbefehl.innerHTML="";
                 this.descriptionLinesOfCurrentDisplayedElement=this.inputLines[this.elementDisplayed].getDescriptionLine();
             }
