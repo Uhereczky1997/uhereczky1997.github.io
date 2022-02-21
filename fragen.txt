@@ -2,7 +2,19 @@
     es gibt schon ein label mit namen x aber zeile ungültiger
     kann x wieder vorkommen in einem richtigen?
 
+
 2.
+    Sollten leere Zeilen auch auswählbar sein?  
+
+3. 
+    adressierungsarten, welche gehoren zu welchen?
+
+4.
+    
+
+
+
+x-----------------------------------------------------------------------
 Label1:Mov d,95h
 Lab1:Mob d,95h
 Mov A,v

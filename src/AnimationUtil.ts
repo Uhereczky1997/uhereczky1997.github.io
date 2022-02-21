@@ -51,7 +51,7 @@ export class AnimationControl{
         this.reset=false;
         this.end=false;
         this.baseFrameTime=500;
-        this.speed=4;
+        this.speed=16;
         this.animationType=0;
         this.frames=60;
     }
@@ -118,8 +118,8 @@ export class AnimationControl{
     }
 
     setSpeed=()=>{
-        this.speed*=2;
-        if(this.speed==256){
+        this.speed*=4;
+        if(this.speed>500){
             this.speed=16;
         }
         this.updateSpeedDisplay();
