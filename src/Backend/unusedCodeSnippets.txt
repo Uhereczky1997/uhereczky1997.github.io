@@ -1233,3 +1233,166 @@ testRegex("abc1"); */
             errorDescriptionDiv.innerHTML += `<div class="backgroundError"><p>${i.commandLinetoString()}:</p><p>${ss.filter(e=>{if(e.includes("gefunden")||e.includes("error")) return e;}).join("</p><p>")}</p></div>`; //<p>${ss.find(e=>e.includes("error"))}</p>
         }
     } */
+
+    public play=async()=>{
+        if(this.inputstrings.length>0){
+            /* while(!aniControl.end){
+                try{
+                    await this.testCycling();
+                    await sleepUntilNextStep();
+                }
+                catch(e){
+                    console.log(e);
+                    break;
+                }
+            } */
+            try {
+                await this.pushLines();
+            } catch (e) {
+                console.log(e);
+            }
+        }
+        else{
+            console.log("no Input");
+        }
+    }
+    public skipToFinish=async()=>{
+        if(this.inputstrings.length>0){
+            await this.reset();
+            /* while(this.inputLines.length>=this.elementDisplayed){
+                try{
+                    await this.testCycling();
+                }
+                catch(e){
+                    console.log(e);
+                    return;
+                }
+            } */
+            try {
+                await this.pushLines();
+            } catch (e) {
+                console.log(e);
+            }
+            aniControl.setEnd();
+        }
+        else{
+            console.log("no Input");
+        }
+        // console.log(this.iWindow);
+    }
+
+
+    public pushTranslation(){
+        let i:InputLine;
+        if(this.inputLines.length>0){
+            if(this.inputLines.length>this.translationOfElementDisplayed+1){
+                this.translationOfElementDisplayed+=1;
+                i =this.inputLines[this.translationOfElementDisplayed];
+                if(i.getType() == InputLineType.TRANSLATED){
+                    OutputAddresses.innerHTML+=`<p><span class="gray">${Manipulator.formatHextoDat16(i.getStartingAddr())}: </span></p>`;
+                    OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">${this.inputLineControl.getSpeicherAbbild(i,false)}</p>`;
+                    
+                    // outputText.innerHTML+= `<p><span class="gray">${Manipulator.formatHextoDat16(i.getStartingAddr())}: </span>  |${this.inputLineControl.getSpeicherAbbild(i)}</p>`;
+                    OutputTextAreaElement.innerHTML+=":"+i.getTranslation()+"\n";
+                }
+                else{
+                    OutputAddresses.innerHTML+=`<p><span class="gray">&nbsp;</span></p>`;
+                    OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">&nbsp;&nbsp;&nbsp;</p>`;
+                    //outputText.innerHTML+= `<p>&nbsp;&nbsp;&nbsp;</p>`;
+                }
+            }
+            else if(this.inputstrings.length==this.translationOfElementDisplayed+1){ //+1
+                this.translationOfElementDisplayed+=1;
+                OutputTextAreaElement.innerHTML+=":00000001FF";
+            }
+            else{
+
+            }
+        }
+    }
+    public  testCycling =async() => {
+        let e:string;
+        if(this.inputstrings.length>0){
+            if(this.elementOfElementDisplayed ==-1 && this.elementDisplayed == -1){
+                await this.testPushing();
+            }
+            else if(this.elementOfElementDisplayed+1<this.descriptionLinesOfCurrentDisplayedElement.length){
+                this.elementOfElementDisplayed+=1;
+                e=this.descriptionLinesOfCurrentDisplayedElement[this.elementOfElementDisplayed];
+                if(e.includes("erwarte")){
+                    await this.nextInverted(this.inputLines[this.elementDisplayed].getAllV());
+                }
+                if(e.includes('error')){
+                    console.log("error has been found");
+                    await this.nextInverted(this.inputLines[this.elementDisplayed].getAllV());
+                    aniControl.setStop();
+                    
+                    descriptionLines.innerHTML += `<p>${this.descriptionLinesOfCurrentDisplayedElement[this.elementOfElementDisplayed]}</p>`;
+                    updateScroll(descriptionLines.id);
+                    throw Error('Stop pressed');
+                }else{
+                    descriptionLines.innerHTML += `<p>${this.descriptionLinesOfCurrentDisplayedElement[this.elementOfElementDisplayed]}</p>`;
+                    updateScroll(descriptionLines.id);
+                }
+                if(e.includes("gefunden: Doppelpunkte")){
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                    }
+                    this.pushNewSymbol(); 
+                }
+            }
+            else if(this.elementOfElementDisplayed+1==this.descriptionLinesOfCurrentDisplayedElement.length){
+                this.elementOfElementDisplayed+=1;
+                let i = this.inputLines[this.elementDisplayed];
+                if(i!=undefined &&i!=null){
+                    if(this.inputLines[this.elementDisplayed].getEndAddr()!=""){
+                        addresszahler.innerHTML= `${this.inputLines[this.elementDisplayed].getEndAddr()}`;
+                        machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(this.inputLines[this.elementDisplayed],false)}`;
+                    }
+                    
+                    this.pushTranslation();
+                    
+                }
+                descriptionLines.innerHTML += `<p> --------------------------------------------------------- </p>`;
+                this.refreshInputListItems();
+                updateScroll(descriptionLines.id);
+            }
+            else{
+                await this.testPushing();
+            }
+        }
+    }
+    public testPushing =async  () => {
+        if(this.inputstrings.length>0){
+            this.elementDisplayed+=1;
+            this.translateInputString();
+            
+            if(this.inputLines.length>this.elementDisplayed){
+                this.elementOfElementDisplayed =-1;
+                // currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${this.inputLines[this.elementDisplayed].commandLinetoString()}</h2>`;
+                currentLine.innerHTML=this.pushCurrentLine(this.inputLines[this.elementDisplayed].getAll());
+                machinenbefehl.innerHTML="";
+                this.descriptionLinesOfCurrentDisplayedElement=this.inputLines[this.elementDisplayed].getDescriptionLine();
+            }
+            else if(this.inputLines.length==this.elementDisplayed){
+                if(aniControl.start){
+                    this.toggleStop();
+                }
+                this.linkerAuflosungB=this.aufzulosendeLabel();
+                await this.linkerAuflosung();
+            }
+            else{
+                aniControl.setEnd();
+                //this.elementDisplayed=-1;
+                //this.testPushing();
+            }
+        }
+    }
+    public translateInputString=()=>{
+        if(this.inputstrings.length>this.elementDisplayed){
+            this.inputLineControl.addInputLine(this.inputstrings[this.elementDisplayed]);
+            this.refreshInputLines();
+        }
+        console.log(this);
+        console.log(aniControl);
+    }

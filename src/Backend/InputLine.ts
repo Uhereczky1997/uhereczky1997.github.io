@@ -176,6 +176,9 @@ export class InputLine{
         let s=Manipulator.splitStringHalf(this.initialLine,":");
         let ss=Manipulator.splitStringHalf(this.initialLine,";");
         let addr:string = this.initialLine.replace(s[0]+':','').replace(';'+ss[1],'');
+        if(ss[1]!=undefined){
+            this.commentary=ss[1];
+        }
 
         /* this.label=this.label.trim();
         this.commentary=this.commentary.trim(); */

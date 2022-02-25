@@ -64,16 +64,17 @@ export class InputLineControl{
     }
     addInputLine=(inputString:string):void=>{
         let i:InputLine= new InputLine(inputString,this.IDcounter);
+        console.log(i.getInitialLine()+"  --->   "+i.getType());
         //i.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)))
-        if(i.getType()!=InputLineType.EMPTY){
+        if(i.getType()==InputLineType.EMPTY){
             this.inputlines.push(i);
             this.IDcounter=this.IDcounter +1;
             return;
         }
         this.map.mapInputLineByCase(i);
         this.createSummary(i);
-        console.log(i.getDescriptionLine());
-        console.log(i.testToString()+"-"+i.getValid());
+        // console.log(i.getDescriptionLine());
+        // console.log(i.testToString()+"-"+i.getValid());
         this.inputlines.push(i);
         if(i.getValid()){
             this.calculateStartingAddr(i);
@@ -81,7 +82,7 @@ export class InputLineControl{
             if(i.hasLabel()){
                 this.symbolliste.updateLabel(i.getLabel(),i.getStartingAddr());
             }
-            console.log(i.getTranslation());
+            // console.log(i.getTranslation());
         }
         else{
             if(i.getLabel()!=""){
