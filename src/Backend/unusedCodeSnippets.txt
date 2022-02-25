@@ -1219,3 +1219,17 @@ const testRegex=(s:string)=>{
 }
 testRegex("1abc");
 testRegex("abc1"); */
+
+/* public displaySummary(i:InputLine){
+        console.log(i);
+        let ss:string[]=i.getDescriptionLine();
+        console.log(ss.find(e=>{return e.includes("error")}));
+        if(ss.find(e=>{return e.includes("error")})==undefined){
+            if(!errorOnlyCheckBox.checked){
+                errorDescriptionDiv.innerHTML += `<div class="backgroundNoError"><p>${i.commandLinetoString()}:</p><p>${ss[ss.length-2]}</p><p>${ss[ss.length-1]}</p></div>`
+            }
+        }
+        else{
+            errorDescriptionDiv.innerHTML += `<div class="backgroundError"><p>${i.commandLinetoString()}:</p><p>${ss.filter(e=>{if(e.includes("gefunden")||e.includes("error")) return e;}).join("</p><p>")}</p></div>`; //<p>${ss.find(e=>e.includes("error"))}</p>
+        }
+    } */

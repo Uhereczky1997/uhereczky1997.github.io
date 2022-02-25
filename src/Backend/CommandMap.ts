@@ -36,6 +36,7 @@ export const saveInput=(I:InputLine,n:number)=>{
             break;
     }
 }
+
 const save2 =(i:InputLine) =>{
     saveInput(i,2);
 }

@@ -26,6 +26,13 @@ export class InputLine{
         this.initialLine=init.replace(/\s+/g,' ').trim();
         this.id=id;
         this.commandLine=this.setCommandLine();
+        this.preemptiveValidation();
+    }
+    preemptiveValidation(){
+        if(this.commandLine==""){
+            this.valid=true;
+            this.type=InputLineType.EMPTY;
+        }
     }
     setError(s:string){
         this.error=s;

@@ -8,8 +8,6 @@ import { aniControl, sleepFor, sleepUntilNextStep } from "./AnimationUtil";
 
 let errorDescriptionDiv:HTMLElement = getHtmlElement('ErrorDescription');
 let inputWindowContainer:HTMLElement = getHtmlElement('InputWindowContainter');
-let errorOnlyCheckBox:HTMLInputElement = getHtmlElement('errorOnlyCheckbox') as HTMLInputElement;
-let previewType:HTMLInputElement = getHtmlElement('previewType') as HTMLInputElement;
 
 const sleepFor500 = ():Promise <any> =>new Promise(resolve => setTimeout(resolve, 500));
 
@@ -26,19 +24,7 @@ export class InputWindow{
         this.InputTextAreaElement=getHtmlElement('InputTextArea')as HTMLTextAreaElement;
         this.pWindow=p;
     }
-    public displaySummary(i:InputLine){
-        console.log(i);
-        let ss:string[]=i.getDescriptionLine();
-        console.log(ss.find(e=>{return e.includes("error")}));
-        if(ss.find(e=>{return e.includes("error")})==undefined){
-            if(!errorOnlyCheckBox.checked){
-                errorDescriptionDiv.innerHTML += `<div class="backgroundNoError"><p>${i.commandLinetoString()}:</p><p>${ss[ss.length-2]}</p><p>${ss[ss.length-1]}</p></div>`
-            }
-        }
-        else{
-            errorDescriptionDiv.innerHTML += `<div class="backgroundError"><p>${i.commandLinetoString()}:</p><p>${ss.filter(e=>{if(e.includes("gefunden")||e.includes("error")) return e;}).join("</p><p>")}</p></div>`; //<p>${ss.find(e=>e.includes("error"))}</p>
-        }
-    }
+    
     public displayError():string{
         let inputs:InputLine[] = this.inputcontrol.getInputLines();
         let ss:string[];
@@ -58,12 +44,12 @@ export class InputWindow{
     public translate = ():void=>{
         try{
             let s:string[]=this.InputTextAreaElement.value.split("\n");
-            s=s.filter(e=>{
+            /* s=s.filter(e=>{
                 e=Manipulator.removeExcessWhiteSpace(e);
                 if(e.length>0){
                     return e;
                 }
-            })
+            }) */
             if(!(s.length<1)){
                 this.pWindow.refreshInputStrings(s);
                 this.inputcontrol.addInputLines(s);
@@ -90,10 +76,6 @@ export class InputWindow{
             // this.displaySummary(inputs[i]);
         } 
         */
-    }
-    private setChecked(){
-        errorOnlyCheckBox.checked=(!errorOnlyCheckBox.checked);
-        console.log(errorOnlyCheckBox.checked);
     }
     private pushPreview = async (e:InputLine,n:number) =>{
         await sleepFor(n);

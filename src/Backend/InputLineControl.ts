@@ -65,6 +65,11 @@ export class InputLineControl{
     addInputLine=(inputString:string):void=>{
         let i:InputLine= new InputLine(inputString,this.IDcounter);
         //i.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)))
+        if(i.getType()!=InputLineType.EMPTY){
+            this.inputlines.push(i);
+            this.IDcounter=this.IDcounter +1;
+            return;
+        }
         this.map.mapInputLineByCase(i);
         this.createSummary(i);
         console.log(i.getDescriptionLine());
@@ -87,8 +92,8 @@ export class InputLineControl{
         this.IDcounter=this.IDcounter +1;
         //console.log(this.getSpeicherAbbild(i,false));
         console.log(i.getAll());
-
     }
+
     getLittleEndianOf(h:string):string{
         return Manipulator.splitDat16InDat8(h).join("");
     }

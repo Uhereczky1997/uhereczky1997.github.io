@@ -1,16 +1,9 @@
-1.
-    es gibt schon ein label mit namen x aber zeile ungültiger
-    kann x wieder vorkommen in einem richtigen?
 
-
-2.
-    Sollten leere Zeilen auch auswählbar sein?  
-
-3. 
+1. 
     adressierungsarten, welche gehoren zu welchen?
 
-4.
-    
+2.
+
 
 
 
@@ -29,3 +22,12 @@ SHL
 JP Label1
 CALL Label1
 const1 EQU 3434h
+
+NOP/HALT falsch wieso nicht?
+
+
+
+label -absolute
+zahl - immidate
+[register] - register indirekt
+register - register (direkt)

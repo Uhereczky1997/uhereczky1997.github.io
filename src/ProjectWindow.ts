@@ -39,9 +39,6 @@ export const addClassTo=(id:string,cls:string)=>{
         elem.classList.add(cls);
     }
 }
-const selectPWithSameId=(n:number)=>{
-
-}
 export const getIDOfSelected=(s:string):string=>{
     return s[0]+s[1];
 }
