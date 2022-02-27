@@ -1,37 +1,4 @@
-/* #InputText{
-    text-align: start;
-    overflow-y: scroll;
-}
-#OutputText{
-    text-align: start;
-    overflow-y: scroll;
-}
-#InputText p{
-    margin: 0;
-    margin-top: 0;
-    margin-bottom:0;
-    padding: 0;
-    padding-left: 3%;
-    line-height: 120%;
-    display: block;
 
-    font-size: 20px;
-}
-#OutputText p{
-    margin: 0;
-    margin-top: 0;
-    margin-bottom:0;
-    padding: 0;
-    padding-left: 3%;
-    line-height: 120%;
-    display: block;
-
-    font-size: 20px;
-}
-#InputText p:hover{
-    background-color: lightcoral;
-    cursor: pointer;
-} */
 .displayText{
     text-align: start;
 }
@@ -52,27 +19,6 @@
     background-color: yellow;
     cursor: pointer;
 }
-/* ol{
-    list-style-type: decimal-leading-zero;
-    list-style-position: outside;
-    margin-top: 5px;
-    margin-bottom: 5px;
-    margin-left:5px;
-}
-ol>li{
-    text-align: start;
-    word-spacing: 5px;
-    font-size: 20px;
-    padding-left:-10px;
-    width:auto;
-    /* overflow:hidden; 
-    
-}
-li:hover{
-    background-color: lightcoral;
-    cursor: pointer;
-    
-} */
 #InputText{
     display:grid;
     grid-template-columns: 10% 90%;
@@ -84,16 +30,6 @@ li:hover{
     overflow-y: scroll;
 }
 
-/* #InputText>span{
-    display: inline-block;
-}
-#OutputText>span{
-    display: inline-block;
-} */
-/* span.hoverable:hover{
-    background-color: lightcoral;
-    cursor: pointer;
-} */
 .overflowText{
     white-space: nowrap;
     overflow: hidden;
@@ -101,39 +37,8 @@ li:hover{
     
     pointer-events: none;
 }
-
-/* .overflowText:after{
-    content: '';
-    display: inline-block;
-    position: relative;
-    top: 0;
-    right: 0;
-    width: 20;
-    height: 15;
-    z-index: 1;
-    pointer-events: initial;
+.overflowElipsis{
+white-space: nowrap;
+overflow: hidden;
+text-overflow: ellipsis;
 }
-.overflowText:hover:after{
-    cursor: pointer;
-} */
-/* .tooltip {
-    
-    position: relative;
-    top: 10;
-    left: 0;
-    background-color: #fff;
-    padding: 10px;
-    opacity: 0;
-    transition: opacity 0.5s ease;
-  }
-  .overflowText:hover + .tooltip {
-    
-    transition: opacity 0.5s ease;
-    opacity: 1;
-    background-color: gray;
-  } */
-  .overflowElipsis{
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }

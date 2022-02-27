@@ -5,18 +5,20 @@
 @import "./DescriptionTable.css";
 @import "colorSheet.css";
 @import "./SymbolTable.css";
-@import "./media.css";
+/* @import "./media.css"; */
 #body{
     display:grid;
     grid-template-columns: repeat(10,1fr);
     grid-template-rows: repeat(12,1fr);
     grid-gap: 5px;
     max-width: 1680px;
-        min-width: 896px;
-    /* min-width: 1680px; */
     max-height: 920px; 
-        min-height: 414px; 
-    /* min-height: 920px; */
+
+    min-width: 1680px;
+    min-height: 920px;
+
+    /* min-width: 896px;
+    min-height: 414px;  */
     margin: 0 auto;
 }
 .maxwidth{

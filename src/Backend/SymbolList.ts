@@ -58,7 +58,13 @@ export class SymbolList{
         else return false;
     }
     isLabel(addr:string):boolean{
-        if(this.Labels.find(element => element.getName()==addr) !=undefined){
+        //  case-sensitive
+        /* if(this.Labels.find(element => element.getName()==addr) !=undefined){
+            return true;
+        }
+        else return false; */
+        //  NOT case-sensitive
+        if(this.Labels.find(element => element.getName().toLowerCase()==addr.toLowerCase()) !=undefined){
             return true;
         }
         else return false;
@@ -100,8 +106,15 @@ export class SymbolList{
         }
     }
     removeLabel(s:string){
+        //  case-sensitive
+        /* 
         this.Labels.filter(e=>{
             e.getName()!=s;
+        })
+        */
+        //   NOT case-sensitive
+        this.Labels.filter(e=>{
+            e.getName().toLowerCase()!=s.toLowerCase();
         })
     }
     getLabels():Label[]{
@@ -114,7 +127,12 @@ export class SymbolList{
         return this.Consts.find(e=>e.getName()==addr);
     }
     getSpecificLabelByName(addr:string):Label|undefined{
+        //  case-sensitive
+        /* 
         return this.Labels.find(e=>e.getName()==addr);
+        */
+        //   NOT case-sensitive
+        return this.Labels.find(e=>e.getName().toLowerCase()==addr.toLowerCase());
     }
     getPositionOfSpecificLabel(addr:string):string|undefined{
         let r=this.getSpecificLabelByName(addr);
