@@ -1221,7 +1221,11 @@ export class CommandMap{
             i.saveDescriptionLine(this.formatGefunden(`Konstante ${strings[0]}`,strings[0]));
             save2(i);
             i.saveDescriptionLine(this.formatErwartet(`EQU`));
-
+            if(strings.length<2){
+                i.saveDescriptionLine(this.formatErrorMassage(`fehlender Operand!`));
+                i.setError(strings[0]);
+                return false;
+            }
             let new_commands=Manipulator.splitStringHalf(strings[1]," ");
             new_commands=this.filterForEmtpyStrings(new_commands);
 

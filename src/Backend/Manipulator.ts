@@ -16,7 +16,7 @@ export class Manipulator {
     static splitStringHalf(addr:string,ch:string):string[]{
         let reString:string[]=[];
         let p:number =addr.indexOf(ch);
-        if(p!=-1){
+        if(p!=-1 && p!=undefined){ 
             reString[0] = addr.slice(0,p).trim();
             reString[1] = addr.slice(p+1).trim();
         }

@@ -4,6 +4,9 @@
 #OutputWindowContainer{
     visibility: hidden;
 } */
+p{
+    font-family: 'Courier New', Courier, monospace;
+}
 .backgroundContainer{
     grid-row: 1/13;
     grid-column: 1/11;

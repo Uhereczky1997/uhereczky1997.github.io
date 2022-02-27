@@ -22,8 +22,10 @@ filtern von bibliothek
 hervorheben von gerade geparse-ten Befehl
 
 
-label: kein ziffer am anfang
+label:  kein ziffer am anfang
         min 3 Zeichen lang
+
+
 rework animation and display:
         {
         leere Zeilen nicht wegfallen!!!
@@ -31,6 +33,7 @@ rework animation and display:
         label nicht case sensitiv!!!
         rot hinterlegung von fehlerhaften roten
         }
+
 OFFSET label !!!!
 monospace Schriftart: currier
 Labels min länge 3 (nicht Ziffer, nur Ziffer, Buchstaben und _)
