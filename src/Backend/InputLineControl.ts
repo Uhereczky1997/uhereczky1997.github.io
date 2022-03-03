@@ -127,7 +127,7 @@ export class InputLineControl{
         let h = i.getHCode();
         let l:string|undefined = "";
         let c:Constant;
-        console.log(i.getCommandLine()+" ... "+i.getLength()+" ... "+i.getHCode());
+        // console.log(i.getCommandLine()+" ... "+i.getLength()+" ... "+i.getHCode());
         if(i.getFirstPart()=="RS"){
             return (h.length>4?"0000...("+i.getLength()+"x)":h);
         }

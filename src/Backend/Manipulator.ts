@@ -178,4 +178,55 @@ export class Manipulator {
         }
         return r;
     }
+    static formatLabelDisplay(s:string,b:boolean):string{
+        let ss="";
+        let toReturn="";
+        if(s.length<1){
+            return "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        }
+        s=s.concat(": ");
+        while(s.length<10){
+            s=s.concat(" ");
+        }
+        ss= s;
+        while(ss.includes(" ")){
+            ss = ss.replace(" ","&nbsp;");
+        }
+        // console.log(ss+" --> "+ss.length);
+        toReturn = b? s:ss
+        return toReturn;
+    }
+    static formatBefehlDisplay(s:string,b:boolean):string{
+        let ss="";
+        let toReturn="";
+        while(s.length<16){
+            s=s.concat(" ");
+        }
+        ss= s;
+        while(ss.includes(" ")){
+            ss = ss.replace(" ","&nbsp;");
+        }
+        toReturn = b? s:ss
+        return toReturn;
+    }
+    static formatLabelandBefehlDisplay(s1:string,s2:string):string{
+        let ss ="";
+        if(s1.length<8){
+            return this.formatLabelDisplay(s1,false).concat(this.formatBefehlDisplay(s2,false));
+        }
+        s1= this.formatLabelDisplay(s1,true);
+        s2= this.formatBefehlDisplay(s2,true);
+        ss= (s1.concat(s2)).trim();
+        if(ss.length<26){
+            while(ss.length<26){
+                ss=ss.concat(" ");
+            }
+        }
+        console.log(ss);
+        while(ss.includes(" ")){
+            ss = ss.replace(" ","&nbsp;");
+        }
+        console.log(ss);
+        return ss;
+    }
 }

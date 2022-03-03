@@ -211,7 +211,7 @@ export class InputLine{
                 return(`${this.firstPart} ${this.secondPart} ${this.thirdPart}`);
             }
             else{
-                return (`${(this.firstPart==""?"":this.firstPart)} ${(this.secondPart==""?"":this.secondPart)}${(this.thirdPart==""?"":', '+this.thirdPart)}`);
+                return (`${(this.firstPart==""?"":this.firstPart)} ${(this.secondPart==""?"":this.secondPart)}${(this.thirdPart==""?"":','+this.thirdPart)}`);
             }
         }
         else{

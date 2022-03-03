@@ -150,43 +150,44 @@ export class ProjectWindow{
     public refreshInputListItems=()=>{
         InputID.innerHTML="";
         InputLines.innerHTML="";
+        let ss:string[]=[];
         //inputTextDiv.innerHTML="";
         let e:InputLine;
         for(let i=0;i<this.inputstrings.length;i++){
             e=this.inputLines[i];
             if(e !=null){
                 if(e.getType()==InputLineType.EMPTY){
-                    console.log(e.getCommentary());
                     InputID.innerHTML+=`<p  class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
-                    InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${e.getCommentary()==""?"&nbsp;":";"+e.getCommentary()}</p>`;
+                    InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
                 }else{
                     InputID.innerHTML+=`<p  class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
-                    // InputLines.innerHTML+=`<p><span class="hoverable maxwidth">${e.inputLineToString()}</span></p>`;
-                    InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${(e.getLabel()==""?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;":e.getLabel()+":")} ${e.commandLinetoString()}${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
-                    // InputLines.innerHTML+=`<p><span class="overflowText">${(e.getLabel()==""?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;":e.getLabel()+":")} ${e.commandLinetoString()}${e.getCommentary()==""?"":";"+e.getCommentary()}</span><span class="tooltip">${e.getCommentary()}</span></p>`;
-                    // inputTextDiv.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span>  |<span class="hoverable maxwidth">${e.inputLineToString()}</span></p>`;
+                    InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.commandLinetoString())}${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
                 }
             }
             else{
                 InputID.innerHTML+=`<p class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
-                // InputLines.innerHTML+=`<p><span class="overflowText">${this.inputstrings[i]}</span><span class="tooltip">${this.inputstrings[i]}</span></p>`;
                 InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP"  class="overflowElipsis">${this.inputstrings[i]}&nbsp;</p>`;
-                // inputTextDiv.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span>  |<span class="hoverable maxwidth">${this.inputstrings[i]}</span></p>`;
             }
         }
-
-        /* inputTextDiv.innerHTML="<p>";
-        this.inputLines.forEach(e=>{
-            inputTextDiv.innerHTML+=`<span class="gray">${e.getId()<10?"0"+e.getId():e.getId()}: </span>  |  <span class="hoverable maxwidth">${e.inputLineToString()}</span><br>`;
-        })
-        inputTextDiv.innerHTML+="</p>" */
+    }
+    public refreshInputListItem=(i:number)=>{
+        if(i<this.inputLines.length){
+            let e:InputLine=this.inputLines[i];
+            let idString = `${(i+1)<10?"0"+(i+1):(i+1)}inputP`;
+            let inputLineHTML:HTMLElement = getHtmlElement(idString);
+            console.log(inputLineHTML);
+            if(e.getType()==InputLineType.EMPTY){
+                inputLineHTML.innerHTML=`${e.getCommentary()==""?"":";"+e.getCommentary()}`;
+            }else{
+                inputLineHTML.innerHTML=`${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.commandLinetoString())}${e.getCommentary()==""?"":";"+e.getCommentary()}`;
+            }
+            
+        }
     }
     private pushNewSymbol=():boolean=>{
         this.symbols=this.symbolList.getSequence();
         let s:Constant|Label;
         let n,p;
-        // console.log(this.symbols);
-        // console.log(this.symbolList);
         if(this.symbols.length!=0){
             if(this.symbols[this.idOfDisplayedConstANDLabel+1]!=null){
                 s=this.symbols[this.idOfDisplayedConstANDLabel+1];
@@ -390,7 +391,8 @@ export class ProjectWindow{
                 
             this.pushTranslationOf(i);
             descriptionLines.innerHTML += `<p> --------------------------------------------------------- </p>`;
-            this.refreshInputListItems();
+            // this.refreshInputListItems();
+            this.refreshInputListItem(i);
             updateScroll(descriptionLines.id);
         }
     }

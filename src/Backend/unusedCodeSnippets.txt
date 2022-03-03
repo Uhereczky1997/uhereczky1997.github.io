@@ -1396,3 +1396,40 @@ testRegex("abc1"); */
         console.log(this);
         console.log(aniControl);
     }
+
+    /////////// just for reference
+    public refreshInputListItems=()=>{
+        InputID.innerHTML="";
+        InputLines.innerHTML="";
+        let ss:string[]=[];
+        //inputTextDiv.innerHTML="";
+        let e:InputLine;
+        for(let i=0;i<this.inputstrings.length;i++){
+            e=this.inputLines[i];
+            if(e !=null){
+                if(e.getType()==InputLineType.EMPTY){
+                    // console.log(e.getCommentary());
+                    InputID.innerHTML+=`<p  class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
+                    InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
+                }else{
+                    InputID.innerHTML+=`<p  class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
+                    ss[0]=(e.getLabel()==""?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;":Manipulator.formatLabelDisplay(e.getLabel(),false));
+                    // console.log(Manipulator.formatLabelDisplay(e.getLabel()).length)
+                    ss[1]=Manipulator.formatBefehlDisplay(e.commandLinetoString(),false);
+                    // console.log(Manipulator.formatBefehlDisplay(e.commandLinetoString()).length)
+                    ss[2]=e.getCommentary()==""?"":";"+e.getCommentary();
+
+                    // InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${ss[0]}${ss[1]}${ss[2]}</p>`;
+                    InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.commandLinetoString())}${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
+                    // InputLines.innerHTML+=`<p><span class="overflowText">${(e.getLabel()==""?"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;":e.getLabel()+":")} ${e.commandLinetoString()}${e.getCommentary()==""?"":";"+e.getCommentary()}</span><span class="tooltip">${e.getCommentary()}</span></p>`;
+                    // inputTextDiv.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span>  |<span class="hoverable maxwidth">${e.inputLineToString()}</span></p>`;
+                }
+            }
+            else{
+                InputID.innerHTML+=`<p class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
+                // InputLines.innerHTML+=`<p><span class="overflowText">${this.inputstrings[i]}</span><span class="tooltip">${this.inputstrings[i]}</span></p>`;
+                InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP"  class="overflowElipsis">${this.inputstrings[i]}&nbsp;</p>`;
+                // inputTextDiv.innerHTML+=`<p><span class="gray">${(i+1)<10?"0"+(i+1):(i+1)}: </span>  |<span class="hoverable maxwidth">${this.inputstrings[i]}</span></p>`;
+            }
+        }
+    }

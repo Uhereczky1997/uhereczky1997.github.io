@@ -23,11 +23,25 @@ JP Label1
 CALL Label1
 const1 EQU 3434h
 
-NOP/HALT falsch wieso nicht?
-
 
 
 label -absolute
 zahl - immidate
 [register] - register indirekt
 register - register (direkt)
+
+
+
+Label1: mov a,b;bruv
+Label1L: mov a,b;bruv
+mov a,b;bruv
+Label1Lab: mov a,b;bruv
+Label1Labe: mov a,b;bruv
+Label1Labe1: mov a,b;bruv
+Label1Label1: mov a,b;bruv
+Label1Label1L: mov a,b;bruv
+Label1Label1La: mov a,b;bruv
+Label1Label1Lab: mov a,b;bruv
+Label1Label1Labe: mov a,b;bruv
+Label1Label1Label: mov a,b;bruv
+Label1Label1Label1: mov a,b;bruv
