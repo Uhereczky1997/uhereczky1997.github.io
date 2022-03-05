@@ -113,8 +113,8 @@ export class ProjectWindow{
                 break;
             }
         }
-
     }
+
     public switchInvertedTo=(n:number)=>{
         // removeClassOfAll("crInvert");
         // console.log(n);
@@ -175,7 +175,7 @@ export class ProjectWindow{
             let e:InputLine=this.inputLines[i];
             let idString = `${(i+1)<10?"0"+(i+1):(i+1)}inputP`;
             let inputLineHTML:HTMLElement = getHtmlElement(idString);
-            console.log(inputLineHTML);
+            // console.log(inputLineHTML);
             if(e.getType()==InputLineType.EMPTY){
                 inputLineHTML.innerHTML=`${e.getCommentary()==""?"":";"+e.getCommentary()}`;
             }else{
@@ -184,6 +184,27 @@ export class ProjectWindow{
             
         }
     }
+    public repushSpeicherabbildOf=(i:number)=>{
+
+        if(i<this.inputLines.length){
+            let e:InputLine=this.inputLines[i];
+            let idString = `${(i+1)<10?"0"+(i+1):(i+1)}outputP`;
+            let outputLineHTML:HTMLElement = getHtmlElement(idString);
+            console.log(outputLineHTML);
+            /* if(e.getType() == InputLineType.TRANSLATED){
+                if(e.getTranslation().includes("????")){
+                    outputLineHTML.innerHTML=`${this.inputLineControl.getSpeicherAbbild(e,false)}`;
+                }
+                else{
+                    outputLineHTML.innerHTML=`${this.inputLineControl.getSpeicherAbbild(e,true)}`;
+                }
+            }
+            else{
+                outputLineHTML.innerHTML=`&nbsp;`;
+            }   */
+        }
+    }
+
     private pushNewSymbol=():boolean=>{
         this.symbols=this.symbolList.getSequence();
         let s:Constant|Label;
@@ -207,22 +228,33 @@ export class ProjectWindow{
             }
         }
         return false;
-
     }
+    
     public checkInputLine=async(e:InputLine)=>{
         let s:string="";
         let n:string="";
         let ss:string[]=[];
         let l:Label|undefined;
+        let k:Label|Constant|undefined;
         if(e.getType()==InputLineType.TRANSLATED){
             if(e.getTranslation().includes("????")){
-                
-                l=this.symbolList.getLabels().find(i=>{
+                // console.log(this.symbols)
+                k=this.symbols.find(i =>{
+                    if(i instanceof Label && !(i instanceof Constant)){
+                        if(i.getName().toLowerCase()==e.getSecondPart().toLowerCase() || i.getName().toLowerCase()== e.getThirdPart().toLowerCase()){
+                            return i;
+                        }
+                    }
+                });
+                if(k==undefined || k instanceof Constant){
+                    return;
+                }
+                /* l=this.symbolList.getLabels().find(i=>{
                     if(i.getName()==e.getSecondPart() || i.getName()== e.getThirdPart()){
                         return i;
                     }
-                })!;
-                descriptionLines.innerHTML += `<p>Suche Label ${l.getName()} in SymbolTabelle</p>`;
+                })!; */
+                /* descriptionLines.innerHTML += `<p>Suche Label ${l.getName()} in SymbolTabelle</p>`;
                 if(aniControl.start){
                     await sleepUntilNextStep();
                     updateScroll(descriptionLines.id);
@@ -254,6 +286,41 @@ export class ProjectWindow{
                         updateScroll(descriptionLines.id);
                     }
                     this.repushTranslations();
+                    this.repushSpeicherabbildOf(e.getId());
+                } */
+                descriptionLines.innerHTML += `<p>Suche Label ${k.getName()} in SymbolTabelle</p>`;
+                if(aniControl.start){
+                    await sleepUntilNextStep();
+                    updateScroll(descriptionLines.id);
+                }
+                if(k.getPosition()=="????"){
+                    descriptionLines.innerHTML += `<p><span class="errorRed">Label '${k.getName()}' konnte nicht aufgelöst werden!</span></p>`;
+                    updateScroll(descriptionLines.id);
+                    await sleepFor(10);
+                    aniControl.setStop();
+                    throw Error('Stop pressed');
+                }
+                else{
+                    descriptionLines.innerHTML += `<p>Label '${k.getName()}' in Symboltabelle gefunden, Wert: ${Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")"}</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    s=this.inputLineControl.getSpeicherAbbild(e,false);
+                    this.inputLineControl.retranslate(e);
+                    n=this.inputLineControl.getSpeicherAbbild(e,true);
+                    descriptionLines.innerHTML += `<p>Ersetzung im Speicherabbild: ${s}-->${n}</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    this.repushTranslations();
+                    this.repushSpeicherabbildOf(e.getId());
                 }
             }
         }
@@ -311,6 +378,7 @@ export class ProjectWindow{
         }
     }
     
+    
     translateInputStringOfId=(n:number):boolean=>{
         // console.log(n+" corresponds to -> "+this.inputstrings[n]);
         if(n<this.inputstrings.length){
@@ -328,7 +396,7 @@ export class ProjectWindow{
                 this.elementDisplayed =i;
                 if(this.inputLines.length>i){
                     input = this.inputLines[i];
-                    console.log(i+" corresponds to -> "+input.getType()+" :: "+input.getInitialLine());
+                    // console.log(i+" corresponds to -> "+input.getType()+" :: "+input.getInitialLine());
                     if(input.getType()==InputLineType.EMPTY){
                         OutputAddresses.innerHTML+=`<p><span class="gray">&nbsp;</span></p>`;
                         OutputLines.innerHTML+=`<p id="${(input.getId()+1)<10?"0"+(input.getId()+1):(input.getId()+1)}outputP">&nbsp;&nbsp;&nbsp;</p>`;
@@ -403,7 +471,6 @@ export class ProjectWindow{
             if(i.getType() == InputLineType.TRANSLATED){
                 OutputAddresses.innerHTML+=`<p><span class="gray">${Manipulator.formatHextoDat16(i.getStartingAddr())}: </span></p>`;
                 OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">${this.inputLineControl.getSpeicherAbbild(i,false)}</p>`;
-                
                 OutputTextAreaElement.innerHTML+=":"+i.getTranslation()+"\n";
             }
             else{

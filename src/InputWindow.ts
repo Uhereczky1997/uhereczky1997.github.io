@@ -63,10 +63,17 @@ export class InputWindow{
         }
     }
     
-    public previewTranslation = async() =>{ 
+    public previewTranslation = async() =>{
+        let s:string;
         this.translate();
-        errorDescriptionDiv.innerHTML=this.displayError();
-
+        s = this.displayError();
+        console.log(s.length);
+        if(s.length>88){
+            errorDescriptionDiv.innerHTML=s;
+        }
+        else{
+            errorDescriptionDiv.innerHTML += `<div class="backgroundNoError"><p>Keine syntaktische Fehler!</p></div>`
+        }
         /* 
         errorDescriptionDiv.innerHTML="";
         let inputs:InputLine[] = this.inputcontrol.getInputLines();
@@ -122,7 +129,7 @@ export class InputWindow{
             else{
                 inputWindowContainer.style.visibility="hidden";
             }
-            console.log(this);
+            // console.log(this);
         }catch(e){
             console.log(e);
         }

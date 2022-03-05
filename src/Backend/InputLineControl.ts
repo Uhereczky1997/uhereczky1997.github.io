@@ -64,7 +64,7 @@ export class InputLineControl{
     }
     addInputLine=(inputString:string):void=>{
         let i:InputLine= new InputLine(inputString,this.IDcounter);
-        console.log(i.getInitialLine()+"  --->   "+i.getType());
+        // console.log(i.getInitialLine()+"  --->   "+i.getType());
         //i.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)))
         if(i.getType()==InputLineType.EMPTY){
             this.inputlines.push(i);
@@ -92,7 +92,7 @@ export class InputLineControl{
         }
         this.IDcounter=this.IDcounter +1;
         //console.log(this.getSpeicherAbbild(i,false));
-        console.log(i.getAll());
+        // console.log(i.getAll());
     }
 
     getLittleEndianOf(h:string):string{

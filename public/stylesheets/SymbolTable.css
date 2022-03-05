@@ -2,8 +2,11 @@
     grid-column: 4/8;
     grid-row: 8/12;
 }
-#symbolTableLines>p{
-    margin: 3px 5px;
+#symbolTableLines{
+    padding: 7.5px 7.5px;
+}
+#symbolTableLines>h4{
+    margin: 5px 0px;
     font-size: 21px;
     letter-spacing: 0.8px;
     line-height: 120%;
