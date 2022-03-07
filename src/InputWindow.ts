@@ -84,6 +84,10 @@ export class InputWindow{
         } 
         */
     }
+    public consolescreensize=()=>{
+        console.log(screen.height);
+        console.log(screen.width);
+    }
     private pushPreview = async (e:InputLine,n:number) =>{
         await sleepFor(n);
         errorDescriptionDiv.innerHTML += `<p> ${e.getDescriptionLine().join("</p><p>")} </p>`;
@@ -162,6 +166,7 @@ export class InputWindow{
         createClickListener('Preview',this.previewTranslation);
         createClickListener('GenerateDummy',this.generateDummy);
         createClickListener('CloseInputWindow',this.openEditWindow);
+        createClickListener('TestThing',this.consolescreensize);
         //errorOnlyCheckBox.addEventListener('change',this.setChecked);
     }
     public generateDummy = ():void=>{

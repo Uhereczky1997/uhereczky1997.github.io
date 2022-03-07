@@ -6,6 +6,17 @@
 @import "colorSheet.css";
 @import "./SymbolTable.css";
 /* @import "./media.css"; */
+:root{
+    --maxheight1680: 1680px;
+    --maxwidth920: 920px;
+    --maxfontsize32:32px;
+    --maxfontsize30:30px;
+    --maxfontsize28:28px;
+    --maxfontsize26:26px;
+    --maxfontsize24:24px;
+
+
+}
 #body{
     display:grid;
     grid-template-columns: repeat(10,1fr);
@@ -239,6 +250,158 @@ grid-template-columns: 1fr;
 border-top-right-radius: 5px;
 border-bottom-right-radius: 5px;
 }
+h1
+{
+    font-size: calc(var(--maxfontsize32) - 6px);
+}
+h2 
+{
+    font-size: calc(var(--maxfontsize32) - 8px);
+}
+h3 
+{
+    font-size: calc(var(--maxfontsize32) - 0px);
+}
+h4 
+{
+    font-size: calc(var(--maxfontsize32) - 10px);
+}
+p
+{
+    font-size: calc(var(--maxfontsize32) - 10px);
+}
+textarea{
+    font-size: calc(var(--maxfontsize32) - 10px);
+}
+
+@media screen and  (min-width: 896px) and (min-height: 414px)
+{
+    /* #body{
+        max-width: 1680px;
+        max-height: 920px; 
+
+        min-width: 1680px;
+        min-height: 920px;
+    } */
+    h1
+    {
+        font-size: calc(var(--maxfontsize26) - 6px);
+    }
+    h2 
+    {
+        font-size: calc(var(--maxfontsize26) - 8px);
+    }
+    h3 
+    {
+        font-size: calc(var(--maxfontsize26) - 0px);
+    }
+    h4 
+    {
+        font-size: calc(var(--maxfontsize26) - 10px);
+    }
+    p
+    {
+        font-size: calc(var(--maxfontsize26) - 10px);
+    }
+    textarea{
+        font-size: calc(var(--maxfontsize26) - 10px);
+    }
+    
+}
+@media screen and  (min-width: 1366px) and (min-height: 768px)
+{
+    h1
+    {
+        font-size: calc(var(--maxfontsize28) - 6px);
+    }
+    h2 
+    {
+        font-size: calc(var(--maxfontsize28) - 8px);
+    }
+    h3 
+    {
+        font-size: calc(var(--maxfontsize28) - 0px);
+    }
+    h4 
+    {
+        font-size: calc(var(--maxfontsize28) - 10px);
+    }
+    p
+    {
+        font-size: calc(var(--maxfontsize28) - 10px);
+    }
+    textarea{
+        font-size: calc(var(--maxfontsize26) - 10px);
+    }
+}
+@media screen and (min-width: 1600px) and (min-height: 900px) 
+{
+    #body{
+        max-width: 1900px;
+        max-height: 1060px; 
+
+        min-width: 1600px;
+        min-height: 900px;
+    }
+    h1
+    {
+        font-size: calc(var(--maxfontsize30) - 6px);
+    }
+    h2 
+    {
+        font-size: calc(var(--maxfontsize30) - 8px);
+    }
+    h3 
+    {
+        font-size: calc(var(--maxfontsize30) - 0px);
+    }
+    h4 
+    {
+        font-size: calc(var(--maxfontsize30) - 10px);
+    }
+    p
+    {
+        font-size: calc(var(--maxfontsize30) - 10px);
+    }
+    textarea{
+        font-size: calc(var(--maxfontsize30) - 10px);
+    }
+    
+}
+@media screen and (min-width: 1920px) and (min-height: 1080px)
+{
+    #body{
+        min-width: 1920px;
+        min-height: 1080px;
+    }
+    h1
+    {
+        font-size: calc(var(--maxfontsize32) - 6px);
+    }
+    h2 
+    {
+        font-size: calc(var(--maxfontsize32) - 8px);
+    }
+    h3 
+    {
+        font-size: calc(var(--maxfontsize32) - 0px);
+    }
+    h4 
+    {
+        font-size: calc(var(--maxfontsize32) - 10px);
+    }
+    p
+    {
+        font-size: calc(var(--maxfontsize32) - 10px);
+    }
+    textarea{
+        font-size: calc(var(--maxfontsize32) - 10px);
+    }
+        
+}
+
+
+
 
 
 /* @media screen and (min-width : 1440px) and (max-width: 1680) and (min-height: )

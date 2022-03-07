@@ -7,7 +7,7 @@
 }
 #symbolTableLines>h4{
     margin: 5px 0px;
-    font-size: 21px;
+    /* font-size: 21px; */
     letter-spacing: 0.8px;
     line-height: 120%;
 }
