@@ -4,6 +4,7 @@
 }
 #symbolTableLines{
     padding: 7.5px 7.5px;
+    max-height: 90%;
 }
 #symbolTableLines>h4{
     margin: 5px 0px;
@@ -14,7 +15,7 @@
 
 .testElemStyle{
     position: absolute;
-    background-color: brown;
+    background-color: rgb(187, 241, 37);
     margin-top: 0;
     margin-bottom: 0;
     

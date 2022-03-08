@@ -9,7 +9,6 @@ import { aniControl, sleepFor, sleepUntilNextStep } from "./AnimationUtil";
 let errorDescriptionDiv:HTMLElement = getHtmlElement('ErrorDescription');
 let inputWindowContainer:HTMLElement = getHtmlElement('InputWindowContainter');
 
-const sleepFor500 = ():Promise <any> =>new Promise(resolve => setTimeout(resolve, 500));
 
 
 

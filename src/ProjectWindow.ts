@@ -8,24 +8,25 @@ import { Constant } from "./Backend/Constant";
 import { InputLineControl } from "./Backend/InputLineControl";
 import { InputLine } from "./Backend/InputLine";
 import { InputWindow } from "./InputWindow";
-import { getHtmlElement, createClickListener, updateScroll } from "./Tools";
+import { getHtmlElement, createClickListener, updateScroll, updateScrollOfIn_Out } from "./Tools";
 import { aniControl, sleepFor, sleepUntilNextStep } from "./AnimationUtil";
+import { Animator } from "./Animator";
 
 
 
-let descriptionLines:HTMLElement = getHtmlElement('descriptionLines');
-let symbolTableLines:HTMLElement = getHtmlElement('symbolTableLines');
-let currentLine:HTMLElement = getHtmlElement('currentLine');
-let outputText:HTMLElement = getHtmlElement('OutputText');
-let inputTextDiv:HTMLElement= getHtmlElement('InputText');
-let addresszahler:HTMLElement = getHtmlElement('Addresszahler');
-let machinenbefehl:HTMLElement = getHtmlElement('Machinenbefehl');
-let outputwindowContainer:HTMLElement = getHtmlElement('OutputWindowContainer');
-let OutputTextAreaElement:HTMLTextAreaElement =getHtmlElement('OutputTextArea')as HTMLTextAreaElement;
-let InputID:HTMLElement=getHtmlElement('InputID');
-let InputLines:HTMLElement=getHtmlElement('InputLines');
-let OutputAddresses:HTMLElement=getHtmlElement('OutputAddresses');
-let OutputLines:HTMLElement=getHtmlElement('OutputLines');
+export let descriptionLines:HTMLElement = getHtmlElement('descriptionLines');
+export let symbolTableLines:HTMLElement = getHtmlElement('symbolTableLines');
+export let currentLine:HTMLElement = getHtmlElement('currentLine');
+export let outputText:HTMLElement = getHtmlElement('OutputText');
+export let inputText:HTMLElement= getHtmlElement('InputText');
+export let addresszahler:HTMLElement = getHtmlElement('Addresszahler');
+export let machinenbefehl:HTMLElement = getHtmlElement('Machinenbefehl');
+export let outputwindowContainer:HTMLElement = getHtmlElement('OutputWindowContainer');
+export let OutputTextAreaElement:HTMLTextAreaElement =getHtmlElement('OutputTextArea')as HTMLTextAreaElement;
+export let InputID:HTMLElement=getHtmlElement('InputID');
+export let InputLines:HTMLElement=getHtmlElement('InputLines');
+export let OutputAddresses:HTMLElement=getHtmlElement('OutputAddresses');
+export let OutputLines:HTMLElement=getHtmlElement('OutputLines');
 
 export const removeClassOfAll=(s:string)=>{
     let elements = Array.from(document.querySelectorAll("."+s+""));
@@ -49,8 +50,9 @@ export class ProjectWindow{
     private iWindow:InputWindow = new InputWindow(this);
     private elementDisplayed:number=-1;
     private descriptionLinesOfCurrentDisplayedElement:string[]=[];
-    private elementOfElementDisplayed = -1;
-    private translationOfElementDisplayed =-1;
+ /*   private elementOfElementDisplayed = -1;
+    private translationOfElementDisplayed =-1; */
+    private anim:Animator;
     private idOfDisplayedConstANDLabel =-1;
     private linkerAuflosungB:boolean=false;
     private nextParseID:number=0;
@@ -58,6 +60,7 @@ export class ProjectWindow{
     private inputstrings:string[] =[];
     private symbols:Array<Label|Constant>=[]
     constructor(){
+        this.anim = new Animator();
     }
 
     public refreshInputLines=()=>{
@@ -90,10 +93,12 @@ export class ProjectWindow{
         OutputLines.innerHTML="";
         this.elementDisplayed = -1;
         this.idOfDisplayedConstANDLabel =-1;
-        this.elementOfElementDisplayed = -1;
-        this.translationOfElementDisplayed =-1;
+        /* this.elementOfElementDisplayed = -1;
+        this.translationOfElementDisplayed =-1; */
         OutputTextAreaElement.innerHTML="";
         this.inputLineControl.reset();
+        this.anim.reset();
+        getHtmlElement("InputText").scrollTop=0;
     }
     private setInOutEmpty(){
         InputID.innerHTML="";
@@ -228,6 +233,30 @@ export class ProjectWindow{
             }
         }
         return false;
+    }
+    private rePushSymbols=()=>{
+        this.symbols=this.symbolList.getSequence();
+        let s:Constant|Label;
+        let n,p;
+        symbolTableLines.innerHTML="";
+        if(this.symbols.length!=0){
+            for(let i=this.symbols.length-1;i>=0;i--){
+
+                if(this.symbols[i]!=null){
+                    s=this.symbols[i];
+                    if(s instanceof Label){
+                        n=s.getName();
+                        p=s.getPosition()!;
+                        symbolTableLines.innerHTML+=`<h4><span class="gray">Label:</span> &nbsp;&nbsp;&nbsp; ${n} Wert:${this.inputLineControl.fHD16(p)} (little endian:${this.inputLineControl.getLittleEndianOf(p)})</h4>`;
+                    }
+                    if(s instanceof Constant){
+                        n=s.getName();
+                        p=s.getValue();
+                        symbolTableLines.innerHTML+=`<h4><span class="gray">Konst.:</span> &nbsp;&nbsp; ${n} Wert:${this.inputLineControl.fHD16(p)} (little endian:${this.inputLineControl.getLittleEndianOf(p)})</h4>`
+                    }
+                }
+            }
+        }
     }
     
     public checkInputLine=async(e:InputLine)=>{
@@ -390,18 +419,26 @@ export class ProjectWindow{
     }
     pushLines=async()=>{
         let input:InputLine;
+        let iP:HTMLElement;
         if(this.inputstrings.length>0){
             for(let i=0;i<this.inputstrings.length;i++){
                 this.translateInputStringOfId(i);
                 this.elementDisplayed =i;
                 if(this.inputLines.length>i){
                     input = this.inputLines[i];
+                    iP= getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}inputP`);
+                    await updateScrollOfIn_Out("InputText",`${(i+1)<10?"0"+(i+1):(i+1)}inputP`,i+1);
+                    // await this.anim.animationInputLineToCurrentLine(iP.offsetTop,iP.offsetLeft,iP.offsetWidth,iP.offsetHeight,"");
                     // console.log(i+" corresponds to -> "+input.getType()+" :: "+input.getInitialLine());
                     if(input.getType()==InputLineType.EMPTY){
                         OutputAddresses.innerHTML+=`<p><span class="gray">&nbsp;</span></p>`;
                         OutputLines.innerHTML+=`<p id="${(input.getId()+1)<10?"0"+(input.getId()+1):(input.getId()+1)}outputP">&nbsp;&nbsp;&nbsp;</p>`;
                     }
                     else{
+                        /* if(aniControl.start){
+                            await this.anim.animationInputLineToCurrentLine(iP.offsetTop,iP.offsetLeft,iP.offsetWidth,iP.offsetHeight,"");
+                        } */
+                            
                         currentLine.innerHTML=this.pushCurrentLine(input.getAll());
                         machinenbefehl.innerHTML="";
                         this.descriptionLinesOfCurrentDisplayedElement=input.getDescriptionLine();
@@ -445,8 +482,9 @@ export class ProjectWindow{
                 if(e.includes("gefunden: Doppelpunkte")){
                     if(aniControl.start){
                         await sleepUntilNextStep();
+                        // await this.anim.moveLabeltoSymboltable("");
                     }
-                    this.pushNewSymbol(); 
+                    this.rePushSymbols(); 
                 }
             }
             if(aniControl.start){
@@ -456,9 +494,12 @@ export class ProjectWindow{
                 addresszahler.innerHTML= `${this.inputLines[this.elementDisplayed].getEndAddr()}`;
                 machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(this.inputLines[this.elementDisplayed],false)}`;
             }
-                
+            descriptionLines.innerHTML += `<p style=" white-space: nowrap; overflow: hidden;"> --------------------------------------------------------- </p>`;
+
+            /* if(aniControl.start){
+                await this.anim.moveDetailToSpeicherabbild("");
+            } */
             this.pushTranslationOf(i);
-            descriptionLines.innerHTML += `<p> --------------------------------------------------------- </p>`;
             // this.refreshInputListItems();
             this.refreshInputListItem(i);
             updateScroll(descriptionLines.id);

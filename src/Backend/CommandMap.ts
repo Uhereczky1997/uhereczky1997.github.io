@@ -728,7 +728,6 @@ export class CommandMap{
             case 'ADD':case'SUB':case'AND':
                 save3(i);
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==i.getFirstPart()});
-                console.log(matches);
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
@@ -809,7 +808,6 @@ export class CommandMap{
             case 'OR':case'XOR':case'CP':
                 save3(i);
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==i.getFirstPart()});
-                console.log(matches);
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
@@ -1094,8 +1092,6 @@ export class CommandMap{
                     i.setLength(matches[0].getSize());
                     i.setHCode(matches[0].getHexCode());
                     i.setValid(true);
-                    console.log(i.getHCode());
-                    console.log(matches[0].toString());
                     return true;
                 }
                 else{
@@ -1111,7 +1107,6 @@ export class CommandMap{
     }
     parsetoPseudoMnemoCode(i:InputLine,strings:string[]):boolean{
         if(this.pseudoMCodes.includes(strings[0].toUpperCase())){
-            console.log(this.pseudoMCodes);
             strings[0]=strings[0].toUpperCase();
             i.setFirstPart(strings[0]);
             i.saveDescriptionLine(this.formatGefunden(`Pseudo-Mnemocode ${strings[0]}`,strings[0]));
