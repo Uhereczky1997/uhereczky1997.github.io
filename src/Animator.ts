@@ -20,6 +20,7 @@ export class Animator{
     targetElemTop:number=0;
     targetElemLeft:number=0;
     frameSleepTime:number = 5;
+
     constructor(){
         this.movingElementFlag = false;
         this.movableElem = this.createMovable();
@@ -32,14 +33,13 @@ export class Animator{
         this.descriptionTableBox= getHtmlElement("descriptionSymboltableBox");
         this.outPutText = getHtmlElement("OutputText");
     }
+
     reset(){
         this.movingElementFlag=false;
         this.turnMovableHidden();
         this.frameSleepTime=3;
     }
-    isCurrentlyInAnimation(){
-        return this.movingElementFlag;
-    }
+
     setMovableParameters(t:number,l:number,w:number,h:number){
         this.movableElem.style.top=t+"px";
         this.movableElem.style.left=l+"px";
@@ -47,15 +47,11 @@ export class Animator{
         this.movableElem.style.width=w+"px";
     }
 
-
     async animationInputLineToCurrentLine(startingTop:number,startingLeft:number,startingWidth:number,startingHeight:number,line:string){
         this.setMovableParameters(startingTop,startingLeft,startingWidth,startingHeight);
-        this.targetElemTop=this.currentLineElem.offsetTop;
+        this.formatLineString(line);
+        this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-startingHeight;
         this.targetElemLeft = this.currentLineElem.offsetLeft;
-        /* console.log("offsetLeft /TestElem/ -> "+this.movableElem.offsetLeft);
-        console.log("offsetTop /TestElem/ -> "+this.movableElem.offsetTop);
-        console.log("offsetTop /CurrentLineElem/ -> "+this.currentLineElem.offsetTop);
-        console.log("offsetLeft /CurrentLineElem/ -> "+this.currentLineElem.offsetLeft); */
         this.turnMovableVisible();
         if(this.targetElemTop>this.movableElem.offsetTop){
             while(this.targetElemTop>this.movableElem.offsetTop){
@@ -77,9 +73,9 @@ export class Animator{
         this.turnMovableHidden();
     }
 
-
     async moveLabeltoSymboltable(line:string){
-        console.log([this.descriptionLineElem.offsetTop,this.descriptionLineElem.offsetHeight,this.vorgangElem.offsetHeight])
+        // console.log([this.descriptionLineElem.offsetTop,this.descriptionLineElem.offsetHeight,this.vorgangElem.offsetHeight])
+        this.formatLineString(line);
         this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft,this.descriptionLineElem.offsetWidth,this.vorgangElem.offsetHeight);
         this.targetElemTop=this.symbolTableElem.offsetTop;
         this.turnMovableVisible();
@@ -90,6 +86,7 @@ export class Animator{
         await sleepFor(500);
         this.turnMovableHidden();
     }
+
     async adjustWidthOfMovable(n:number,w:number){
         if(this.movableElem.offsetWidth>w){
             this.movableElem.style.width=(this.movableElem.offsetWidth-n)+"px";
@@ -98,28 +95,76 @@ export class Animator{
             this.movableElem.style.width=(this.movableElem.offsetWidth+n)+"px";
         }
     }
-    async setTargetTopToSpeicherabbild(){
-        let childElem:HTMLElement;
-        if(this.outPutLinesElem.firstChild == null){
-            this.targetElemTop=this.outPutLinesElem.offsetTop;
+
+    async adjustHeightOfMovable(n:number,h:number){
+        if(this.movableElem.offsetHeight>h){
+            this.movableElem.style.height=(this.movableElem.offsetHeight-n)+"px";
         }
         else{
-            childElem=getHtmlElement("01outputP");
-            // console.log(this.outPutLinesElem.childElementCount*childElem.offsetHeight);
-            // console.log(this.outPutLinesElem.offsetHeight);
-            // console.log(this.outPutLinesElem.offsetTop+this.outPutLinesElem.childElementCount*childElem.offsetHeight);
-            if(this.outPutLinesElem.childElementCount*childElem.offsetHeight<this.outPutText.offsetHeight){
-                this.targetElemTop=this.outPutLinesElem.offsetTop+this.outPutLinesElem.childElementCount*childElem.offsetHeight;
-            }
-            else{
-                this.targetElemTop=this.outPutLinesElem.offsetTop+this.outPutText.offsetHeight-childElem.offsetHeight;
-            }
+            this.movableElem.style.height=(this.movableElem.offsetHeight+n)+"px";
         }
     }
-    async moveDetailToSpeicherabbild(line:string){
-        
-        this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft,this.descriptionLineElem.offsetWidth,this.vorgangElem.offsetHeight);
-        this.targetElemTop=this.symbolTableBox.offsetTop+this.symbolTableBox.offsetHeight;
+
+    async setTargetTopToSpeicherabbild(id:number){
+        let childElem:HTMLElement;
+        if(id<0){
+            if(this.outPutLinesElem.firstChild == null){
+                this.targetElemTop=this.outPutLinesElem.offsetTop;
+            }
+            else{
+                childElem=getHtmlElement("01outputP");
+                // console.log(this.outPutLinesElem.childElementCount*childElem.offsetHeight);
+                // console.log(this.outPutLinesElem.offsetHeight);
+                // console.log(this.outPutLinesElem.offsetTop+this.outPutLinesElem.childElementCount*childElem.offsetHeight);
+                if(this.outPutLinesElem.childElementCount*childElem.offsetHeight<this.outPutText.offsetHeight){
+                    this.targetElemTop=this.outPutLinesElem.offsetTop+this.outPutLinesElem.childElementCount*childElem.offsetHeight;
+                }
+                else{
+                    this.targetElemTop=this.outPutLinesElem.offsetTop+this.outPutText.offsetHeight-childElem.offsetHeight;
+                }
+            }
+        }
+        else{
+            childElem = getHtmlElement(`${(id+1)<10?"0"+(id+1):(id+1)}outputP`);
+            this.targetElemTop = childElem.scrollTop;
+        }
+    }
+
+    private formatLineString(line:string){
+        this.movableElem.innerHTML=`<h4 style="margin:0px 0px; padding: 5px 10px">${line}</h4>`;
+    }
+
+    async pushAufzulosendestoCurrentLine(i:number,line:string){
+        let childelem = getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}outputP`);
+        this.setMovableParameters(childelem.offsetTop,this.outPutText.offsetLeft,this.outPutText.offsetWidth,childelem.offsetHeight);
+        this.formatLineString(line);
+        this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-childelem.offsetHeight;
+        this.targetElemLeft = this.currentLineElem.offsetLeft;
+        this.turnMovableVisible();
+        if(this.targetElemTop>this.movableElem.offsetTop){
+            while(this.targetElemTop>this.movableElem.offsetTop){
+                await this.moveSleepCheck(5,0);
+            }
+        }
+        else if(this.targetElemTop==this.movableElem.offsetTop){
+        }
+        else{
+            while(this.targetElemTop<this.movableElem.offsetTop){
+                await this.moveSleepCheck(-5,0);
+            }
+        }
+        await sleepFor(500);
+        while(this.targetElemLeft<this.movableElem.offsetLeft){
+            await this.moveSleepCheck(0,-5);
+        }
+        await sleepFor(200);
+        this.turnMovableHidden();
+    }
+
+    async moveDetailToSpeicherabbild(line:string,id:number){
+        this.setMovableParameters((this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionTableBox.offsetLeft,this.descriptionTableBox.offsetWidth,this.vorgangElem.offsetHeight);
+        this.formatLineString(line);
+        this.targetElemTop=this.outPutText.offsetTop+this.outPutText.offsetHeight;
         this.targetElemLeft=this.outPutText.offsetLeft;
         this.turnMovableVisible();
         await sleepFor(500);
@@ -133,10 +178,8 @@ export class Animator{
             await this.moveSleepCheck(0,3);
             await this.adjustWidthOfMovable(3,this.outPutText.offsetWidth);
         }
-        // console.log(this.outPutLinesElem.firstChild);
-        // console.log(this.outPutLinesElem.childElementCount);
-        await this.setTargetTopToSpeicherabbild();
-        // this.targetElemTop=this.symbolTableBox.offsetTop+this.symbolTableBox.offsetHeight;
+        this.movableElem.style.width=this.outPutText.offsetWidth+"px";
+        await this.setTargetTopToSpeicherabbild(id);
         await sleepFor(200);
         console.log(this.targetElemTop);
         if(this.targetElemTop>this.movableElem.offsetTop){
@@ -155,15 +198,13 @@ export class Animator{
         this.turnMovableHidden();
     }
 
-
     private async moveSleepCheck(t:number,l:number){
         await this.updateMovingElement(t,l);
         await sleepUntilNextFrame(this.frameSleepTime);
         await checkIfPaused();
     }
 
-
-    createMovable=():HTMLDivElement=>{
+    private createMovable=():HTMLDivElement=>{
         let newElem:HTMLDivElement;
         newElem = document.createElement("div");
         newElem.id="Movable";
@@ -179,16 +220,13 @@ export class Animator{
         return newElem;
     }
 
-
     async turnMovableHidden():Promise <any>{
         getHtmlElement("Movable").style.visibility="hidden";
     }
 
-
     async turnMovableVisible():Promise <any>{
         getHtmlElement("Movable").style.visibility="visible";
     }
-
     
     async updateMovingElement(mTop:number,mLeft:number){
         this.movableElem.style.top = (this.movableElem.offsetTop+mTop)+"px";

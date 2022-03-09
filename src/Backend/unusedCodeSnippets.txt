@@ -1433,3 +1433,126 @@ testRegex("abc1"); */
             }
         }
     }
+
+    public checkInputLine=async(e:InputLine)=>{
+        let s:string="";
+        let n:string="";
+        let ss:string[]=[];
+        let l:Label|undefined;
+        let k:Label|Constant|undefined;
+        if(e.getType()==InputLineType.TRANSLATED){
+            if(e.getTranslation().includes("????")){
+                // console.log(this.symbols)
+                k=this.symbols.find(i =>{
+                    if(i instanceof Label && !(i instanceof Constant)){
+                        if(i.getName().toLowerCase()==e.getSecondPart().toLowerCase() || i.getName().toLowerCase()== e.getThirdPart().toLowerCase()){
+                            return i;
+                        }
+                    }
+                });
+                if(k==undefined || k instanceof Constant){
+                    return;
+                }
+                /* l=this.symbolList.getLabels().find(i=>{
+                    if(i.getName()==e.getSecondPart() || i.getName()== e.getThirdPart()){
+                        return i;
+                    }
+                })!; */
+                /* descriptionLines.innerHTML += `<p>Suche Label ${l.getName()} in SymbolTabelle</p>`;
+                if(aniControl.start){
+                    await sleepUntilNextStep();
+                    updateScroll(descriptionLines.id);
+                }
+                if(l.getPosition()=="????"){
+                    descriptionLines.innerHTML += `<p><span class="errorRed">Label '${l.getName()}' konnte nicht aufgelöst werden!</span></p>`;
+                    updateScroll(descriptionLines.id);
+                    await sleepFor(10);
+                    aniControl.setStop();
+                    throw Error('Stop pressed');
+                }
+                else{
+                    descriptionLines.innerHTML += `<p>Label '${l.getName()}' in Symboltabelle gefunden, Wert: ${Manipulator.hexToDec(l.getPosition()!)+" ("+l.getPosition()!+")"}</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    s=this.inputLineControl.getSpeicherAbbild(e,false);
+                    this.inputLineControl.retranslate(e);
+                    n=this.inputLineControl.getSpeicherAbbild(e,true);
+                    descriptionLines.innerHTML += `<p>Ersetzung im Speicherabbild: ${s}-->${n}</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    this.repushTranslations();
+                    this.repushSpeicherabbildOf(e.getId());
+                } */
+                descriptionLines.innerHTML += `<p>Suche Label ${k.getName()} in SymbolTabelle</p>`;
+                if(aniControl.start){
+                    await sleepUntilNextStep();
+                    updateScroll(descriptionLines.id);
+                }
+                if(k.getPosition()=="????"){
+                    descriptionLines.innerHTML += `<p><span class="errorRed">Label '${k.getName()}' konnte nicht aufgelöst werden!</span></p>`;
+                    updateScroll(descriptionLines.id);
+                    await sleepFor(10);
+                    aniControl.setStop();
+                    throw Error('Stop pressed');
+                }
+                else{
+                    descriptionLines.innerHTML += `<p>Label '${k.getName()}' in Symboltabelle gefunden, Wert: ${Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")"}</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    s=this.inputLineControl.getSpeicherAbbild(e,false);
+                    this.inputLineControl.retranslate(e);
+                    n=this.inputLineControl.getSpeicherAbbild(e,true);
+                    descriptionLines.innerHTML += `<p>Ersetzung im Speicherabbild: ${s}-->${n}</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    this.repushTranslations();
+                    this.repushSpeicherabbildOf(e.getId());
+                }
+            }
+        }
+        updateScroll(descriptionLines.id);
+
+    }
+
+    private pushNewSymbol=():boolean=>{
+        this.symbols=this.symbolList.getSequence();
+        let s:Constant|Label;
+        let n,p;
+        if(this.symbols.length!=0){
+            if(this.symbols[this.idOfDisplayedConstANDLabel+1]!=null){
+                s=this.symbols[this.idOfDisplayedConstANDLabel+1];
+                this.idOfDisplayedConstANDLabel+=1;
+                if(s instanceof Label){
+                    n=s.getName();
+                    p=s.getPosition()!;
+                    symbolTableLines.innerHTML+=`<h4><span class="gray">Label:</span> &nbsp;&nbsp;&nbsp; ${n} Wert:${this.inputLineControl.fHD16(p)} (little endian:${this.inputLineControl.getLittleEndianOf(p)})</h4>`;
+                }
+                if(s instanceof Constant){
+                    n=s.getName();
+                    p=s.getValue();
+                    symbolTableLines.innerHTML+=`<h4><span class="gray">Konst.:</span> &nbsp;&nbsp; ${n} Wert:${this.inputLineControl.fHD16(p)} (little endian:${this.inputLineControl.getLittleEndianOf(p)})</h4>`
+                }
+                updateScroll(symbolTableLines.id);
+                return true;
+            }
+        }
+        return false;
+    }

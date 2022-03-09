@@ -29,7 +29,7 @@ export class InputLineControl{
         }
         else return true;
     }
-    //updateLabelsConstants()
+
     getInvalidIDs=():number[]=>{
         return this.invalidIDs;
     }

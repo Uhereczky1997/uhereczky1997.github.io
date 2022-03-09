@@ -495,7 +495,7 @@ export class CommandMap{
                     i.setSecondPart(strings[0]);
                     if(!this.symbollist.isLabel(strings[0])){
                         this.symbollist.setLabelWithoutPosition(strings[0]);
-                        i.saveDescriptionLine(`Neue Label angesetzt!`);
+                        // i.saveDescriptionLine(`Neue Label angesetzt!`);
                     }
                     save4(i);
                     consoletostring=this.getScources(matches).join(", ");
