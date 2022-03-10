@@ -343,8 +343,10 @@ export class CommandMap{
                                         if(e.getSource()=="dat_8"){
                                             return e;
                                         }
-                                        });
-                                    i.setThirdPart(Manipulator.formatHextoDat8(strings[1]));
+                                    });
+                                    // Änderung
+                                    // i.setThirdPart(Manipulator.formatHextoDat8(strings[1]));
+                                    i.setThirdPart((strings[1]));
                                     break;
                                 }else if(consoletostring.includes("dat_16")){
                                     //i.saveDescriptionLine(`Gefunden -> 'dat_16'`);
@@ -353,8 +355,10 @@ export class CommandMap{
                                         if(e.getSource()=="dat_16"){
                                             return e;
                                         }
-                                        });
-                                    i.setThirdPart(Manipulator.formatHextoDat16(strings[1]));
+                                    });
+                                    // Änderung
+                                    i.setThirdPart((strings[1]));
+                                    // i.setThirdPart(Manipulator.formatHextoDat16(strings[1]));
                                     break;
                                 }
                                 else if(consoletostring.includes("dat_8")){
@@ -377,8 +381,10 @@ export class CommandMap{
                                         if(e.getSource()=="dat_16"){
                                             return e;
                                         }
-                                        });
-                                    i.setThirdPart(Manipulator.formatHextoDat16(strings[1]));
+                                    });
+                                    // Änderung
+                                    // i.setThirdPart(Manipulator.formatHextoDat16(strings[1]));
+                                    i.setThirdPart((strings[1]));
                                     break;
                                 }
                                 else{
@@ -412,7 +418,6 @@ export class CommandMap{
                                             return e;
                                         }
                                     });
-                                    //i.setThirdPart(Manipulator.formatHextoDat8(commands[1]));
                                     break;
                                 }
                                 else if(consoletostring.includes("dat_16")){ //Konstante hat Datentyp 'dat_16'
@@ -422,7 +427,6 @@ export class CommandMap{
                                         return e;
                                     }
                                     });
-                                    //i.setThirdPart(Manipulator.formatHextoDat16(commands[1]));
                                     break;
                                 }
                                 else if(consoletostring.includes("dat_8")){
@@ -616,7 +620,9 @@ export class CommandMap{
                     }
                     else if(Manipulator.isDat_8(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[1]),i.getFirstPart().toUpperCase()+" "+i.getSecondPart()+", "+Manipulator.formatHextoDat8(strings[1])));
-                        i.setThirdPart(Manipulator.formatHextoDat8(strings[1]));
+                        // Änderung
+                        // i.setThirdPart(Manipulator.formatHextoDat8(strings[1]));
+                        i.setThirdPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
                         i.setHCode(matches[0].getHexCode());
@@ -676,7 +682,9 @@ export class CommandMap{
                 }
                 else if(Manipulator.isDat_8(strings[0])){
                     i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[0]),i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])));
-                    i.setSecondPart(Manipulator.formatHextoDat8(strings[0]));
+                    // Änderung
+                    // i.setSecondPart(Manipulator.formatHextoDat8(strings[0]));
+                    i.setSecondPart((strings[0]));
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet("A"));
                     if(strings.length<2){
@@ -811,7 +819,9 @@ export class CommandMap{
                         }
                     });
                     if(matches.length==1){
-                        i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
+                        // Änderung
+                        // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
+                        i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
                         i.setHCode(matches[0].getHexCode());
@@ -894,7 +904,9 @@ export class CommandMap{
                         }
                     });
                     if(matches.length==1){
-                        i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
+                        // Änderung
+                        // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
+                        i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
                         i.setHCode(matches[0].getHexCode());
@@ -1148,7 +1160,9 @@ export class CommandMap{
                     save3(i);
                     if(Manipulator.isDat_8(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (16-bit)`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
-                        i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
+                        // Änderung
+                        // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
+                        i.setSecondPart((strings[1]));
                         i.setLength(Manipulator.formatHextoDat8(strings[1]));
                         i.setType(InputLineType.TRANSLATED);
                         let Hcode="";
@@ -1173,7 +1187,9 @@ export class CommandMap{
                     if(Manipulator.isDat_16(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (16-bit)`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
                         i.setLength(2);
-                        i.setSecondPart(Manipulator.formatHextoDat16(strings[1]));
+                        // Änderung
+                        // i.setSecondPart(Manipulator.formatHextoDat16(strings[1]));
+                        i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
                         i.setValid(true);
                         return true;
@@ -1192,7 +1208,9 @@ export class CommandMap{
                     if(Manipulator.isDat_8(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (8-bit)`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])))
                         i.setLength(1);
-                        i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
+                        // Änderung
+                        // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
+                        i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
                         i.setValid(true);
                         return true;
@@ -1210,7 +1228,9 @@ export class CommandMap{
                     if(Manipulator.isDat_16(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (16-bit)`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
                         i.setLength(Manipulator.hexToDec(strings[1]));
-                        i.setSecondPart(Manipulator.formatHextoDat16(strings[1]));
+                        // Änderung
+                        // i.setSecondPart(Manipulator.formatHextoDat16(strings[1]));
+                        i.setSecondPart((strings[1]));
                         i.setValid(true);
                         return true;
                     }
@@ -1264,16 +1284,18 @@ export class CommandMap{
                     let type=this.getDataType(new_commands[1]);
                     if(type ==DataType.dat_8){
                         i.saveDescriptionLine(this.formatGefunden(` Wert (8-bit) ${Manipulator.formatHextoDat8(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat8(new_commands[1])));
-                        // i.setSecondPart(new_commands[0]);
-                        i.setThirdPart(Manipulator.formatHextoDat8(new_commands[1]));
+                        // Änderung
+                        // i.setThirdPart(Manipulator.formatHextoDat8(new_commands[1]));
+                        i.setThirdPart((new_commands[1]));
                         i.setValid(true);
                         this.symbollist.setConst(strings[0],new_commands[1]);
                         return true;
                     }
                     else if(type ==DataType.dat_16){
                         i.saveDescriptionLine(this.formatGefunden(` Wert (16-bit) ${Manipulator.formatHextoDat16(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat16(new_commands[1])));
-                        // i.setSecondPart(new_commands[0]);
-                        i.setThirdPart(Manipulator.formatHextoDat16(new_commands[1]));
+                        // Änderung
+                        // i.setThirdPart(Manipulator.formatHextoDat16(new_commands[1]));
+                        i.setThirdPart((new_commands[1]));
                         i.setValid(true);
                         this.symbollist.setConst(strings[0],new_commands[1]);
                         return true;

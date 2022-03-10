@@ -38,56 +38,52 @@ export class InputLine{
     setError(s:string){
         this.error=s;
     }
-    getError():string{
-        return this.error;
-    }
-    setStartingAddr(addr:string){this.startingAddr=addr;}
+    setStartingAddr(s:string){this.startingAddr=s;}
     setLength(n:number|string){
         if(Manipulator.isHex(String(n))){
             this.length=Manipulator.hexToDec(String(n));
         }
         else this.length = Number(n);
     }
-    setHCode(addr:string){
-        this.hCode=addr;
+    setHCode(s:string){
+        this.hCode=s;
     }
-    setFirstPart(addr:string){this.firstPart=addr;}
-    setSecondPart(addr:string){
-        if(this.firstPart=="RS"){
-            this.secondPart=addr;
+    setFirstPart(s:string){this.firstPart=s;}
+    setSecondPart(s:string){
+        /* if(this.firstPart=="RS"){
+            this.secondPart=s;
         }
-        if(Manipulator.isDat_8(addr)){
-            this.secondPart=addr=Manipulator.formatHextoDat8(addr);
+        if(Manipulator.isDat_8(s)){
+            this.secondPart=s=Manipulator.formatHextoDat8(s);
         }
-        else if(Manipulator.isDat_16(addr)){
-            this.secondPart=addr=Manipulator.formatHextoDat16(addr);
+        else if(Manipulator.isDat_16(s)){
+            this.secondPart=s=Manipulator.formatHextoDat16(s);
         }
         else{
-            this.secondPart=addr=addr;
-        }
+            this.secondPart=s;
+        } */
+        this.secondPart=s;
     }
     getEndAddr():string{
+        if(this.firstPart.toUpperCase()=="ORG"){
+            return Manipulator.formatHextoDat16(String(this.length));
+        }
         if(this.startingAddr!=""){
            return Manipulator.formatHextoDat16(String(Manipulator.hexToDec(this.startingAddr)+this.length));
         }
-        if(this.firstPart=="ORG"){
-            return Manipulator.formatHextoDat16(String(this.length));
-        }
         else return "";
     }
-    setThirdPart(addr:string){
-        if(Manipulator.isDat_8(addr)){
-            this.thirdPart=Manipulator.formatHextoDat8(addr);
+    setThirdPart(s:string){
+        /* if(Manipulator.isDat_8(s)){
+            this.thirdPart=Manipulator.formatHextoDat8(s);
         }
-        else if(Manipulator.isDat_16(addr)){
-            this.thirdPart=Manipulator.formatHextoDat16(addr);
+        else if(Manipulator.isDat_16(s)){
+            this.thirdPart=Manipulator.formatHextoDat16(s);
         }
         else{
-            this.thirdPart=addr;
-        }
-    }
-    getRest():string{
-        return this.rest;
+            this.thirdPart=s;
+        } */
+        this.thirdPart=s;
     }
     setRest(s:string){
         this.rest=s;
@@ -95,14 +91,11 @@ export class InputLine{
     
     setValid(b:boolean){this.valid=b;}
     setType(t:InputLineType){this.type=t;}
-    saveDescriptionLine(addr:string){
-        this.description.push(addr);
+    saveDescriptionLine(s:string){
+        this.description.push(s);
     }
-    setDescriptionLine=(addr:string[])=>{
-        this.description=addr;
-    }
-    setTranslation=(addr:string)=>{
-        this.translation=addr;
+    setTranslation=(s:string)=>{
+        this.translation=s;
     }
     getTranslation=():string=>{
         return this.translation;
@@ -119,51 +112,17 @@ export class InputLine{
         return this.hCode;
     }
     getId=()=>{return this.id;}
-    /* changeNumType(addr:string):string{
-        if(Manipulator.isDec(addr)||Manipulator.isHex(addr)){
-            return Manipulator.formatHex(addr);
-        }
-        else return addr;
-    } */
     getLabel=()=>{
         return this.label;
     }
     getFirstPart=()=>{ return this.firstPart;}
     getSecondPart=()=>{return this.secondPart;}
     getThirdPart=()=>{return this.thirdPart;}
-    getCommandLine=()=>{return this.commandLine;}
     getCommentary=()=>{
         return this.commentary;
     }
     getValid=()=>{return this.valid;}
     getType=()=>{return this.type;}
-    setLabel=():string=>{
-        if(this.initialLine.includes(':')){
-            let addr:string= Manipulator.splitStringHalf(this.initialLine,':')[0]
-            /* console.log(addr); */
-            if(addr.length<0){
-                return "";
-            }
-            else{
-                return addr;
-            }
-        }
-        else return "";
-    }
-
-    setCommentary=():string=>{
-        if(this.initialLine.includes(';')){
-            let addr:string= Manipulator.splitStringHalf(this.initialLine,';')[1];
-            /* console.log(addr); */
-            if(addr.length<0){
-                return "";
-            }
-            else{
-                return addr;
-            }
-        }
-        else return "";
-    }
     setComment=(s:string)=>{
         this.commentary =s;
     }
@@ -239,9 +198,6 @@ export class InputLine{
         return dsrl;
     }
 
-    getAll():string[]{
-        return [this.label,this.firstPart,this.secondPart,this.thirdPart,this.error,this.rest];
-    }
     getAllV():number[]{
         return [this.label!=""?1:0, this.firstPart!=""?1:0, this.secondPart!=""?1:0, this.thirdPart!=""?1:0, this.error!=""?1:0, this.rest!=""?1:0];
     }

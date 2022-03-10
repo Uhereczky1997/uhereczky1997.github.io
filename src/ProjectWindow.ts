@@ -48,7 +48,6 @@ export class ProjectWindow{
     private inputLineControl:InputLineControl=InputLineControl.getInstance();
     private symbolList=SymbolList.getInstance();
     private iWindow:InputWindow = new InputWindow(this);
-    private elementDisplayed:number=-1;
     private anim:Animator;
     private linkerAuflosungB:boolean=false;
     private nextParseID:number=0;
@@ -88,7 +87,6 @@ export class ProjectWindow{
         machinenbefehl.innerHTML="";
         OutputAddresses.innerHTML="";
         OutputLines.innerHTML="";
-        this.elementDisplayed = -1;
         OutputTextAreaElement.innerHTML="";
         this.inputLineControl.reset();
         this.anim.reset();
@@ -373,7 +371,6 @@ export class ProjectWindow{
         if(this.inputstrings.length>0){
             for(let i=0;i<this.inputstrings.length;i++){
                 this.translateInputStringOfId(i);
-                this.elementDisplayed =i;
                 if(this.inputLines.length>i){
                     input = this.inputLines[i];
                     iP= getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}inputP`);
@@ -419,11 +416,11 @@ export class ProjectWindow{
                     await sleepUntilNextStep();
                 }
                 if(e.includes("parse")){
-                    await this.nextInverted(this.inputLines[this.elementDisplayed].getAllV());
+                    await this.nextInverted(l.getAllV());
                 }
                 if(e.includes('error')){
                     console.log("error has been found");
-                    await this.nextInverted(this.inputLines[this.elementDisplayed].getAllV());
+                    await this.nextInverted(l.getAllV());
                     aniControl.setStop();
                     
                     descriptionLines.innerHTML += `<p>${e}</p>`;
@@ -443,8 +440,11 @@ export class ProjectWindow{
                 }
                 if(j-1>0){
                     if(ss[j-1].includes("gesamter")){
-                        if(l.getEndAddr()!=""){
-                            machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(this.inputLines[this.elementDisplayed],false)}`;
+                        if(l.getFirstPart().toUpperCase()=="ORG"){
+                            this.pushTranslationOf(i);
+                        }
+                        else if(l.getEndAddr()!=""){
+                            machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(l,false)}`;
             
                             if(aniControl.start){
                                 await sleepUntilNextStep();
@@ -454,20 +454,18 @@ export class ProjectWindow{
                         }
                     }
                 }
-                /* if(e.includes("Anzahl")){
-                } */
             }
+
             if(this.symbolList.isConst(l.getFirstPart())){
                 if(aniControl.start){
-                    await this.anim.moveLabeltoSymboltable(this.symbolList.getSpecificConstantByName(l.getFirstPart())!.toStringtoMovable());
                     await sleepUntilNextStep();
-                    
+                    await this.anim.moveLabeltoSymboltable(this.symbolList.getSpecificConstantByName(l.getFirstPart())!.toStringtoMovable());
                 }
                 this.rePushSymbols();
                 this.pushTranslationOf(i);
             }
             else{
-                addresszahler.innerHTML= `${this.inputLines[this.elementDisplayed].getEndAddr()}`;
+                addresszahler.innerHTML= `${l.getEndAddr()}`;
             }
 
             descriptionLines.innerHTML += `<p style=" white-space: nowrap; overflow: hidden;"> --------------------------------------------------------- </p>`;
@@ -475,18 +473,7 @@ export class ProjectWindow{
             if(aniControl.start){
                 await sleepUntilNextStep();
             }
-            /* if(l.getEndAddr()!=""){
-                machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(this.inputLines[this.elementDisplayed],false)}`;
 
-                if(aniControl.start){
-                    await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(i,false),-1);
-                }
-
-                addresszahler.innerHTML= `${this.inputLines[this.elementDisplayed].getEndAddr()}`;
-
-            } */
-            // this.pushTranslationOf(i);
-            // this.refreshInputListItems();
             l.formatInputToDisplay();
             this.refreshInputListItem(i);
             updateScroll(descriptionLines.id);

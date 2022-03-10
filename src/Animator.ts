@@ -21,7 +21,7 @@ export class Animator{
     targetElemTop:number=0;
     targetElemLeft:number=0;
     frameSleepTime:number = 10;
-    pixeljump:number=1;
+    pixeljump:number=aniControl.speed;
 
     constructor(){
         this.movingElementFlag = false;
@@ -48,7 +48,9 @@ export class Animator{
         this.movableElem.style.height=h+"px";
         this.movableElem.style.width=w+"px";
     }
-
+    private getPixeljump():number{
+        return aniControl.speed;
+    }
     async animationInputLineToCurrentLine(startingTop:number,startingLeft:number,startingWidth:number,startingHeight:number,line:string){
         this.setMovableParameters(startingTop,startingLeft,startingWidth,startingHeight);
         this.formatLineString(line);
@@ -57,20 +59,23 @@ export class Animator{
         this.turnMovableVisible();
         if(this.targetElemTop>this.movableElem.offsetTop){
             while(this.targetElemTop>this.movableElem.offsetTop){
-                await this.moveSleepCheck(this.pixeljump,0);
+                await this.moveSleepCheck(this.getPixeljump(),0);
             }
+            this.movableElem.style.top=this.targetElemTop+"px";
         }
         else if(this.targetElemTop==this.movableElem.offsetTop){
         }
         else{
             while(this.targetElemTop<this.movableElem.offsetTop){
-                await this.moveSleepCheck(-this.pixeljump,0);
+                await this.moveSleepCheck(-this.getPixeljump(),0);
             }
+            this.movableElem.style.top=this.targetElemTop+"px";
         }
         await sleepFor(500);
         while(this.targetElemLeft>this.movableElem.offsetLeft){
-            await this.moveSleepCheck(0,this.pixeljump);
+            await this.moveSleepCheck(0,this.getPixeljump());
         }
+        this.movableElem.style.left=this.targetElemLeft+"px";
         await sleepFor(200);
         this.turnMovableHidden();
     }
@@ -83,8 +88,10 @@ export class Animator{
         this.turnMovableVisible();
         await sleepFor(500);
         while(this.targetElemTop>this.movableElem.offsetTop){
-            await this.moveSleepCheck(this.pixeljump,0);
+            await this.moveSleepCheck(this.getPixeljump(),0);
         }
+        this.movableElem.style.top=this.targetElemTop+"px";
+
         await sleepFor(500);
         this.turnMovableHidden();
     }
@@ -95,14 +102,18 @@ export class Animator{
         this.turnMovableVisible();
         await sleepFor(200);
         while(this.targetElemTop>this.movableElem.offsetTop){
-            await this.moveSleepCheck(this.pixeljump,0);
+            await this.moveSleepCheck(this.getPixeljump(),0);
         }
+        this.movableElem.style.top=this.targetElemTop+"px";
+
         await sleepFor(200);
         this.movableElem.innerHTML=`<h3 style="margin:0px 0px; padding: 5px 10px; font: bold; text-align: center;">${returnLine}</h3>`;
         this.targetElemTop=this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight;
         while(this.targetElemTop<this.movableElem.offsetTop){
-            await this.moveSleepCheck(-this.pixeljump,0);
+            await this.moveSleepCheck(-this.getPixeljump(),0);
         }
+        this.movableElem.style.top=this.targetElemTop+"px";
+
         await sleepFor(200);
         this.turnMovableHidden();
     }
@@ -163,20 +174,25 @@ export class Animator{
         this.turnMovableVisible();
         if(this.targetElemTop>this.movableElem.offsetTop){
             while(this.targetElemTop>this.movableElem.offsetTop){
-                await this.moveSleepCheck(this.pixeljump,0);
+                await this.moveSleepCheck(this.getPixeljump(),0);
             }
+            this.movableElem.style.top=this.targetElemTop+"px";
+
         }
         else if(this.targetElemTop==this.movableElem.offsetTop){
         }
         else{
             while(this.targetElemTop<this.movableElem.offsetTop){
-                await this.moveSleepCheck(-this.pixeljump,0);
+                await this.moveSleepCheck(-this.getPixeljump(),0);
             }
+            this.movableElem.style.top=this.targetElemTop+"px";
+
         }
         await sleepFor(500);
         while(this.targetElemLeft<this.movableElem.offsetLeft){
-            await this.moveSleepCheck(0,-this.pixeljump);
+            await this.moveSleepCheck(0,-this.getPixeljump());
         }
+        this.movableElem.style.left=this.targetElemLeft+"px";
         await sleepFor(200);
         this.turnMovableHidden();
     }
@@ -184,33 +200,40 @@ export class Animator{
     async moveDetailToSpeicherabbild(line:string,id:number){
         this.setMovableParameters((this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionTableBox.offsetLeft,this.descriptionTableBox.offsetWidth,this.vorgangElem.offsetHeight);
         this.formatLineString(line);
-        this.targetElemTop=this.outPutText.offsetTop+this.outPutText.offsetHeight;
+        this.targetElemTop=this.outPutText.offsetTop+this.outPutText.offsetHeight-this.vorgangElem.offsetHeight;
         this.targetElemLeft=this.outPutText.offsetLeft;
         this.turnMovableVisible();
         await sleepFor(500);
 
         while(this.targetElemTop>this.movableElem.offsetTop){
-            await this.moveSleepCheck(this.pixeljump,0);
+            await this.moveSleepCheck(this.getPixeljump(),0);
         }
+        this.movableElem.style.top=this.targetElemTop+"px";
+
         await sleepFor(200);
         while(this.targetElemLeft>this.movableElem.offsetLeft){
-            await this.moveSleepCheck(0,this.pixeljump);
-            await this.adjustWidthOfMovable(this.pixeljump,this.outPutText.offsetWidth);
+            await this.moveSleepCheck(0,this.getPixeljump());
+            await this.adjustWidthOfMovable(this.getPixeljump(),this.outPutText.offsetWidth);
         }
+        this.movableElem.style.left=this.targetElemLeft+"px";
         this.movableElem.style.width=this.outPutText.offsetWidth+"px";
         await this.setTargetTopToSpeicherabbild(id);
         await sleepFor(200);
         if(this.targetElemTop>this.movableElem.offsetTop){
             while(this.targetElemTop>this.movableElem.offsetTop){
-                await this.moveSleepCheck(this.pixeljump,0);
+                await this.moveSleepCheck(this.getPixeljump(),0);
             }
+            this.movableElem.style.top=this.targetElemTop+"px";
+
         }
         else if(this.targetElemTop==this.movableElem.offsetTop){
         }
         else{
             while(this.targetElemTop<this.movableElem.offsetTop){
-                await this.moveSleepCheck(-this.pixeljump,0);
+                await this.moveSleepCheck(-this.getPixeljump(),0);
             }
+            this.movableElem.style.top=this.targetElemTop+"px";
+
         }
         await sleepFor(500);
         this.turnMovableHidden();
