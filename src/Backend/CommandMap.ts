@@ -221,10 +221,12 @@ export class CommandMap{
         if(commandLine.includes(":")){
             strings=Manipulator.splitStringHalf(commandLine,":");
             if(this.symbollist.isLabel(strings[0])){
-                i.saveDescriptionLine(this.formatErrorMassage(`Label ${strings[0]} ist schon bereits besetzt`))
-                i.setError(strings[0]);
-                i.setRest(": "+strings[1]);
-                return false;
+                if(this.symbollist.getPositionOfSpecificLabel(strings[0])!=undefined){
+                    i.saveDescriptionLine(this.formatErrorMassage(`Label ${strings[0]} ist schon bereits besetzt`))
+                    i.setError(strings[0]);
+                    i.setRest(": "+strings[1]);
+                    return false;
+                }
             }
             if(!this.symbollist.isEligible(strings[0])){
                 i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} kein gülitger Label`))
@@ -941,7 +943,7 @@ export class CommandMap{
                     });
                     if(!this.symbollist.isLabel(strings[1])){
                         this.symbollist.setLabelWithoutPosition(strings[1]);
-                        i.saveDescriptionLine(`Neue Label angesetzt!`);
+                        // i.saveDescriptionLine(`Neue Label angesetzt!`);
                     }
                     if(matches.length==1){
                         i.setSecondPart(strings[1]);
@@ -981,7 +983,7 @@ export class CommandMap{
                     });
                     if(!this.symbollist.isLabel(strings[1])){
                         this.symbollist.setLabelWithoutPosition(strings[1]);
-                        i.saveDescriptionLine(`Neue Label angesetzt!`);
+                        // i.saveDescriptionLine(`Neue Label angesetzt!`);
                     }
                     if(matches.length==1){
                         i.setSecondPart(strings[1]);
@@ -1038,7 +1040,7 @@ export class CommandMap{
                     });
                     if(!this.symbollist.isLabel(strings[1])){
                         this.symbollist.setLabelWithoutPosition(strings[1]);
-                        i.saveDescriptionLine(`Neue Label angesetzt!`);
+                        // i.saveDescriptionLine(`Neue Label angesetzt!`);
                     }
                     if(matches.length==1){
                         i.setSecondPart(strings[1]);

@@ -1,8 +1,9 @@
-import { checkIfPaused, sleepFor } from "./AnimationUtil";
+import { aniControl, checkIfPaused, sleepFor } from "./AnimationUtil";
 import { getHtmlElement } from "./Tools";
 
 export const sleepUntilNextFrame=async(n:number):Promise <any>=>{
-    await sleepFor(3*n)
+    await sleepFor(n);
+    // await sleepFor(n/aniControl.speed);
 }
 
 export class Animator{
@@ -19,7 +20,8 @@ export class Animator{
     symbolTableBox:HTMLElement;
     targetElemTop:number=0;
     targetElemLeft:number=0;
-    frameSleepTime:number = 5;
+    frameSleepTime:number = 10;
+    pixeljump:number=1;
 
     constructor(){
         this.movingElementFlag = false;
@@ -55,19 +57,19 @@ export class Animator{
         this.turnMovableVisible();
         if(this.targetElemTop>this.movableElem.offsetTop){
             while(this.targetElemTop>this.movableElem.offsetTop){
-                await this.moveSleepCheck(5,0);
+                await this.moveSleepCheck(this.pixeljump,0);
             }
         }
         else if(this.targetElemTop==this.movableElem.offsetTop){
         }
         else{
             while(this.targetElemTop<this.movableElem.offsetTop){
-                await this.moveSleepCheck(-5,0);
+                await this.moveSleepCheck(-this.pixeljump,0);
             }
         }
         await sleepFor(500);
         while(this.targetElemLeft>this.movableElem.offsetLeft){
-            await this.moveSleepCheck(0,5);
+            await this.moveSleepCheck(0,this.pixeljump);
         }
         await sleepFor(200);
         this.turnMovableHidden();
@@ -81,9 +83,27 @@ export class Animator{
         this.turnMovableVisible();
         await sleepFor(500);
         while(this.targetElemTop>this.movableElem.offsetTop){
-            await this.moveSleepCheck(5,0);
+            await this.moveSleepCheck(this.pixeljump,0);
         }
         await sleepFor(500);
+        this.turnMovableHidden();
+    }
+    async exchangeLabelWithSymbolTable(toLine:string,returnLine:string){
+        this.movableElem.innerHTML=`<h3 style="margin:0px 0px; padding: 5px 10px; font: bold; text-align: center;">${toLine}</h3>`;
+        this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft,this.descriptionLineElem.offsetWidth,this.vorgangElem.offsetHeight);
+        this.targetElemTop=this.symbolTableElem.offsetTop;
+        this.turnMovableVisible();
+        await sleepFor(200);
+        while(this.targetElemTop>this.movableElem.offsetTop){
+            await this.moveSleepCheck(this.pixeljump,0);
+        }
+        await sleepFor(200);
+        this.movableElem.innerHTML=`<h3 style="margin:0px 0px; padding: 5px 10px; font: bold; text-align: center;">${returnLine}</h3>`;
+        this.targetElemTop=this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight;
+        while(this.targetElemTop<this.movableElem.offsetTop){
+            await this.moveSleepCheck(-this.pixeljump,0);
+        }
+        await sleepFor(200);
         this.turnMovableHidden();
     }
 
@@ -126,12 +146,12 @@ export class Animator{
         }
         else{
             childElem = getHtmlElement(`${(id+1)<10?"0"+(id+1):(id+1)}outputP`);
-            this.targetElemTop = childElem.scrollTop;
+            this.targetElemTop = childElem.offsetTop;
         }
     }
 
     private formatLineString(line:string){
-        this.movableElem.innerHTML=`<h4 style="margin:0px 0px; padding: 5px 10px">${line}</h4>`;
+        this.movableElem.innerHTML=`<h3 style="margin:0px 0px; padding: 5px 10px; font: bold;">${line}</h3>`;
     }
 
     async pushAufzulosendestoCurrentLine(i:number,line:string){
@@ -143,19 +163,19 @@ export class Animator{
         this.turnMovableVisible();
         if(this.targetElemTop>this.movableElem.offsetTop){
             while(this.targetElemTop>this.movableElem.offsetTop){
-                await this.moveSleepCheck(5,0);
+                await this.moveSleepCheck(this.pixeljump,0);
             }
         }
         else if(this.targetElemTop==this.movableElem.offsetTop){
         }
         else{
             while(this.targetElemTop<this.movableElem.offsetTop){
-                await this.moveSleepCheck(-5,0);
+                await this.moveSleepCheck(-this.pixeljump,0);
             }
         }
         await sleepFor(500);
         while(this.targetElemLeft<this.movableElem.offsetLeft){
-            await this.moveSleepCheck(0,-5);
+            await this.moveSleepCheck(0,-this.pixeljump);
         }
         await sleepFor(200);
         this.turnMovableHidden();
@@ -171,12 +191,12 @@ export class Animator{
         console.log(this.targetElemTop);
 
         while(this.targetElemTop>this.movableElem.offsetTop){
-            await this.moveSleepCheck(5,0);
+            await this.moveSleepCheck(this.pixeljump,0);
         }
         await sleepFor(200);
         while(this.targetElemLeft>this.movableElem.offsetLeft){
-            await this.moveSleepCheck(0,3);
-            await this.adjustWidthOfMovable(3,this.outPutText.offsetWidth);
+            await this.moveSleepCheck(0,this.pixeljump);
+            await this.adjustWidthOfMovable(this.pixeljump,this.outPutText.offsetWidth);
         }
         this.movableElem.style.width=this.outPutText.offsetWidth+"px";
         await this.setTargetTopToSpeicherabbild(id);
@@ -184,14 +204,14 @@ export class Animator{
         console.log(this.targetElemTop);
         if(this.targetElemTop>this.movableElem.offsetTop){
             while(this.targetElemTop>this.movableElem.offsetTop){
-                await this.moveSleepCheck(5,0);
+                await this.moveSleepCheck(this.pixeljump,0);
             }
         }
         else if(this.targetElemTop==this.movableElem.offsetTop){
         }
         else{
             while(this.targetElemTop<this.movableElem.offsetTop){
-                await this.moveSleepCheck(-5,0);
+                await this.moveSleepCheck(-this.pixeljump,0);
             }
         }
         await sleepFor(500);

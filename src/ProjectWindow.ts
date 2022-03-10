@@ -268,6 +268,9 @@ export class ProjectWindow{
                 // console.log(this.getLinkerAufloesungLine(e.getId()));
                 await this.anim.pushAufzulosendestoCurrentLine(e.getId(),this.getLinkerAufloesungLine(e.getId(),false));
                 currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${this.getLinkerAufloesungLine(e.getId(),false)}</h2>`
+                addresszahler.innerHTML= `${e.getStartingAddr()}`;
+                machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(e,false)}`;
+
                 descriptionLines.innerHTML += `<p>Suche Label ${k.getName()} in SymbolTabelle</p>`;
                 if(aniControl.start){
                     await sleepUntilNextStep();
@@ -281,29 +284,37 @@ export class ProjectWindow{
                     throw Error('Stop pressed');
                 }
                 else{
+                    s=this.inputLineControl.getSpeicherAbbild(e,false);
+                    this.inputLineControl.retranslate(e);
+                    n=this.inputLineControl.getSpeicherAbbild(e,true);
+
+                    await this.anim.exchangeLabelWithSymbolTable("Label '"+k.getName()+"'?","Label '"+k.getName()+"' Wert:"+Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")");
+
                     descriptionLines.innerHTML += `<p>Label '${k.getName()}' in Symboltabelle gefunden, Wert: ${Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")"}</p>`;
                     if(aniControl.start){
                         await sleepUntilNextStep();
                         updateScroll(descriptionLines.id);
                     }
-                    s=this.inputLineControl.getSpeicherAbbild(e,false);
-                    this.inputLineControl.retranslate(e);
-                    n=this.inputLineControl.getSpeicherAbbild(e,true);
+                    
                     descriptionLines.innerHTML += `<p>Ersetzung im Speicherabbild: ${s}-->${n}</p>`;
                     if(aniControl.start){
                         await sleepUntilNextStep();
                         updateScroll(descriptionLines.id);
                     }
+                    
+                    this.repushTranslations();
+                    machinenbefehl.innerHTML= `${n}`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(e.getId(),true),e.getId());
+                    }
+                    this.repushSpeicherabbildOf(e.getId());
                     descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
                     if(aniControl.start){
                         await sleepUntilNextStep();
                         updateScroll(descriptionLines.id);
                     }
-                    this.repushTranslations();
-                    if(aniControl.start){
-                        await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(e.getId(),false),e.getId());
-                    }
-                    this.repushSpeicherabbildOf(e.getId());
+                    
                 }
             }
         }
@@ -332,29 +343,13 @@ export class ProjectWindow{
     }
 
     public repushTranslations=async()=>{
-        OutputAddresses.innerHTML="";
-        OutputLines.innerHTML="";
         OutputTextAreaElement.innerHTML="";
         let i;
         for(let j=0;j<=this.inputLines.length;j++){
             i=this.inputLines[j];
-            // console.log(i);
             if(i!=undefined){
                 if(i.getType() == InputLineType.TRANSLATED){
-                    OutputAddresses.innerHTML+=`<p><span class="gray">${Manipulator.formatHextoDat16(i.getStartingAddr())}: </span></p>`;
-                    if(i.getTranslation().includes("????")){
-                        OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">${this.inputLineControl.getSpeicherAbbild(i,false)}</p>`;
-                    }
-                    else{
-                        OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">${this.inputLineControl.getSpeicherAbbild(i,true)}</p>`;
-                    }
-                    // outputText.innerHTML+= `<p><span class="gray">${Manipulator.formatHextoDat16(i.getStartingAddr())}: </span>  |${this.inputLineControl.getSpeicherAbbild(i)}</p>`;
                     OutputTextAreaElement.innerHTML+=":"+i.getTranslation()+"\n";
-                }
-                else{
-                    OutputAddresses.innerHTML+=`<p><span class="gray">&nbsp;</span></p>`;
-                    OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">&nbsp;&nbsp;&nbsp;</p>`;
-                    //outputText.innerHTML+= `<p>&nbsp;&nbsp;&nbsp;</p>`;
                 }
             }else{
                 OutputTextAreaElement.innerHTML+=":00000001FF";
@@ -418,7 +413,10 @@ export class ProjectWindow{
             ss=this.inputLines[i].getDescriptionLine()
             for(let j=0;j<ss.length;j++){
                 e=ss[j]
-                if(e.includes("erwarte")){
+                if(aniControl.start){
+                    await sleepUntilNextStep();
+                }
+                if(e.includes("parse")){
                     await this.nextInverted(this.inputLines[this.elementDisplayed].getAllV());
                 }
                 if(e.includes('error')){
@@ -430,34 +428,50 @@ export class ProjectWindow{
                     updateScroll(descriptionLines.id);
                     throw Error('Stop pressed');
                 }else{
-                    if(aniControl.start){
-                        await sleepUntilNextStep();
-                    }
+                    
                     descriptionLines.innerHTML += `<p>${e}</p>`;
                     updateScroll(descriptionLines.id);
                 }
                 if(e.includes("gefunden: Doppelpunkte")){
                     if(aniControl.start){
                         await sleepUntilNextStep();
-                        await this.anim.moveLabeltoSymboltable("");
+                        await this.anim.moveLabeltoSymboltable("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+this.inputLines[i].getLabel()+" Wert:"+this.symbolList.getPositionOfSpecificLabel(this.inputLines[i].getLabel()));
                     }
                     this.rePushSymbols(); 
                 }
-            }
-            if(aniControl.start){
-                await sleepUntilNextStep();
-            }
-            console.log(this.getLinkerAufloesungLine(i,false));
-            if(this.inputLines[i].getEndAddr()!=""){
-                addresszahler.innerHTML= `${this.inputLines[this.elementDisplayed].getEndAddr()}`;
-                machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(this.inputLines[this.elementDisplayed],false)}`;
+                if(j-1>0){
+                    if(ss[j-1].includes("gesamter")){
+                        if(this.inputLines[i].getEndAddr()!=""){
+                            machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(this.inputLines[this.elementDisplayed],false)}`;
+            
+                            if(aniControl.start){
+                                await sleepUntilNextStep();
+                                await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(i,false),-1);
+                            }
+                            this.pushTranslationOf(i);
+                        }
+                    }
+                }
+                if(e.includes("Anzahl")){
+                    addresszahler.innerHTML= `${this.inputLines[this.elementDisplayed].getEndAddr()}`;
+                }
             }
             descriptionLines.innerHTML += `<p style=" white-space: nowrap; overflow: hidden;"> --------------------------------------------------------- </p>`;
 
             if(aniControl.start){
-                await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(i,false),-1);
+                await sleepUntilNextStep();
             }
-            this.pushTranslationOf(i);
+            /* if(this.inputLines[i].getEndAddr()!=""){
+                machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(this.inputLines[this.elementDisplayed],false)}`;
+
+                if(aniControl.start){
+                    await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(i,false),-1);
+                }
+
+                addresszahler.innerHTML= `${this.inputLines[this.elementDisplayed].getEndAddr()}`;
+
+            } */
+            // this.pushTranslationOf(i);
             // this.refreshInputListItems();
             this.refreshInputListItem(i);
             updateScroll(descriptionLines.id);

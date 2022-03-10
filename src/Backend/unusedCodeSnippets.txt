@@ -1556,3 +1556,97 @@ testRegex("abc1"); */
         }
         return false;
     }
+
+    public repushTranslations=async()=>{
+        OutputAddresses.innerHTML="";
+        OutputLines.innerHTML="";
+        OutputTextAreaElement.innerHTML="";
+        let i;
+        for(let j=0;j<=this.inputLines.length;j++){
+            i=this.inputLines[j];
+            // console.log(i);
+            if(i!=undefined){
+                if(i.getType() == InputLineType.TRANSLATED){
+                    // OutputAddresses.innerHTML+=`<p><span class="gray">${Manipulator.formatHextoDat16(i.getStartingAddr())}: </span></p>`;
+                    // if(i.getTranslation().includes("????")){
+                    //     OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">${this.inputLineControl.getSpeicherAbbild(i,false)}</p>`;
+                    // }
+                    // else{
+                    //     OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">${this.inputLineControl.getSpeicherAbbild(i,true)}</p>`;
+                    // }
+                    // outputText.innerHTML+= `<p><span class="gray">${Manipulator.formatHextoDat16(i.getStartingAddr())}: </span>  |${this.inputLineControl.getSpeicherAbbild(i)}</p>`;
+                    OutputTextAreaElement.innerHTML+=":"+i.getTranslation()+"\n";
+                }
+                else{
+                    // OutputAddresses.innerHTML+=`<p><span class="gray">&nbsp;</span></p>`;
+                    // OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">&nbsp;&nbsp;&nbsp;</p>`;
+                    //outputText.innerHTML+= `<p>&nbsp;&nbsp;&nbsp;</p>`;
+                }
+            }else{
+                OutputTextAreaElement.innerHTML+=":00000001FF";
+            }
+        }
+    }
+
+    public checkInputLine=async(e:InputLine)=>{
+        let s:string="";
+        let n:string="";
+        let k:Label|undefined;
+        if(e.getType()==InputLineType.TRANSLATED){
+            if(e.getTranslation().includes("????")){
+
+                k=this.symbolList.getLabels().find(i=>{
+                    if(i.getName().toLowerCase()==e.getSecondPart().toLowerCase() || i.getName().toLowerCase()== e.getThirdPart().toLowerCase()){
+                        return i;
+                    }
+                })!;
+                // console.log(this.getLinkerAufloesungLine(e.getId()));
+                await this.anim.pushAufzulosendestoCurrentLine(e.getId(),this.getLinkerAufloesungLine(e.getId(),false));
+                currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${this.getLinkerAufloesungLine(e.getId(),false)}</h2>`
+                addresszahler.innerHTML= `${e.getStartingAddr()}`;
+                machinenbefehl.innerHTML= `&nbsp;`;
+
+                descriptionLines.innerHTML += `<p>Suche Label ${k.getName()} in SymbolTabelle</p>`;
+                if(aniControl.start){
+                    await sleepUntilNextStep();
+                    updateScroll(descriptionLines.id);
+                }
+                if(k.getPosition()=="????"){
+                    descriptionLines.innerHTML += `<p><span class="errorRed">Label '${k.getName()}' konnte nicht aufgelöst werden!</span></p>`;
+                    updateScroll(descriptionLines.id);
+                    await sleepFor(10);
+                    aniControl.setStop();
+                    throw Error('Stop pressed');
+                }
+                else{
+                    descriptionLines.innerHTML += `<p>Label '${k.getName()}' in Symboltabelle gefunden, Wert: ${Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")"}</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    s=this.inputLineControl.getSpeicherAbbild(e,false);
+                    this.inputLineControl.retranslate(e);
+                    n=this.inputLineControl.getSpeicherAbbild(e,true);
+                    descriptionLines.innerHTML += `<p>Ersetzung im Speicherabbild: ${s}-->${n}</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        updateScroll(descriptionLines.id);
+                    }
+                    this.repushTranslations();
+                    machinenbefehl.innerHTML= `${n}`;
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(e.getId(),true),e.getId());
+                    }
+                    this.repushSpeicherabbildOf(e.getId());
+                }
+            }
+        }
+        updateScroll(descriptionLines.id);
+
+    }
