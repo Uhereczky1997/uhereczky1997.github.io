@@ -147,5 +147,5 @@ export class SymbolList{
             else return r.getPosition();
         }
     }
-
 }
+export let SymbolL = SymbolList.getInstance();

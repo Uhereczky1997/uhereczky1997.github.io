@@ -1650,3 +1650,31 @@ testRegex("abc1"); */
         updateScroll(descriptionLines.id);
 
     }
+    commandLinetoString=():string=>{
+        let first:string=this.firstPart,second:string=this.secondPart,third:string=this.thirdPart;
+
+        if(this.valid==true){
+            if(this.secondPart.toUpperCase()=="EQU"){
+                this.secondPart=this.secondPart.toUpperCase();
+            }
+            else{
+                first=this.firstPart.toUpperCase();
+                if(!SymbolL.isLabel(this.secondPart) && !SymbolL.isConst(this.secondPart) && !Manipulator.isDat_16(this.secondPart)){
+                    this.secondPart=this.secondPart.toUpperCase();
+                }
+                if(!SymbolL.isLabel(this.thirdPart) && !SymbolL.isConst(this.thirdPart) && !Manipulator.isDat_16(this.thirdPart)){
+                    this.thirdPart=this.thirdPart.toUpperCase();
+                }
+            }
+            if(this.secondPart.toUpperCase()=="EQU"){
+                this.secondPart = "EQU";
+                return(`${first} ${this.secondPart} ${this.thirdPart}`);
+            }
+            else{
+                return (`${(this.firstPart==""?"":this.firstPart)} ${(this.secondPart==""?"":this.secondPart)}${(this.thirdPart==""?"":','+this.thirdPart)}`);
+            }
+        }
+        else{
+            return this.commandLine;
+        }
+    }

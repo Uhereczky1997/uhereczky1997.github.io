@@ -59,7 +59,7 @@ textarea{
     }
     #descriptionLines>p{
         margin: 2px;
-        font-size: calc(var(--maxfontsize14) - 10px);
+        font-size: calc(var(--maxfontsize14) - 12px);
 
     }
     
@@ -99,7 +99,7 @@ textarea{
     }
     #descriptionLines>p{
         margin: 2px;
-        font-size: calc(var(--maxfontsize20) - 10px);
+        font-size: calc(var(--maxfontsize20) - 12px);
 
     }
     
@@ -138,7 +138,7 @@ textarea{
     }
     #descriptionLines>p{
         margin: 2px;
-        font-size: calc(var(--maxfontsize28) - 10px);
+        font-size: calc(var(--maxfontsize28) - 12px);
 
     }
 }
@@ -176,7 +176,7 @@ textarea{
     }
     #descriptionLines>p{
         margin: 2px;
-        font-size: calc(var(--maxfontsize30) - 10px);
+        font-size: calc(var(--maxfontsize30) - 12px);
     }
     
 }
@@ -214,7 +214,7 @@ textarea{
     }
     #descriptionLines>p{
         margin: 2px;
-        font-size: calc(var(--maxfontsize32) - 10px);
+        font-size: calc(var(--maxfontsize32) - 12px);
     }
         
 }

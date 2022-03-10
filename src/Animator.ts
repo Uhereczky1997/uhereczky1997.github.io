@@ -188,7 +188,6 @@ export class Animator{
         this.targetElemLeft=this.outPutText.offsetLeft;
         this.turnMovableVisible();
         await sleepFor(500);
-        console.log(this.targetElemTop);
 
         while(this.targetElemTop>this.movableElem.offsetTop){
             await this.moveSleepCheck(this.pixeljump,0);
@@ -201,7 +200,6 @@ export class Animator{
         this.movableElem.style.width=this.outPutText.offsetWidth+"px";
         await this.setTargetTopToSpeicherabbild(id);
         await sleepFor(200);
-        console.log(this.targetElemTop);
         if(this.targetElemTop>this.movableElem.offsetTop){
             while(this.targetElemTop>this.movableElem.offsetTop){
                 await this.moveSleepCheck(this.pixeljump,0);

@@ -45,3 +45,13 @@ Label1Label1Lab: mov a,b;bruv
 Label1Label1Labe: mov a,b;bruv
 Label1Label1Label: mov a,b;bruv
 Label1Label1Label1: mov a,b;bruv
+
+mov a,b
+lab: ret
+jp lab
+dw 1212h
+db 12
+org 56h
+rs 5
+constant2 equ 12
+constant3 EqU 2323h

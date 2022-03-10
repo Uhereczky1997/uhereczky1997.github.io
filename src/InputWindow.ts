@@ -36,6 +36,12 @@ export class InputWindow{
             if(ss.find(e=>{return e.includes("error")})!=undefined){                
                 toReturn += `<p>${e.getId()+1}</p>`; 
             } 
+            console.log(e.getAll());
+            console.log(e.getCommandLineToCurrentLine());
+            e.formatInputToDisplay()
+            console.log(e.getAll());
+            console.log("--------------------------------------------------------------------------");
+            // console.log(e.commandLinetoString())
         })
         toReturn +=`</div>`;
         return toReturn;
@@ -71,7 +77,7 @@ export class InputWindow{
             errorDescriptionDiv.innerHTML=s;
         }
         else{
-            errorDescriptionDiv.innerHTML += `<div class="backgroundNoError"><p>Keine syntaktische Fehler!</p></div>`
+            errorDescriptionDiv.innerHTML= `<div class="backgroundNoError"><p>Keine syntaktische Fehler!</p></div>`
         }
         /* 
         errorDescriptionDiv.innerHTML="";

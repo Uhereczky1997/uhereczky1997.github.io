@@ -64,8 +64,6 @@ export class InputLineControl{
     }
     addInputLine=(inputString:string):void=>{
         let i:InputLine= new InputLine(inputString,this.IDcounter);
-        // console.log(i.getInitialLine()+"  --->   "+i.getType());
-        //i.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)))
         if(i.getType()==InputLineType.EMPTY){
             this.inputlines.push(i);
             this.IDcounter=this.IDcounter +1;
@@ -73,8 +71,6 @@ export class InputLineControl{
         }
         this.map.mapInputLineByCase(i);
         this.createSummary(i);
-        // console.log(i.getDescriptionLine());
-        // console.log(i.testToString()+"-"+i.getValid());
         this.inputlines.push(i);
         if(i.getValid()){
             this.calculateStartingAddr(i);
@@ -82,7 +78,6 @@ export class InputLineControl{
             if(i.hasLabel()){
                 this.symbolliste.updateLabel(i.getLabel(),i.getStartingAddr());
             }
-            // console.log(i.getTranslation());
         }
         else{
             if(i.getLabel()!=""){
@@ -91,8 +86,7 @@ export class InputLineControl{
             this.invalidIDs.push(this.IDcounter);
         }
         this.IDcounter=this.IDcounter +1;
-        //console.log(this.getSpeicherAbbild(i,false));
-        // console.log(i.getAll());
+        console.log(i);
     }
 
     getLittleEndianOf(h:string):string{
@@ -123,29 +117,29 @@ export class InputLineControl{
         this.calculateTranslation(i,true);
     }
     getSpeicherAbbild(i:InputLine,flag:boolean):string{
-        let s = i.commandLinetoString();
+        let s = i.commandLinetoString(true);
         let h = i.getHCode();
         let l:string|undefined = "";
         let c:Constant;
         // console.log(i.getCommandLine()+" ... "+i.getLength()+" ... "+i.getHCode());
-        if(i.getFirstPart()=="RS"){
+        if(i.getFirstPart().toUpperCase()=="RS"){
             return (h.length>4?"0000...("+i.getLength()+"x)":h);
         }
-        else if(i.getFirstPart()=="ORG"){
+        else if(i.getFirstPart().toUpperCase()=="ORG"){
             return "";
         }
-        else if(i.getFirstPart()=='DB'){
+        else if(i.getFirstPart().toUpperCase()=='DB'){
             h=i.getSecondPart();
             return `${this.fHD8WH(h)}`;
         }
-        else if(i.getFirstPart()=='DW'){
+        else if(i.getFirstPart().toUpperCase()=='DW'){
             h=i.getSecondPart();
             return `${this.getLittleEndianOf(h)}`;
         }
         else{
             switch(i.getLength()){
                 case 1:
-                    if(i.getFirstPart()=="NOP"){
+                    if(i.getFirstPart().toUpperCase()=="NOP"){
                         return '00';
                     }
                     return this.fHD8WH(h);
@@ -204,17 +198,21 @@ export class InputLineControl{
         }
     }
     createSummary(i:InputLine){
-        let s = i.commandLinetoString();
+        let s = i.commandLinetoString(true);
         let h = i.getHCode()
         let l:string|undefined = "";
         let c:Constant;
+        if(i.getFirstPart().toUpperCase()=="ORG"){
+            saveInput(i,5);
+            i.saveDescriptionLine(`<span class="eingeruckt">`+"Addresszähler = "+this.fHD16WH(String(i.getLength()))+`</span>`);
+        }
         if(i.getType()==InputLineType.TRANSLATED){
             saveInput(i,5);
-            if(i.getFirstPart()=="RS"){
+            if(i.getFirstPart().toUpperCase()=="RS"){
                 i.saveDescriptionLine(`<span class="eingeruckt">`+s+" -> "+(h.length>4?"00 ("+i.getLength()+"x)":h)+`</span>`);
                 i.saveDescriptionLine(`<span class="eingeruckt">`+"Anzahl der Bytes: "+i.getLength()+`</span>`);
             }
-            else if(i.getFirstPart()=="ORG"){
+            else if(i.getFirstPart().toUpperCase()=="ORG"){
                 i.saveDescriptionLine(`<span class="eingeruckt">`+"Addresszähler = "+this.fHD16WH(String(i.getLength()))+`</span>`);
             }
             else
@@ -238,7 +236,8 @@ export class InputLineControl{
             this.startingAddrOfTranslated= this.startingAddrOfTranslated+e.getLength();
 
         }
-        if(e.getFirstPart()=='ORG'){
+        if(e.getFirstPart().toUpperCase()=='ORG'){
+            e.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
             this.startingAddrOfTranslated=e.getLength();
         }
        
@@ -282,16 +281,16 @@ export class InputLineControl{
             else{
                 addr=this.fHD16(e.getStartingAddr());
             }
-            if(e.getFirstPart()=='RS'){
+            if(e.getFirstPart().toUpperCase()=='RS'){
                 rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr));
                 e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${hex}${this.fHD8WH(rest)}`);
             }
-            else if(e.getFirstPart()=='DB'){
+            else if(e.getFirstPart().toUpperCase()=='DB'){
                 h=e.getSecondPart();
                 rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
                 e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(h)}${this.fHD8WH(rest)}`);
             }
-            else if(e.getFirstPart()=='DW'){
+            else if(e.getFirstPart().toUpperCase()=='DW'){
                 h=e.getSecondPart();
                 rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
                 e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);

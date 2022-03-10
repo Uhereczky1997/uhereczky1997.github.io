@@ -49,11 +49,7 @@ export class ProjectWindow{
     private symbolList=SymbolList.getInstance();
     private iWindow:InputWindow = new InputWindow(this);
     private elementDisplayed:number=-1;
-    private descriptionLinesOfCurrentDisplayedElement:string[]=[];
- /*   private elementOfElementDisplayed = -1;
-    private translationOfElementDisplayed =-1; */
     private anim:Animator;
-    private idOfDisplayedConstANDLabel =-1;
     private linkerAuflosungB:boolean=false;
     private nextParseID:number=0;
     private inputLines:InputLine[]=[];
@@ -93,12 +89,10 @@ export class ProjectWindow{
         OutputAddresses.innerHTML="";
         OutputLines.innerHTML="";
         this.elementDisplayed = -1;
-        this.idOfDisplayedConstANDLabel =-1;
-        /* this.elementOfElementDisplayed = -1;
-        this.translationOfElementDisplayed =-1; */
         OutputTextAreaElement.innerHTML="";
         this.inputLineControl.reset();
         this.anim.reset();
+        aniControl.resetFlags();
         getHtmlElement("InputText").scrollTop=0;
     }
 
@@ -162,7 +156,7 @@ export class ProjectWindow{
                     InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
                 }else{
                     InputID.innerHTML+=`<p  class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
-                    InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.commandLinetoString())}${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
+                    InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.commandLinetoString(false))}${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
                 }
             }
             else{
@@ -181,7 +175,7 @@ export class ProjectWindow{
             if(e.getType()==InputLineType.EMPTY){
                 inputLineHTML.innerHTML=`${e.getCommentary()==""?"":";"+e.getCommentary()}`;
             }else{
-                inputLineHTML.innerHTML=`${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.commandLinetoString())}${e.getCommentary()==""?"":";"+e.getCommentary()}`;
+                inputLineHTML.innerHTML=`${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.commandLinetoString(true))}${e.getCommentary()==""?"":";"+e.getCommentary()}`;
             }
             
         }
@@ -196,10 +190,10 @@ export class ProjectWindow{
             console.log(outputLineHTML);
             if(e.getType() == InputLineType.TRANSLATED){
                 if(e.getTranslation().includes("????")){
-                    outputLineHTML.innerHTML=`${this.inputLineControl.getSpeicherAbbild(e,false)}`;
+                    outputLineHTML.innerHTML=`${this.inputLineControl.getSpeicherAbbild(e,false)}&nbsp;`;
                 }
                 else{
-                    outputLineHTML.innerHTML=`${this.inputLineControl.getSpeicherAbbild(e,true)}`;
+                    outputLineHTML.innerHTML=`${this.inputLineControl.getSpeicherAbbild(e,true)}&nbsp;`;
                 }
             }
             else{
@@ -221,12 +215,12 @@ export class ProjectWindow{
                     if(s instanceof Label){
                         n=s.getName();
                         p=s.getPosition()!;
-                        symbolTableLines.innerHTML+=`<h4><span class="gray">Label:</span> &nbsp;&nbsp;&nbsp; ${n} Wert:${this.inputLineControl.fHD16(p)} (little endian:${this.inputLineControl.getLittleEndianOf(p)})</h4>`;
+                        symbolTableLines.innerHTML+=`<h4><span class="gray">Label:</span> &nbsp;&nbsp;${n} Wert:${this.inputLineControl.fHD16(p)} (little endian:${this.inputLineControl.getLittleEndianOf(p)})</h4>`;
                     }
                     if(s instanceof Constant){
                         n=s.getName();
                         p=s.getValue();
-                        symbolTableLines.innerHTML+=`<h4><span class="gray">Konst.:</span> &nbsp;&nbsp; ${n} Wert:${this.inputLineControl.fHD16(p)} (little endian:${this.inputLineControl.getLittleEndianOf(p)})</h4>`
+                        symbolTableLines.innerHTML+=`<h4><span class="gray">Konst.:</span> &nbsp;${n} Wert:${this.inputLineControl.fHD16(p)} (little endian:${this.inputLineControl.getLittleEndianOf(p)})</h4>`
                     }
                 }
             }
@@ -266,7 +260,10 @@ export class ProjectWindow{
                     }
                 })!;
                 // console.log(this.getLinkerAufloesungLine(e.getId()));
-                await this.anim.pushAufzulosendestoCurrentLine(e.getId(),this.getLinkerAufloesungLine(e.getId(),false));
+                if(aniControl.start){
+
+                    await this.anim.pushAufzulosendestoCurrentLine(e.getId(),this.getLinkerAufloesungLine(e.getId(),false));
+                }
                 currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${this.getLinkerAufloesungLine(e.getId(),false)}</h2>`
                 addresszahler.innerHTML= `${e.getStartingAddr()}`;
                 machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(e,false)}`;
@@ -287,8 +284,10 @@ export class ProjectWindow{
                     s=this.inputLineControl.getSpeicherAbbild(e,false);
                     this.inputLineControl.retranslate(e);
                     n=this.inputLineControl.getSpeicherAbbild(e,true);
-
-                    await this.anim.exchangeLabelWithSymbolTable("Label '"+k.getName()+"'?","Label '"+k.getName()+"' Wert:"+Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")");
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        await this.anim.exchangeLabelWithSymbolTable("Label '"+k.getName()+"'?","Label '"+k.getName()+"' Wert:"+Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")");
+                    }
 
                     descriptionLines.innerHTML += `<p>Label '${k.getName()}' in Symboltabelle gefunden, Wert: ${Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")"}</p>`;
                     if(aniControl.start){
@@ -389,10 +388,10 @@ export class ProjectWindow{
                         if(aniControl.start){
                             await this.anim.animationInputLineToCurrentLine(iP.offsetTop,iP.offsetLeft,iP.offsetWidth,iP.offsetHeight,this.inputstrings[i]);
                         }
-                            
-                        currentLine.innerHTML=this.pushCurrentLine(input.getAll());
+                        this.nextParseID=0;
+                        // currentLine.innerHTML=this.pushCurrentLine(input.getAll());
+                        currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${input.getCommandLineToCurrentLine()}</h2>`
                         machinenbefehl.innerHTML="";
-                        this.descriptionLinesOfCurrentDisplayedElement=input.getDescriptionLine();
                         await this.pushDescriptionLinesOf(i);
                     }
                 }
@@ -402,6 +401,7 @@ export class ProjectWindow{
             }
             this.linkerAuflosungB=this.aufzulosendeLabel();
             await this.linkerAuflosung();
+            console.log("finished");
             aniControl.setEnd();
         }
     }
@@ -409,8 +409,10 @@ export class ProjectWindow{
     private pushDescriptionLinesOf=async(i:number)=>{
         let e:string;
         let ss:string[];
+        let l:InputLine;
         if(this.inputLines.length>i){
-            ss=this.inputLines[i].getDescriptionLine()
+            l=this.inputLines[i]
+            ss=l.getDescriptionLine()
             for(let j=0;j<ss.length;j++){
                 e=ss[j]
                 if(aniControl.start){
@@ -435,13 +437,13 @@ export class ProjectWindow{
                 if(e.includes("gefunden: Doppelpunkte")){
                     if(aniControl.start){
                         await sleepUntilNextStep();
-                        await this.anim.moveLabeltoSymboltable("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+this.inputLines[i].getLabel()+" Wert:"+this.symbolList.getPositionOfSpecificLabel(this.inputLines[i].getLabel()));
+                        await this.anim.moveLabeltoSymboltable("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+l.getLabel()+" Wert:"+this.symbolList.getPositionOfSpecificLabel(l.getLabel()));
                     }
                     this.rePushSymbols(); 
                 }
                 if(j-1>0){
                     if(ss[j-1].includes("gesamter")){
-                        if(this.inputLines[i].getEndAddr()!=""){
+                        if(l.getEndAddr()!=""){
                             machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(this.inputLines[this.elementDisplayed],false)}`;
             
                             if(aniControl.start){
@@ -452,16 +454,28 @@ export class ProjectWindow{
                         }
                     }
                 }
-                if(e.includes("Anzahl")){
-                    addresszahler.innerHTML= `${this.inputLines[this.elementDisplayed].getEndAddr()}`;
-                }
+                /* if(e.includes("Anzahl")){
+                } */
             }
+            if(this.symbolList.isConst(l.getFirstPart())){
+                if(aniControl.start){
+                    await this.anim.moveLabeltoSymboltable(this.symbolList.getSpecificConstantByName(l.getFirstPart())!.toStringtoMovable());
+                    await sleepUntilNextStep();
+                    
+                }
+                this.rePushSymbols();
+                this.pushTranslationOf(i);
+            }
+            else{
+                addresszahler.innerHTML= `${this.inputLines[this.elementDisplayed].getEndAddr()}`;
+            }
+
             descriptionLines.innerHTML += `<p style=" white-space: nowrap; overflow: hidden;"> --------------------------------------------------------- </p>`;
 
             if(aniControl.start){
                 await sleepUntilNextStep();
             }
-            /* if(this.inputLines[i].getEndAddr()!=""){
+            /* if(l.getEndAddr()!=""){
                 machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(this.inputLines[this.elementDisplayed],false)}`;
 
                 if(aniControl.start){
@@ -473,6 +487,7 @@ export class ProjectWindow{
             } */
             // this.pushTranslationOf(i);
             // this.refreshInputListItems();
+            l.formatInputToDisplay();
             this.refreshInputListItem(i);
             updateScroll(descriptionLines.id);
         }
@@ -484,7 +499,7 @@ export class ProjectWindow{
             i =this.inputLines[e];
             if(i.getType() == InputLineType.TRANSLATED){
                 OutputAddresses.innerHTML+=`<p><span class="gray">${Manipulator.formatHextoDat16(i.getStartingAddr())}: </span></p>`;
-                OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">${this.inputLineControl.getSpeicherAbbild(i,false)}</p>`;
+                OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">${this.inputLineControl.getSpeicherAbbild(i,false)}&nbsp;</p>`;
                 OutputTextAreaElement.innerHTML+=":"+i.getTranslation()+"\n";
             }
             else{
@@ -503,37 +518,6 @@ export class ProjectWindow{
             }
         });
         return b;
-    }
-    
-    private pushCurrentLine=(ss:string[])=>{
-        this.nextParseID=0;
-        let dsrl=`<h2 style="align-self: end;" class=" noMargin p5px">`;
-        if(ss[0]!=""){
-            dsrl+=`<span id="crLabel">${ss[0]}</span>: `;
-        }
-        if(ss[1]!=""){
-            dsrl+=`<span id="crFirst">${ss[1]}</span> `;
-        }
-        if(ss[2]!="" && this.inputLines[this.elementDisplayed].getSecondPart()=="EQU"){
-            dsrl+=`<span id="crSecond">${ss[2]}</span> `;
-        }
-        else if(ss[2]!="" && this.inputLines[this.elementDisplayed].getSecondPart()!="EQU" && this.inputLines[this.elementDisplayed].getThirdPart()==""){
-            dsrl+=`<span id="crSecond">${ss[2]}</span> `;
-        }
-        else if(ss[2]!=""){
-            dsrl+=`<span id="crSecond">${ss[2]}</span>,`;
-        }
-        if(ss[3]!=""){
-            dsrl+=`<span id="crThird">${ss[3]}</span>`;
-        }
-        if(ss[4]!=""){
-            dsrl+=`<span id="crError">${ss[4]}</span>`;
-        }
-        if(ss[5]!=""){
-            dsrl+=`<span id="crRest">${ss[5]}</span>`;
-        }
-        dsrl+=`</h2>`;
-        return dsrl;
     }
     
     public toggleStop=async()=>{
@@ -562,6 +546,8 @@ export class ProjectWindow{
             } catch (e) {
                 console.log(e);
             }
+            console.log("finished");
+            currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">&nbsp;</h2>`
         }
         else{
             console.log("no Input");

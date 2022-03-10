@@ -11,8 +11,9 @@
     padding-right:3px;
     line-height: 140%;
     display: block;
-    /* width: 120%; */
-    /* font-size: 20px; */
+}
+.displayText + .hoverable>p{
+    font-weight: bold;
 }
 
 .displayText + .hoverable>p:hover{
@@ -34,11 +35,11 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    
     pointer-events: none;
 }
 .overflowElipsis{
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    
 }

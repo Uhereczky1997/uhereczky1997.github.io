@@ -176,7 +176,6 @@ export class CommandMap{
 
         //Haltbefehl
         new MnemoCommand("HALT","","","01 110 110",1),
-
     ];
     private symbollist:SymbolList=SymbolList.getInstance();
     
@@ -246,9 +245,10 @@ export class CommandMap{
         strings = Manipulator.splitStringHalf(commandLine," ");
         strings = this.filterForEmtpyStrings(strings);
         if(this.mCodes.includes(strings[0].toUpperCase())){
+            i.setFirstPart(strings[0]);
+            //ÄNDERUNG
             strings[0] = strings[0].toUpperCase();
             i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
-            i.setFirstPart(strings[0]);
            return this.parseToMnemoCode(i,strings);
         }
         else if(this.pseudoMCodes.includes(strings[0].toUpperCase()) || this.symbollist.isEligible(strings[0])){
@@ -267,7 +267,8 @@ export class CommandMap{
     parseToMnemoCode(i:InputLine,strings:string[]):boolean{
         let consoletostring="";
         let matches:MnemoCommand[]=[];
-        strings[0]=strings[0].toUpperCase();
+        let toSave:string="";
+        // strings[0]=strings[0].toUpperCase();
         switch(strings[0]){
             case 'MOV':
                 save3(i);
@@ -281,9 +282,13 @@ export class CommandMap{
                 strings=Manipulator.splitStringHalf(strings[1],",");
                 strings = this.filterForEmtpyStrings(strings);
                 if(this.getDests(matches).includes(strings[0].toUpperCase())&&this.Regs.includes(strings[0].toUpperCase())){ // A || B || C || IX || HL || SP
+                    toSave=strings[0];
+                    i.setSecondPart(toSave);
+                    // i.setSecondPart(strings[0]);
+                    //ÄNDERUNG
                     strings[0] = strings[0].toUpperCase();
                     i.saveDescriptionLine(this.formatGefunden("Register "+strings[0],i.getFirstPart()+" "+strings[0]));
-                    i.setSecondPart(strings[0]);
+                    
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() ==strings[0]){
                             return e;
@@ -298,8 +303,10 @@ export class CommandMap{
                     }
 
                     if(this.getScources(matches).includes(strings[1].toUpperCase())&&this.Regs.includes(strings[1].toUpperCase())){ // A || B || C || [HL]
+                        //ÄNDERUNG
+                        toSave=strings[1];
                         strings[1] = strings[1].toUpperCase();
-                        i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],i.getFirstPart()+" "+i.getSecondPart()+", "+strings[1]));
+                        i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+strings[1]));
                         
                         matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                             if(e.getSource() ==strings[1]){
@@ -308,7 +315,9 @@ export class CommandMap{
                         });
                         //console.log(matches);
                         if(matches.length==1){
-                            i.setThirdPart(strings[1]);
+                            //ÄNDERUNG
+                            i.setThirdPart(toSave);
+                            // i.setThirdPart(strings[1]);
                             i.setType(InputLineType.TRANSLATED);
                             i.setLength(matches[0].getSize());
                             i.setHCode(matches[0].getHexCode());
@@ -507,6 +516,8 @@ export class CommandMap{
                         return false;
                     }
                     if(this.getScources(matches).includes(strings[1].toUpperCase())){
+                        //ÄNDERUNG
+                        toSave=strings[1];
                         strings[1] = strings[1].toUpperCase();
                         i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],i.getFirstPart()+" "+i.getFirstPart()+strings[1]))
                         matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
@@ -515,7 +526,9 @@ export class CommandMap{
                             }
                         });
                         if(matches.length==1){
-                            i.setThirdPart(strings[1]);
+                            //ÄNDERUNG
+                            i.setThirdPart(toSave);
+                            // i.setThirdPart(strings[1]);
                             i.setType(InputLineType.TRANSLATED);
                             i.setLength(matches[0].getSize());
                             i.setHCode(matches[0].getHexCode());
@@ -583,8 +596,8 @@ export class CommandMap{
                 }
                 strings = Manipulator.splitStringHalf(strings[1],",");
                 strings = this.filterForEmtpyStrings(strings);
-                if(strings[0] =="A"){
-                    i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart()+" "+strings[0]));
+                if(strings[0].toUpperCase() =="A"){
+                    i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+strings[0]));
                     i.setSecondPart(strings[0]);
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8-bit)"));
@@ -593,7 +606,7 @@ export class CommandMap{
                         return false;
                     }
                     if(this.symbollist.isConst(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],i.getFirstPart()+" "+i.getSecondPart()+", "+strings[1]))
+                        i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],i.getFirstPart().toUpperCase()+" "+i.getSecondPart()+", "+strings[1]))
                         i.setThirdPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -602,7 +615,7 @@ export class CommandMap{
                         return true;
                     }
                     else if(Manipulator.isDat_8(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[1]),i.getFirstPart()+" "+i.getSecondPart()+", "+Manipulator.formatHextoDat8(strings[1])));
+                        i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[1]),i.getFirstPart().toUpperCase()+" "+i.getSecondPart()+", "+Manipulator.formatHextoDat8(strings[1])));
                         i.setThirdPart(Manipulator.formatHextoDat8(strings[1]));
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -637,7 +650,7 @@ export class CommandMap{
                 strings = Manipulator.splitStringHalf(strings[1],",");
                 strings = this.filterForEmtpyStrings(strings);
                 if(this.symbollist.isConst(strings[0])){
-                    i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[0],i.getFirstPart()+" "+strings[0]))
+                    i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[0],i.getFirstPart().toUpperCase()+" "+strings[0]))
                     i.setSecondPart(strings[0]);
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet("A"));
@@ -646,8 +659,9 @@ export class CommandMap{
                         return false;
                     }
                     if(strings[1].toUpperCase() =="A"){
-                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart()+" "+i.getSecondPart()+", A"));
-                        i.setThirdPart(strings[1].toUpperCase())
+                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+i.getSecondPart()+", A"));
+                        //ÄNDERUNG
+                        i.setThirdPart(strings[1])
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
                         i.setHCode(matches[0].getHexCode());
@@ -661,7 +675,7 @@ export class CommandMap{
                     }
                 }
                 else if(Manipulator.isDat_8(strings[0])){
-                    i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[0]),i.getFirstPart()+" "+Manipulator.formatHextoDat8(strings[0])));
+                    i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[0]),i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])));
                     i.setSecondPart(Manipulator.formatHextoDat8(strings[0]));
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet("A"));
@@ -670,8 +684,9 @@ export class CommandMap{
                         return false;
                     }
                     if(strings[1].toUpperCase() =="A"){
-                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart()+" "+i.getSecondPart()+", A"));
-                        i.setThirdPart(strings[1].toUpperCase())
+                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+i.getSecondPart()+", A"));
+                        //ÄNDERUNG
+                        i.setThirdPart(strings[1])
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
                         i.setHCode(matches[0].getHexCode());
@@ -692,23 +707,27 @@ export class CommandMap{
                 break;
             case 'INC':case'DEC':
                 save3(i);
-                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==i.getFirstPart()});
+                //ÄNDERUNG
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
                     i.saveDescriptionLine(this.formatErrorMassage("fehlender Operand!"));
                     return false;
                 }
+                //ÄNDERUNG
+                toSave=strings[1];
                 strings[1] = strings[1].toUpperCase();
                 if(this.getDests(matches).includes(strings[1])){
-                    i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],i.getFirstPart()+" "+strings[1]));
+                    i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],strings[0]+" "+strings[1]));
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() ==strings[1]){
                             return e;
                         }
                     });
                     if(matches.length==1){
-                        i.setSecondPart(strings[1]);
+                        //ÄNDERUNG
+                        i.setSecondPart(toSave);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
                         i.setHCode(matches[0].getHexCode());
@@ -729,7 +748,8 @@ export class CommandMap{
                 break;
             case 'ADD':case'SUB':case'AND':
                 save3(i);
-                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==i.getFirstPart()});
+                //ÄNDERUNG
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
@@ -737,15 +757,18 @@ export class CommandMap{
                     return false;
                 }
                 if(this.getDests(matches).includes(strings[1].toUpperCase())){
+                    //ÄNDERUNG
+                    toSave=strings[1];
                     strings[1]=strings[1].toUpperCase()
-                    i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],i.getFirstPart()+" "+strings[1]));
+                    i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],strings[0]+" "+strings[1]));
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() ==strings[1].toUpperCase()){
                             return e;
                         }
                     });
                     if(matches.length==1){
-                        i.setSecondPart(strings[1]);
+                        //ÄNDERUNG
+                        i.setSecondPart(toSave);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
                         i.setHCode(matches[0].getHexCode());
@@ -760,7 +783,7 @@ export class CommandMap{
                 }
                 else if(this.symbollist.isConst(strings[1])){
                     
-                    i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],i.getFirstPart()+" "+strings[1]));
+                    i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="dat_8"){
                             return e;
@@ -781,7 +804,7 @@ export class CommandMap{
                     }
                 }
                 else if(Manipulator.isDat_8(strings[1])){
-                    i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[1]),i.getFirstPart()+" "+Manipulator.formatHextoDat8(strings[1])));
+                    i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[1]),strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="dat_8"){
                             return e;
@@ -809,7 +832,7 @@ export class CommandMap{
                 break;
             case 'OR':case'XOR':case'CP':
                 save3(i);
-                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==i.getFirstPart()});
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
@@ -817,15 +840,18 @@ export class CommandMap{
                     return false;
                 }
                 if(this.getDests(matches).includes(strings[1].toUpperCase())){
+                    //ÄNDERUNG
+                    toSave=strings[1];
                     strings[1]=strings[1].toUpperCase()
-                    i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],i.getFirstPart()+" "+strings[1]));
+                    i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],strings[0]+" "+strings[1]));
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() ==strings[1].toUpperCase()){
                             return e;
                         }
                     });
                     if(matches.length==1){
-                        i.setSecondPart(strings[1]);
+                        //ÄNDERUNG
+                        i.setSecondPart(toSave);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
                         i.setHCode(matches[0].getHexCode());
@@ -840,7 +866,7 @@ export class CommandMap{
                 }
                 else if(this.symbollist.isConst(strings[1])){
                     
-                    i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],i.getFirstPart()+" "+strings[1]));
+                    i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="dat_8"){
                             return e;
@@ -861,7 +887,7 @@ export class CommandMap{
                     }
                 }
                 else if(Manipulator.isDat_8(strings[1])){
-                    i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[1]),i.getFirstPart()+" "+Manipulator.formatHextoDat8(strings[1])));
+                    i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[1]),strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="dat_8"){
                             return e;
@@ -888,7 +914,7 @@ export class CommandMap{
                 }
                 break;
             case 'SHL':case'SHR':
-                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==i.getFirstPart()});
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
                     i.setError(strings[1]);
@@ -907,7 +933,7 @@ export class CommandMap{
                     return false;
                 }
             case 'RCL':case'ROL':case'RCR':case'ROR':
-                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==i.getFirstPart()});
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
                     i.setError(strings[1]);
@@ -927,7 +953,7 @@ export class CommandMap{
                 }
             case 'JPNZ':case'JPZ':case'JPNC':case'JPC':case'JPNO':case'JPO':case'JPNS':case'JPS':
                 save3(i);
-                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==i.getFirstPart()});
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
@@ -935,7 +961,7 @@ export class CommandMap{
                     return false;
                 }
                 if(this.symbollist.isLabel(strings[1]) || this.symbollist.isEligible(strings[1])){ // MUSS label sein
-                    i.saveDescriptionLine(this.formatGefunden("Label '"+strings[1]+"'",i.getFirstPart()+" "+strings[1]));
+                    i.saveDescriptionLine(this.formatGefunden("Label '"+strings[1]+"'",strings[0]+" "+strings[1]));
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="label"){
                             return e;
@@ -975,7 +1001,7 @@ export class CommandMap{
                     return false;
                 }
                 if(this.symbollist.isLabel(strings[1]) || this.symbollist.isEligible(strings[1])){ // MUSS label sein
-                    i.saveDescriptionLine(this.formatGefunden("Label '"+strings[1]+"'",i.getFirstPart()+" "+strings[1]));
+                    i.saveDescriptionLine(this.formatGefunden("Label '"+strings[1]+"'",strings[0]+" "+strings[1]));
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="label"){
                             return e;
@@ -1032,7 +1058,7 @@ export class CommandMap{
                     }
                 }
                 else if(this.symbollist.isLabel(strings[1]) || this.symbollist.isEligible(strings[1])){ // MUSS label sein
-                    i.saveDescriptionLine(this.formatGefunden("Label '"+strings[1]+"'",i.getFirstPart()+" "+strings[1]));
+                    i.saveDescriptionLine(this.formatGefunden("Label '"+strings[1]+"'",strings[0]+" "+strings[1]));
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="label"){
                             return e;
@@ -1063,7 +1089,7 @@ export class CommandMap{
                 }
                 break;
             case 'RET':case 'HALT':
-                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==i.getFirstPart()});
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
                     i.setError(strings[1]);
@@ -1109,8 +1135,8 @@ export class CommandMap{
     }
     parsetoPseudoMnemoCode(i:InputLine,strings:string[]):boolean{
         if(this.pseudoMCodes.includes(strings[0].toUpperCase())){
-            strings[0]=strings[0].toUpperCase();
             i.setFirstPart(strings[0]);
+            strings[0]=strings[0].toUpperCase();
             i.saveDescriptionLine(this.formatGefunden(`Pseudo-Mnemocode ${strings[0]}`,strings[0]));
             if(strings.length<2){
                 i.saveDescriptionLine(this.formatErrorMassage("fehlende Operanden"));
@@ -1121,6 +1147,7 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8-bit)"));
                     save3(i);
                     if(Manipulator.isDat_8(strings[1])){
+                        i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (16-bit)`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
                         i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
                         i.setLength(Manipulator.formatHextoDat8(strings[1]));
                         i.setType(InputLineType.TRANSLATED);
@@ -1141,10 +1168,10 @@ export class CommandMap{
 
                 case 'DW':
                     // i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (16-bit) oder OFFSET Label"));
-                    i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8/16-bit)"));
                     save3(i);
+                    i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8/16-bit)"));
                     if(Manipulator.isDat_16(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (16-bit)`,i.getFirstPart()+" "+Manipulator.formatHextoDat16(strings[1])))
+                        i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (16-bit)`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
                         i.setLength(2);
                         i.setSecondPart(Manipulator.formatHextoDat16(strings[1]));
                         i.setType(InputLineType.TRANSLATED);
@@ -1160,10 +1187,10 @@ export class CommandMap{
 
                 case 'DB':
                     // i.saveDescriptionLine(this.formatErwartet("Wert(en)/Konstante(n) (8-bit)"));
-                    i.saveDescriptionLine(this.formatErwartet("Konstante (8-bit)"));
                     save3(i);
+                    i.saveDescriptionLine(this.formatErwartet("Konstante (8-bit)"));
                     if(Manipulator.isDat_8(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (8-bit)`,i.getFirstPart()+" "+Manipulator.formatHextoDat8(strings[1])))
+                        i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (8-bit)`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])))
                         i.setLength(1);
                         i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
                         i.setType(InputLineType.TRANSLATED);
@@ -1178,10 +1205,10 @@ export class CommandMap{
                     break;
 
                 case 'ORG':
-                    i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8/16-bit)"));
                     save3(i);
+                    i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8/16-bit)"));
                     if(Manipulator.isDat_16(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (16-bit)`,i.getFirstPart()+" "+Manipulator.formatHextoDat16(strings[1])))
+                        i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (16-bit)`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
                         i.setLength(Manipulator.hexToDec(strings[1]));
                         i.setSecondPart(Manipulator.formatHextoDat16(strings[1]));
                         i.setValid(true);
@@ -1195,13 +1222,13 @@ export class CommandMap{
                     break;
 
                 case 'EXT':
-                    i.saveDescriptionLine(this.formatErrorMassage(`Command 'EXT' is not defined yet!`));
+                    i.saveDescriptionLine(this.formatErrorMassage(`Pseudo-Mnemocode 'EXT' ist nicht unterstützt!`));
                     i.setFirstPart('EXT');
                     return false;
                     break;
 
                 case 'ENT':
-                    i.saveDescriptionLine(this.formatErrorMassage(`Command 'ENT' is not defined yet!`));
+                    i.saveDescriptionLine(this.formatErrorMassage(`Pseudo-Mnemocode 'ENT' ist nicht unterstützt!`));
                     i.setFirstPart('ENT');
                     return false;
                     break;
@@ -1231,21 +1258,21 @@ export class CommandMap{
                 i.saveDescriptionLine(this.formatGefunden("EQU",i.getFirstPart()+" EQU"));
                 i.saveDescriptionLine(`<span class="gray">parse Operandenfeld</span>`);
                 i.saveDescriptionLine(this.formatErwartet(`Wert/Konstante (16-bit)`));
-                i.setSecondPart("EQU");
+                i.setSecondPart(new_commands[0]);
 
                 if(new_commands.length>1){
                     let type=this.getDataType(new_commands[1]);
                     if(type ==DataType.dat_8){
-                        i.saveDescriptionLine(this.formatGefunden(` Wert (8-bit) ${Manipulator.formatHextoDat8(new_commands[1])}`,i.getFirstPart()+" "+i.getSecondPart()+" "+Manipulator.formatHextoDat8(new_commands[1])));
-                        i.setSecondPart(new_commands[0]);
+                        i.saveDescriptionLine(this.formatGefunden(` Wert (8-bit) ${Manipulator.formatHextoDat8(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat8(new_commands[1])));
+                        // i.setSecondPart(new_commands[0]);
                         i.setThirdPart(Manipulator.formatHextoDat8(new_commands[1]));
                         i.setValid(true);
                         this.symbollist.setConst(strings[0],new_commands[1]);
                         return true;
                     }
                     else if(type ==DataType.dat_16){
-                        i.saveDescriptionLine(this.formatGefunden(` Wert (16-bit) ${Manipulator.formatHextoDat16(new_commands[1])}`,i.getFirstPart()+" "+i.getSecondPart()+" "+Manipulator.formatHextoDat16(new_commands[1])));
-                        i.setSecondPart(new_commands[0]);
+                        i.saveDescriptionLine(this.formatGefunden(` Wert (16-bit) ${Manipulator.formatHextoDat16(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat16(new_commands[1])));
+                        // i.setSecondPart(new_commands[0]);
                         i.setThirdPart(Manipulator.formatHextoDat16(new_commands[1]));
                         i.setValid(true);
                         this.symbollist.setConst(strings[0],new_commands[1]);

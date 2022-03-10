@@ -1,5 +1,6 @@
 import { InputLineType } from "./Enums";
 import { Manipulator } from "./Manipulator";
+import { SymbolL } from "./SymbolList";
 
 export class InputLine{
     private startingAddr:string="";
@@ -91,6 +92,7 @@ export class InputLine{
     setRest(s:string){
         this.rest=s;
     }
+    
     setValid(b:boolean){this.valid=b;}
     setType(t:InputLineType){this.type=t;}
     saveDescriptionLine(addr:string){
@@ -135,9 +137,6 @@ export class InputLine{
     }
     getValid=()=>{return this.valid;}
     getType=()=>{return this.type;}
-
-    
-
     setLabel=():string=>{
         if(this.initialLine.includes(':')){
             let addr:string= Manipulator.splitStringHalf(this.initialLine,':')[0]
@@ -171,7 +170,6 @@ export class InputLine{
     setLabelTo=(s:string)=>{
         this.label =s;
     }
-
     setCommandLine=():string=>{
         let s=Manipulator.splitStringHalf(this.initialLine,":");
         let ss=Manipulator.splitStringHalf(this.initialLine,";");
@@ -179,39 +177,114 @@ export class InputLine{
         if(ss[1]!=undefined){
             this.commentary=ss[1];
         }
-
-        /* this.label=this.label.trim();
-        this.commentary=this.commentary.trim(); */
         return addr.trim();
     }
-    /* commandLineToCurrentLine=():string=>{
+    formatInputToDisplay(){
         if(this.valid){
             if(this.secondPart.toUpperCase()=="EQU"){
-                this.secondPart = "EQU";
-                return(`${this.firstPart} ${this.secondPart} ${this.thirdPart}`);
+                this.secondPart=this.secondPart.toUpperCase();
             }
             else{
-                return (`${(this.firstPart==""?"":this.firstPart)} ${(this.secondPart==""?"":this.secondPart)}${(this.thirdPart==""?"":', '+this.thirdPart)}`);
+                this.firstPart=this.firstPart.toUpperCase();
+                if(!SymbolL.isLabel(this.secondPart) && !SymbolL.isConst(this.secondPart) && !Manipulator.isDat_16(this.secondPart)){
+                    this.secondPart=this.secondPart.toUpperCase();
+                }else if(this.secondPart!=""){
+                    if(Manipulator.isDat_8(this.secondPart)){
+                        this.secondPart=Manipulator.formatHextoDat8(this.secondPart);
+                    }
+                    else if(Manipulator.isDat_16(this.secondPart)){
+                        this.secondPart=Manipulator.formatHextoDat16(this.secondPart);
+                    }
+                }
+                if(!SymbolL.isLabel(this.thirdPart) && !SymbolL.isConst(this.thirdPart) && !Manipulator.isDat_16(this.thirdPart)){
+                    this.thirdPart=this.thirdPart.toUpperCase();
+                }if(this.thirdPart!=""){
+
+                    if(Manipulator.isDat_8(this.thirdPart)){
+                        this.thirdPart=Manipulator.formatHextoDat8(this.thirdPart);
+                    }
+                    else if(Manipulator.isDat_16(this.thirdPart)){
+                        this.thirdPart=Manipulator.formatHextoDat16(this.thirdPart);
+                    }
+                }
             }
         }
-        else{
-
+    }
+    getCommandLineToCurrentLine(){
+        let dsrl="";
+        if(this.label!=""){
+            dsrl+=`<span id="crLabel">${this.label}</span>: `;
         }
-    } */
+        if(this.firstPart!=""){
+            dsrl+=`<span id="crFirst">${this.firstPart}</span> `;
+        }
+        if(this.secondPart!="" && this.secondPart.toUpperCase()=="EQU"){
+            dsrl+=`<span id="crSecond">${this.secondPart}</span> `;
+        }
+        else if(this.secondPart!="" && this.secondPart.toUpperCase()!="EQU" && this.thirdPart==""){
+            dsrl+=`<span id="crSecond">${this.secondPart}</span> `;
+        }
+        else if(this.secondPart!=""){
+            dsrl+=`<span id="crSecond">${this.secondPart}</span>,`;
+        }
+        if(this.thirdPart!=""){
+            dsrl+=`<span id="crThird">${this.thirdPart}</span>`;
+        }
+        if(this.error!=""){
+            dsrl+=`<span id="crError">${this.error}</span>`;
+        }
+        if(this.rest!=""){
+            dsrl+=`<span id="crRest">${this.rest}</span>`;
+        }
+        return dsrl;
+    }
+
     getAll():string[]{
         return [this.label,this.firstPart,this.secondPart,this.thirdPart,this.error,this.rest];
     }
     getAllV():number[]{
-        return [this.label!=""?1:0,this.firstPart!=""?1:0,this.secondPart!=""?1:0,this.thirdPart!=""?1:0,this.error!=""?1:0,this.rest!=""?1:0];
+        return [this.label!=""?1:0, this.firstPart!=""?1:0, this.secondPart!=""?1:0, this.thirdPart!=""?1:0, this.error!=""?1:0, this.rest!=""?1:0];
     }
-    commandLinetoString=():string=>{
+    commandLinetoString=(b:boolean):string=>{
+        let first:string=this.firstPart,second:string=this.secondPart,third:string=this.thirdPart;
+
         if(this.valid==true){
-            if(this.secondPart.toUpperCase()=="EQU"){
-                this.secondPart = "EQU";
-                return(`${this.firstPart} ${this.secondPart} ${this.thirdPart}`);
+            if(b){
+                if(second.toUpperCase()=="EQU"){
+                    second=second.toUpperCase();
+                }
+                else{
+                    first=first.toUpperCase();
+                    if(!SymbolL.isLabel(second) && !SymbolL.isConst(second) && !Manipulator.isDat_16(second)){
+                        second=second.toUpperCase();
+                    }
+                    else if(second !=""){
+                        if(Manipulator.isDat_8(second)){
+                            second=Manipulator.formatHextoDat8(second);
+                        }
+                        else if(Manipulator.isDat_16(second)){
+                            second=Manipulator.formatHextoDat16(second);
+                        }
+                    }
+                    if(!SymbolL.isLabel(third) && !SymbolL.isConst(third) && !Manipulator.isDat_16(third)){
+                        third=third.toUpperCase();
+                    }
+                    else if(third !=""){
+                        if(Manipulator.isDat_8(third)){
+                            third=Manipulator.formatHextoDat8(third);
+                        }
+                        else if(Manipulator.isDat_16(third)){
+                            third=Manipulator.formatHextoDat16(third);
+                        }
+                    }
+                }
+            }
+            if(second.toUpperCase()=="EQU"){
+                // this.secondPart = "EQU";
+                return(`${first} ${second} ${third}`);
             }
             else{
-                return (`${(this.firstPart==""?"":this.firstPart)} ${(this.secondPart==""?"":this.secondPart)}${(this.thirdPart==""?"":','+this.thirdPart)}`);
+                return (`${first} ${second}${(third==""?"":','+third)}`);
             }
         }
         else{
@@ -221,18 +294,4 @@ export class InputLine{
     hasLabel=():boolean=>{
         return this.label !="";
     }
-    inputLineToString=():string=>{
-        if(this.hasLabel()){
-            return ((this.label==""?"":this.label+':')+"\t"+this.commandLinetoString()+(this.commentary==""?"":';'+this.commentary));
-        }
-        else{
-            return ("\t\t"+this.commandLinetoString()+(this.commentary==""?"":';'+this.commentary));
-        }
-        
-    }
-
-    testToString=()=>{
-        return (`${this.label==""?"":this.label+'\n'}${(this.firstPart==""?"":this.firstPart)} ${(this.secondPart==""?"":this.secondPart)}${(this.thirdPart==""?"":','+this.thirdPart)}${this.commentary==""?"":'\n'+this.commentary}`);
-    }
-
 }

@@ -63,7 +63,7 @@ export class AnimationControl{
         this.reset=false;
         this.end=false;
         this.baseFrameTime=500;
-        this.speed=4;
+        this.speed=16;
     }
     setStart=()=>{
         this.start=true;

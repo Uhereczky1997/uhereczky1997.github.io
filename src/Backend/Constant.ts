@@ -17,6 +17,9 @@ export class Constant{
     setValue(addr:string){
         this.value=addr;
     }
+    toStringtoMovable():string{
+        return `${this.name} Wert:${this.value}`;
+    }
     toString():string{
         return `<span class="gray">Konst.:</span> ;&nbsp;&nbsp;&nbsp; ${this.name} Wert:${this.value}`;
     }
