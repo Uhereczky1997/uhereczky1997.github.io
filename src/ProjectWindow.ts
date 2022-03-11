@@ -455,13 +455,16 @@ export class ProjectWindow{
                     }
                 }
             }
-
+            console.log(l.getType());
             if(this.symbolList.isConst(l.getFirstPart())){
                 if(aniControl.start){
                     await sleepUntilNextStep();
                     await this.anim.moveLabeltoSymboltable(this.symbolList.getSpecificConstantByName(l.getFirstPart())!.toStringtoMovable());
                 }
                 this.rePushSymbols();
+                this.pushTranslationOf(i);
+            }
+            else if(l.getType()==InputLineType.PSEUDOTRANSLATED){
                 this.pushTranslationOf(i);
             }
             else{
@@ -582,13 +585,13 @@ export class ProjectWindow{
         else{
             console.log("no Input");
         } */
-        console.log(this);
+        // console.log(this);
         aniControl.setReset();
         await sleepFor(100);
         await this.partialReset();
         await sleepFor(100);
         await this.refreshInputListItems();
-        console.log(this);
+        // console.log(this);
     }
 
     public displayInputLines=()=>{        

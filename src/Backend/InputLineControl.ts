@@ -64,8 +64,32 @@ export class InputLineControl{
     }
     addInputLine=(inputString:string):void=>{
         let i:InputLine= new InputLine(inputString,this.IDcounter);
+        console.log(this.IDcounter);
         if(i.getType()==InputLineType.EMPTY){
             this.inputlines.push(i);
+            this.IDcounter=this.IDcounter +1;
+            return;
+        }
+        else if(i.getType()==InputLineType.PSEUDOTRANSLATED){
+            this.map.mapInputLineByCase(i);
+            this.inputlines.push(i);
+            if(i.getValid()){ // UPDATE FOR ORG?????
+                // console.log(this.fHD16(String(this.startingAddrOfTranslated)));
+                if(this.startingAddrOfTranslated==0){
+                    i.setStartingAddr('0000h');
+                }
+                else{
+                    i.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
+                }
+                // i.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
+                this.symbolliste.updateLabel(i.getLabel(),i.getStartingAddr());
+            }
+            else{
+                if(i.getLabel()!=""){
+                    this.symbolliste.removeLabel(i.getLabel());
+                }
+                this.invalidIDs.push(this.IDcounter);
+            }
             this.IDcounter=this.IDcounter +1;
             return;
         }
@@ -86,6 +110,7 @@ export class InputLineControl{
             this.invalidIDs.push(this.IDcounter);
         }
         this.IDcounter=this.IDcounter +1;
+        
         // console.log(i);
     }
 
@@ -206,7 +231,7 @@ export class InputLineControl{
             saveInput(i,5);
             i.saveDescriptionLine(`<span class="eingeruckt">`+"Addresszähler = "+this.fHD16WH(String(i.getLength()))+`</span>`);
         }
-        if(i.getType()==InputLineType.TRANSLATED){
+        else if(i.getType()==InputLineType.TRANSLATED){
             saveInput(i,5);
             if(i.getFirstPart().toUpperCase()=="RS"){
                 i.saveDescriptionLine(`<span class="eingeruckt">`+s+" -> "+(h.length>4?"00 ("+i.getLength()+"x)":h)+`</span>`);

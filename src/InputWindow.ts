@@ -67,7 +67,7 @@ export class InputWindow{
         let s:string;
         this.translate();
         s = this.displayError();
-        console.log(s.length);
+        // console.log(s.length);
         if(s.length>88){
             errorDescriptionDiv.innerHTML=s;
         }
@@ -93,7 +93,7 @@ export class InputWindow{
         errorDescriptionDiv.innerHTML += `<p> ${e.getDescriptionLine().join("</p><p>")} </p>`;
         errorDescriptionDiv.innerHTML += `<p> ----------------------------------------- </p>`;
         updateScroll(errorDescriptionDiv.id);
-        console.log(e.getTranslation());
+        // console.log(e.getTranslation());
     }
     private addLinetoTextArea=(s:string[])=>{
         this.InputTextAreaElement.value="";
@@ -176,7 +176,7 @@ export class InputWindow{
         createClickListener('Preview',this.previewTranslation);
         createClickListener('GenerateDummy',this.generateDummy);
         createClickListener('CloseInputWindow',this.openEditWindow);
-        createClickListener('TestThing',this.consolescreensize);
+        // createClickListener('TestThing',this.consolescreensize);
         //errorOnlyCheckBox.addEventListener('change',this.setChecked);
     }
     public generateDummy = ():void=>{

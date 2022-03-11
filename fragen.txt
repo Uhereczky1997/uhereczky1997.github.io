@@ -82,7 +82,6 @@ MNEMOCODE 5 ZEICHEN (inc. SPACE) -> REST
 
 
 DETAILAUSGABE:
-... für nicht vollständig analysierten Befehle
 
 parse Labelfeld/Befehlsfeld:
     erwarte: Labeldefinition, Mnemocode oder Konstante (+EQU)
@@ -123,12 +122,8 @@ Label schwarz
 
 
 ÜBERSETZUNG + VALIDITÄT
-label:
++ OFFSET LABEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-
-mov a,B
-
-(label können alleine stehen (werden nicht übersetzt.))
 
 WEITERER FUNKTIONALITÄTEN:
 

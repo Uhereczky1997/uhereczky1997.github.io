@@ -185,6 +185,9 @@ grid-template-columns: 1fr;
     box-sizing: border-box;
  */
 }
+.bold{
+    font-weight: bold;
+}
 .button1:hover{
     background-color: rgb(85, 151, 252);
     -webkit-transition: all .1s linear;

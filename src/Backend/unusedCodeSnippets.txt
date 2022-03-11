@@ -1678,3 +1678,7 @@ testRegex("abc1"); */
             return this.commandLine;
         }
     }
+
+
+    +" ..."
+`Label '<span class="labelBlue">${strings[0]}</span>'`

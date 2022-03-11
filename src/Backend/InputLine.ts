@@ -29,10 +29,16 @@ export class InputLine{
         this.commandLine=this.setCommandLine();
         this.preemptiveValidation();
     }
+    getCommandline():string{
+        return this.commandLine;
+    }
     preemptiveValidation(){
-        if(this.commandLine==""){
+        if(this.commandLine=="" && this.label==""){
             this.valid=true;
             this.type=InputLineType.EMPTY;
+        }
+        else if(this.commandLine==""&& this.label!=""){
+            this.type=InputLineType.PSEUDOTRANSLATED;
         }
     }
     setError(s:string){
@@ -131,6 +137,9 @@ export class InputLine{
     }
     setCommandLine=():string=>{
         let s=Manipulator.splitStringHalf(this.initialLine,":");
+        if(s.length>1){
+            this.label=s[0];
+        }
         let ss=Manipulator.splitStringHalf(this.initialLine,";");
         let addr:string = this.initialLine.replace(s[0]+':','').replace(';'+ss[1],'');
         if(ss[1]!=undefined){

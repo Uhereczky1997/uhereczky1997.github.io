@@ -8,6 +8,7 @@ export enum DataType{
 }
 export enum InputLineType{
     TRANSLATED="TRANSLATED",
+    PSEUDOTRANSLATED="PSEUDOTRANSLATED",
     NOTTRANSLATED="NOTTRANSLATED",
     EMPTY="EMPTY"
 }

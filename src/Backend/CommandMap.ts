@@ -5,10 +5,10 @@ import { InputLine } from "./InputLine";
 import { InputLineType, DataType } from "./Enums";
 
 
-const parse1:string = `<span class="gray">parse Labelfeld/Befehlsfeld ...</span>`;
-const parse2:string = `<span class="gray">parse Befehlsfeld ...</span>`;
-const parse3:string = `<span class="gray">parse Operandenfeld (1) ...</span>`;
-const parse4:string = `<span class="gray">parse Operandenfeld (2) ...</span>`;
+const parse1:string = `<span class="gray">parse Labelfeld/Befehlsfeld:</span>`;
+const parse2:string = `<span class="gray">parse Befehlsfeld:</span>`;
+const parse3:string = `<span class="gray">parse Operandenfeld (1):</span>`;
+const parse4:string = `<span class="gray">parse Operandenfeld (2):</span>`;
 const parse5:string = `<span class="gray">gesamter Befehl:</span>`;
 
 const addressierungDirekt:string = `erkannt Direkte Adressierung`;
@@ -196,7 +196,7 @@ export class CommandMap{
 
     formatGefunden(s1:string,s2:string):string{
         // return 'gefunden: '+(s1!=""?s1+' ':"")+'-> '+s2;
-        return `<span class="eingeruckt">gefunden: ${s1!=""?s1+' ':""} -> ${s2}</span>`;
+        return `<span class="eingeruckt">gefunden: ${s1!=""?s1+' ':""} -> <span class="bold">${s2}</span></span>`;
     }
     
     formatErwartet(s1:string):string{
@@ -221,7 +221,7 @@ export class CommandMap{
             strings=Manipulator.splitStringHalf(commandLine,":");
             if(this.symbollist.isLabel(strings[0])){
                 if(this.symbollist.getPositionOfSpecificLabel(strings[0])!=undefined){
-                    i.saveDescriptionLine(this.formatErrorMassage(`Label ${strings[0]} ist schon bereits besetzt`))
+                    i.saveDescriptionLine(this.formatErrorMassage(`Label ${strings[0]} ist schon bereits besetzt`));
                     i.setError(strings[0]);
                     i.setRest(": "+strings[1]);
                     return false;
@@ -234,11 +234,17 @@ export class CommandMap{
                 return false;
             }
             else{
-                i.saveDescriptionLine(this.formatGefunden("Doppelpunkte ","Label '"+strings[0]+"'"));
+                i.saveDescriptionLine(this.formatGefunden("Doppelpunkte ",`Label '<span class="labelBlue">${strings[0]}</span>'`));
                 i.setLabelTo(strings[0]);
                 this.symbollist.setLabelWithoutPosition(strings[0]);
                 saveInput(i,2);
                 i.saveDescriptionLine(this.formatErwartet("(Pseudo-)Mnemocode"));
+                if(strings[1]==""){
+                    i.saveDescriptionLine(`<span class="eingeruckt">gefunden: Ende der Codezeile</span>`);
+                    i.setType(InputLineType.PSEUDOTRANSLATED);
+                    i.setValid(true);
+                    return true;
+                }
                 commandLine=strings[1];
             }
         }
@@ -248,7 +254,7 @@ export class CommandMap{
             i.setFirstPart(strings[0]);
             //ÄNDERUNG
             strings[0] = strings[0].toUpperCase();
-            i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
+            // i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
            return this.parseToMnemoCode(i,strings);
         }
         else if(this.pseudoMCodes.includes(strings[0].toUpperCase()) || this.symbollist.isEligible(strings[0])){
@@ -264,6 +270,7 @@ export class CommandMap{
             return false;
         }        
     }
+
     parseToMnemoCode(i:InputLine,strings:string[]):boolean{
         let consoletostring="";
         let matches:MnemoCommand[]=[];
@@ -271,6 +278,8 @@ export class CommandMap{
         // strings[0]=strings[0].toUpperCase();
         switch(strings[0]){
             case 'MOV':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
                 save3(i);
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='MOV'}); //Alle treffer auf MOV Codes filtriert
                 consoletostring=this.getDests(matches).join(", ");
@@ -287,7 +296,7 @@ export class CommandMap{
                     // i.setSecondPart(strings[0]);
                     //ÄNDERUNG
                     strings[0] = strings[0].toUpperCase();
-                    i.saveDescriptionLine(this.formatGefunden("Register "+strings[0],i.getFirstPart()+" "+strings[0]));
+                    i.saveDescriptionLine(this.formatGefunden("Register "+strings[0],i.getFirstPart().toUpperCase()+" "+strings[0]+" ..."));
                     
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() ==strings[0]){
@@ -450,7 +459,8 @@ export class CommandMap{
                                 }
                                 //i.saveDescriptionLine(`Gefunden 'label'\n ${commands[1]} ist ein bereits existierender 'label'`);
                                 let value1 = this.symbollist.getSpecificLabelByName(strings[1]);
-                                i.saveDescriptionLine(this.formatGefunden("Label "+`'${value1?.getName()}'`,i.getFirstPart()+" "+i.getSecondPart()+", "+value1?.getName()));
+                                // i.saveDescriptionLine(this.formatGefunden("Label "+`'${value1?.getName()}'`,i.getFirstPart()+" "+i.getSecondPart()+", "+value1?.getName()));
+                                i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${value1?.getName()}</span>'`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+value1?.getName()));
                                 i.setThirdPart(strings[1]);
                                 matches=matches.filter(e=>{
                                     if(e.getSource()=="label"){
@@ -467,7 +477,7 @@ export class CommandMap{
                                 }
                                 //i.saveDescriptionLine(`Gefunden 'label'\n ${strings[1]} als neue 'label' definiert`);
                                 this.symbollist.setLabelWithoutPosition(strings[1]);
-                                i.saveDescriptionLine(this.formatGefunden("Label "+`'${strings[1]}'`,i.getFirstPart()+" "+i.getSecondPart()+", "+strings[1]));
+                                i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[1]}</span>'`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+strings[1]));
                                 i.setThirdPart(strings[1]);
                                 matches=matches.filter(e=>{
                                     if(e.getSource()=="label"){
@@ -501,7 +511,7 @@ export class CommandMap{
                     }
                 }
                 else if(this.symbollist.isLabel(strings[0]) || this.symbollist.isEligible(strings[0])){ // MUSS label sein
-                    i.saveDescriptionLine(this.formatGefunden("Label '"+strings[0]+"'",i.getFirstPart()+" "+strings[0]))
+                    i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[0]}</span>'`,i.getFirstPart().toUpperCase()+" "+strings[0]+" ..."))
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="label"){
                             return e;
@@ -523,7 +533,7 @@ export class CommandMap{
                         //ÄNDERUNG
                         toSave=strings[1];
                         strings[1] = strings[1].toUpperCase();
-                        i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],i.getFirstPart()+" "+i.getFirstPart()+strings[1]))
+                        i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],i.getFirstPart().toUpperCase()+" "+i.getSecondPart()+","+strings[1]))
                         matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                             if(e.getSource() ==strings[1]){
                                 return e;
@@ -561,6 +571,8 @@ export class CommandMap{
                 }
                 break;
             case 'PUSH':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
+
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='PUSH'});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viele Operanden!"));
@@ -576,6 +588,8 @@ export class CommandMap{
                     }
                 break;
             case 'POP':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
+
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='POP'});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viele Operanden!"));
@@ -591,6 +605,8 @@ export class CommandMap{
                     }
                 break;
             case 'IN':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
                 save3(i);
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='IN'});
                 i.saveDescriptionLine(this.formatErwartet("A"));
@@ -601,7 +617,7 @@ export class CommandMap{
                 strings = Manipulator.splitStringHalf(strings[1],",");
                 strings = this.filterForEmtpyStrings(strings);
                 if(strings[0].toUpperCase() =="A"){
-                    i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+strings[0]));
+                    i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+strings[0]+" ..."));
                     i.setSecondPart(strings[0]);
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8-bit)"));
@@ -645,6 +661,8 @@ export class CommandMap{
                 }
                 break;
             case 'OUT':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
                 save3(i);
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='OUT'});
                 i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8-bit)"));
@@ -656,7 +674,7 @@ export class CommandMap{
                 strings = Manipulator.splitStringHalf(strings[1],",");
                 strings = this.filterForEmtpyStrings(strings);
                 if(this.symbollist.isConst(strings[0])){
-                    i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[0],i.getFirstPart().toUpperCase()+" "+strings[0]))
+                    i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[0],i.getFirstPart().toUpperCase()+" "+strings[0]+" ..."))
                     i.setSecondPart(strings[0]);
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet("A"));
@@ -665,7 +683,7 @@ export class CommandMap{
                         return false;
                     }
                     if(strings[1].toUpperCase() =="A"){
-                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+i.getSecondPart()+", A"));
+                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+strings[0]+", A"));
                         //ÄNDERUNG
                         i.setThirdPart(strings[1])
                         i.setType(InputLineType.TRANSLATED);
@@ -681,7 +699,7 @@ export class CommandMap{
                     }
                 }
                 else if(Manipulator.isDat_8(strings[0])){
-                    i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[0]),i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])));
+                    i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[0]),i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+" ..."));
                     // Änderung
                     // i.setSecondPart(Manipulator.formatHextoDat8(strings[0]));
                     i.setSecondPart((strings[0]));
@@ -692,7 +710,7 @@ export class CommandMap{
                         return false;
                     }
                     if(strings[1].toUpperCase() =="A"){
-                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+i.getSecondPart()+", A"));
+                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+strings[0]+", A"));
                         //ÄNDERUNG
                         i.setThirdPart(strings[1])
                         i.setType(InputLineType.TRANSLATED);
@@ -714,6 +732,8 @@ export class CommandMap{
                 }
                 break;
             case 'INC':case'DEC':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
                 save3(i);
                 //ÄNDERUNG
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
@@ -755,6 +775,8 @@ export class CommandMap{
                 }
                 break;
             case 'ADD':case'SUB':case'AND':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
                 save3(i);
                 //ÄNDERUNG
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
@@ -841,6 +863,8 @@ export class CommandMap{
                 }
                 break;
             case 'OR':case'XOR':case'CP':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
                 save3(i);
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 consoletostring = this.getDests(matches).join(", ");
@@ -926,6 +950,8 @@ export class CommandMap{
                 }
                 break;
             case 'SHL':case'SHR':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
+
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
@@ -945,6 +971,8 @@ export class CommandMap{
                     return false;
                 }
             case 'RCL':case'ROL':case'RCR':case'ROR':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
+
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
@@ -964,6 +992,8 @@ export class CommandMap{
                     return false;
                 }
             case 'JPNZ':case'JPZ':case'JPNC':case'JPC':case'JPNO':case'JPO':case'JPNS':case'JPS':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
                 save3(i);
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 consoletostring = this.getDests(matches).join(", ");
@@ -973,7 +1003,7 @@ export class CommandMap{
                     return false;
                 }
                 if(this.symbollist.isLabel(strings[1]) || this.symbollist.isEligible(strings[1])){ // MUSS label sein
-                    i.saveDescriptionLine(this.formatGefunden("Label '"+strings[1]+"'",strings[0]+" "+strings[1]));
+                    i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[0]}</span>'`,strings[0]+" "+strings[1]));
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="label"){
                             return e;
@@ -1004,6 +1034,8 @@ export class CommandMap{
                 }
                 break;
             case 'JP':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
                 save3(i);
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=="JP"});
                 consoletostring = this.getDests(matches).join(", ");
@@ -1013,7 +1045,7 @@ export class CommandMap{
                     return false;
                 }
                 if(this.symbollist.isLabel(strings[1]) || this.symbollist.isEligible(strings[1])){ // MUSS label sein
-                    i.saveDescriptionLine(this.formatGefunden("Label '"+strings[1]+"'",strings[0]+" "+strings[1]));
+                    i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[1]}</span>'`,strings[0]+" "+strings[1]));
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="label"){
                             return e;
@@ -1043,8 +1075,10 @@ export class CommandMap{
                     return false;
                 }
                 break;
-                
+
             case 'CALL':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
                 save3(i);
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=="CALL"});
                 consoletostring = this.getDests(matches).join(", ");
@@ -1070,7 +1104,7 @@ export class CommandMap{
                     }
                 }
                 else if(this.symbollist.isLabel(strings[1]) || this.symbollist.isEligible(strings[1])){ // MUSS label sein
-                    i.saveDescriptionLine(this.formatGefunden("Label '"+strings[1]+"'",strings[0]+" "+strings[1]));
+                    i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[1]}</span>'`,strings[0]+" "+strings[1]));
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="label"){
                             return e;
@@ -1101,6 +1135,8 @@ export class CommandMap{
                 }
                 break;
             case 'RET':case 'HALT':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
+
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
@@ -1121,6 +1157,8 @@ export class CommandMap{
                 }
                 break;
             case 'NOP':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
+
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=="NOP"});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
@@ -1145,11 +1183,12 @@ export class CommandMap{
                 return false;
         }
     }
+
     parsetoPseudoMnemoCode(i:InputLine,strings:string[]):boolean{
         if(this.pseudoMCodes.includes(strings[0].toUpperCase())){
             i.setFirstPart(strings[0]);
             strings[0]=strings[0].toUpperCase();
-            i.saveDescriptionLine(this.formatGefunden(`Pseudo-Mnemocode ${strings[0]}`,strings[0]));
+            i.saveDescriptionLine(this.formatGefunden(`Pseudo-Mnemocode ${strings[0]}`,strings[0]+" ..."));
             if(strings.length<2){
                 i.saveDescriptionLine(this.formatErrorMassage("fehlende Operanden"));
                 return false;
@@ -1262,7 +1301,7 @@ export class CommandMap{
             
         }
         else if(this.symbollist.isEligible(strings[0])&&!this.symbollist.isConst(strings[0])&&!this.symbollist.isLabel(strings[0]) && i.getLabel() ==""){
-            i.saveDescriptionLine(this.formatGefunden(`Konstante ${strings[0]}`,strings[0]));
+            i.saveDescriptionLine(this.formatGefunden(`Konstante ${strings[0]}`,strings[0]+" ..."));
             save2(i);
             i.saveDescriptionLine(this.formatErwartet(`EQU`));
             if(strings.length<2){
@@ -1275,7 +1314,7 @@ export class CommandMap{
 
             i.setFirstPart(strings[0]);
             if(new_commands[0].toUpperCase()=="EQU"){
-                i.saveDescriptionLine(this.formatGefunden("EQU",i.getFirstPart()+" EQU"));
+                i.saveDescriptionLine(this.formatGefunden("EQU",i.getFirstPart()+" EQU"+" ..."));
                 i.saveDescriptionLine(`<span class="gray">parse Operandenfeld</span>`);
                 i.saveDescriptionLine(this.formatErwartet(`Wert/Konstante (16-bit)`));
                 i.setSecondPart(new_commands[0]);
@@ -1349,7 +1388,6 @@ export class CommandMap{
             return false;
         }
     }
-
 
     getDataType(addr:string):DataType{
         if(this.Regs.includes(addr)||this.pseudoMCodes.includes(addr)||this.mCodes.includes(addr)){
