@@ -25,7 +25,7 @@ export const sleepUntilNextStep=async():Promise <any>=>{
         }
         else{
             await sleepFor(10);
-            c-=20*(aniControl.baseFrameTime/1000)*aniControl.speed;
+            c-=5*(aniControl.baseFrameTime/1000)*aniControl.speed*aniControl.speed;
             await checkIfPaused();
         }
     }
@@ -50,7 +50,7 @@ export class AnimationControl{
         this.stop=false;
         this.reset=false;
         this.end=false;
-        this.baseFrameTime=500;
+        this.baseFrameTime=1000;
         this.speed=1;
         this.animationType=0;
         this.frames=60;
@@ -62,8 +62,9 @@ export class AnimationControl{
         this.stop=false;
         this.reset=false;
         this.end=false;
-        this.baseFrameTime=500;
+        this.baseFrameTime=1000;
         this.speed=1;
+        this.updateSpeedDisplay();
     }
     setStart=()=>{
         this.start=true;
@@ -124,21 +125,18 @@ export class AnimationControl{
         // }
         // this.updateSpeedDisplay();
         // console.log(this.speed);
-        // //this.updateBaseFrameTime();
         this.speed+=1;
         if(this.speed==5){
             this.speed=1;
         }
         this.updateSpeedDisplay();
         // console.log(this.speed);
-        //this.updateBaseFrameTime();
+
     }
     updateSpeedDisplay(){
         speedBTN.innerText=(this.speed==1?"":this.speed+"x-")+"speed";
     }
-    updateBaseFrameTime=()=>{
-        this.baseFrameTime=1000/this.speed;
-    }
+
     setFrames=(n:number)=>{
         this.frames=n;
     }

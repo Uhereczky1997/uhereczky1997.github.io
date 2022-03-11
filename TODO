@@ -13,15 +13,20 @@ Outputwindow: [] copy to clipboard
 
 !!! edge case & thorough testing !!!
 
-register adressierungs art erkannt-> was für eine adressierung
 
 filtern von bibliothek
 
-hervorheben von gerade geparse-ten Befehl
 
-rot hinterlegung von fehlerhaften roten
 
 css variables : https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
+
+
+
+label am ende von speicherabbild anzeigen (wenn umbekannt)
+hervorheben von gerade geparse-ten Befehl
+register adressierungs art erkannt-> was für eine adressierung
+farben-wechsel bei Error (hintergrund von inputtext, )
+wechseln auf fertigen Section beim erfolgreichen Übersetzen
 
 OFFSET label !!!!
 Labels min länge 3 (nicht Ziffer, nur Ziffer, Buchstaben und _)

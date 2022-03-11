@@ -86,7 +86,7 @@ export class InputLineControl{
             this.invalidIDs.push(this.IDcounter);
         }
         this.IDcounter=this.IDcounter +1;
-        console.log(i);
+        // console.log(i);
     }
 
     getLittleEndianOf(h:string):string{

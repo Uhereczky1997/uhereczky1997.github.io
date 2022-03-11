@@ -102,13 +102,12 @@ export class InputWindow{
         });
     }
 
-    public translateAndGo = ():void=>{
+    public translateAndGo = async()=>{
         try{
-            this.translate();
+            await this.translate();
             //if(!this.inputcontrol.hasInvalid()){
-                this.openEditWindow();
-                this.pushInputLines();
-                aniControl.resetFlags();
+            await this.pushInputLines();
+            await this.openEditWindow();
             //}
             //else window.alert(`Input has InvalidLines-> ${this.inputcontrol.getInvalidIDs()}`);
         }catch(e){
@@ -116,11 +115,12 @@ export class InputWindow{
         }
         
     }
-    public pushInputLines=():void=>{
+    public pushInputLines=async()=>{
         if(this.pWindow){
-            this.pWindow.partialReset();
-            this.pWindow.refreshInputLines();
-            this.pWindow.displayInputLines();
+            await this.pWindow.reset()
+            // this.pWindow.partialReset();
+            await this.pWindow.refreshInputLines();
+            await this.pWindow.displayInputLines();
         }
     }
     public openEditWindow =()=>{
@@ -221,4 +221,7 @@ export class InputWindow{
             "const1 EQU 3434h",
         ]);
     }
+
+    
 } 
+// export iWindow:InputWindow= new InputWindow()

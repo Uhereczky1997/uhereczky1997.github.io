@@ -77,7 +77,7 @@ export class ProjectWindow{
         }
     }
     
-    public partialReset = () =>{
+    public partialReset =async () =>{
         this.inputLines=[];
         currentLine.innerHTML="";
         symbolTableLines.innerHTML="";
@@ -88,9 +88,9 @@ export class ProjectWindow{
         OutputAddresses.innerHTML="";
         OutputLines.innerHTML="";
         OutputTextAreaElement.innerHTML="";
-        this.inputLineControl.reset();
-        this.anim.reset();
-        aniControl.resetFlags();
+        await this.inputLineControl.reset();
+        await this.anim.reset();
+        await aniControl.resetFlags();
         getHtmlElement("InputText").scrollTop=0;
     }
 
@@ -465,6 +465,10 @@ export class ProjectWindow{
                 this.pushTranslationOf(i);
             }
             else{
+                if(aniControl.start){
+                    await sleepUntilNextStep();
+                    await this.anim.displayAddresserhoehung(l.getLength());
+                }
                 addresszahler.innerHTML= `${l.getEndAddr()}`;
             }
 
@@ -566,15 +570,25 @@ export class ProjectWindow{
     }
 
     public reset=async()=>{
-        if(this.inputstrings.length>0){
+        /* if(this.inputstrings.length>0){
+            console.log(this);
             aniControl.setReset();
-            await sleepFor(10);
-            this.partialReset();
-            this.refreshInputListItems();
+            await sleepFor(100);
+            await this.partialReset();
+            await sleepFor(100);
+            await this.refreshInputListItems();
+            console.log(this);
         }
         else{
             console.log("no Input");
-        }
+        } */
+        console.log(this);
+        aniControl.setReset();
+        await sleepFor(100);
+        await this.partialReset();
+        await sleepFor(100);
+        await this.refreshInputListItems();
+        console.log(this);
     }
 
     public displayInputLines=()=>{        

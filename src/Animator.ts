@@ -21,7 +21,8 @@ export class Animator{
     targetElemTop:number=0;
     targetElemLeft:number=0;
     frameSleepTime:number = 10;
-    pixeljump:number=aniControl.speed;
+    turnSleepTime:number = 1000;
+    addresszaehlerElem:HTMLElement;
 
     constructor(){
         this.movingElementFlag = false;
@@ -34,12 +35,14 @@ export class Animator{
         this.outPutLinesElem = getHtmlElement("OutputLines");
         this.descriptionTableBox= getHtmlElement("descriptionSymboltableBox");
         this.outPutText = getHtmlElement("OutputText");
+        this.addresszaehlerElem = getHtmlElement("Addresszahler");
     }
 
     reset(){
         this.movingElementFlag=false;
         this.turnMovableHidden();
-        this.frameSleepTime=3;
+        this.frameSleepTime=10;
+        this.turnSleepTime = 1000;
     }
 
     setMovableParameters(t:number,l:number,w:number,h:number){
@@ -48,18 +51,23 @@ export class Animator{
         this.movableElem.style.height=h+"px";
         this.movableElem.style.width=w+"px";
     }
+
     private getPixeljump():number{
-        return aniControl.speed;
+        return aniControl.speed+1;
     }
+
     async animationInputLineToCurrentLine(startingTop:number,startingLeft:number,startingWidth:number,startingHeight:number,line:string){
-        this.setMovableParameters(startingTop,startingLeft,startingWidth,startingHeight);
+        this.setMovableParameters(startingTop,startingLeft,startingWidth,this.currentLineElem.offsetHeight/5*4);
+        // this.setMovableParameters(startingTop,startingLeft,startingWidth,startingHeight);
         this.formatLineString(line);
-        this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-startingHeight;
+        // this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-startingHeight;
+        this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-(this.currentLineElem.offsetHeight/5*4);
         this.targetElemLeft = this.currentLineElem.offsetLeft;
         this.turnMovableVisible();
         if(this.targetElemTop>this.movableElem.offsetTop){
             while(this.targetElemTop>this.movableElem.offsetTop){
                 await this.moveSleepCheck(this.getPixeljump(),0);
+                await this.adjustHeightOfMovable(this.getPixeljump(),this.currentLineElem.offsetHeight/5*4);
             }
             this.movableElem.style.top=this.targetElemTop+"px";
         }
@@ -68,15 +76,16 @@ export class Animator{
         else{
             while(this.targetElemTop<this.movableElem.offsetTop){
                 await this.moveSleepCheck(-this.getPixeljump(),0);
+                await this.adjustHeightOfMovable(this.getPixeljump(),this.currentLineElem.offsetHeight/5*4);
             }
             this.movableElem.style.top=this.targetElemTop+"px";
         }
-        await sleepFor(500);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
         while(this.targetElemLeft>this.movableElem.offsetLeft){
             await this.moveSleepCheck(0,this.getPixeljump());
         }
         this.movableElem.style.left=this.targetElemLeft+"px";
-        await sleepFor(200);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
         this.turnMovableHidden();
     }
 
@@ -86,27 +95,28 @@ export class Animator{
         this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft,this.descriptionLineElem.offsetWidth,this.vorgangElem.offsetHeight);
         this.targetElemTop=this.symbolTableElem.offsetTop;
         this.turnMovableVisible();
-        await sleepFor(500);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
         while(this.targetElemTop>this.movableElem.offsetTop){
             await this.moveSleepCheck(this.getPixeljump(),0);
         }
         this.movableElem.style.top=this.targetElemTop+"px";
 
-        await sleepFor(500);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
         this.turnMovableHidden();
     }
+
     async exchangeLabelWithSymbolTable(toLine:string,returnLine:string){
         this.movableElem.innerHTML=`<h3 style="margin:0px 0px; padding: 5px 10px; font: bold; text-align: center;">${toLine}</h3>`;
         this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft,this.descriptionLineElem.offsetWidth,this.vorgangElem.offsetHeight);
         this.targetElemTop=this.symbolTableElem.offsetTop;
         this.turnMovableVisible();
-        await sleepFor(200);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
         while(this.targetElemTop>this.movableElem.offsetTop){
             await this.moveSleepCheck(this.getPixeljump(),0);
         }
         this.movableElem.style.top=this.targetElemTop+"px";
 
-        await sleepFor(200);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
         this.movableElem.innerHTML=`<h3 style="margin:0px 0px; padding: 5px 10px; font: bold; text-align: center;">${returnLine}</h3>`;
         this.targetElemTop=this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight;
         while(this.targetElemTop<this.movableElem.offsetTop){
@@ -114,26 +124,8 @@ export class Animator{
         }
         this.movableElem.style.top=this.targetElemTop+"px";
 
-        await sleepFor(200);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
         this.turnMovableHidden();
-    }
-
-    async adjustWidthOfMovable(n:number,w:number){
-        if(this.movableElem.offsetWidth>w){
-            this.movableElem.style.width=(this.movableElem.offsetWidth-n)+"px";
-        }
-        else{
-            this.movableElem.style.width=(this.movableElem.offsetWidth+n)+"px";
-        }
-    }
-
-    async adjustHeightOfMovable(n:number,h:number){
-        if(this.movableElem.offsetHeight>h){
-            this.movableElem.style.height=(this.movableElem.offsetHeight-n)+"px";
-        }
-        else{
-            this.movableElem.style.height=(this.movableElem.offsetHeight+n)+"px";
-        }
     }
 
     async setTargetTopToSpeicherabbild(id:number){
@@ -160,57 +152,64 @@ export class Animator{
             this.targetElemTop = childElem.offsetTop;
         }
     }
-
-    private formatLineString(line:string){
-        this.movableElem.innerHTML=`<h3 style="margin:0px 0px; padding: 5px 10px; font: bold;">${line}</h3>`;
-    }
-
+ 
     async pushAufzulosendestoCurrentLine(i:number,line:string){
         let childelem = getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}outputP`);
-        this.setMovableParameters(childelem.offsetTop,this.outPutText.offsetLeft,this.outPutText.offsetWidth,childelem.offsetHeight);
+        // this.setMovableParameters(childelem.offsetTop,this.outPutText.offsetLeft,this.outPutText.offsetWidth,childelem.offsetHeight);
+        this.setMovableParameters(childelem.offsetTop,this.outPutText.offsetLeft,this.outPutText.offsetWidth,this.currentLineElem.offsetHeight/5*4);
         this.formatLineString(line);
-        this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-childelem.offsetHeight;
+        this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-(this.currentLineElem.offsetHeight/5*4);
+        // this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-childelem.offsetHeight;
         this.targetElemLeft = this.currentLineElem.offsetLeft;
         this.turnMovableVisible();
         if(this.targetElemTop>this.movableElem.offsetTop){
             while(this.targetElemTop>this.movableElem.offsetTop){
                 await this.moveSleepCheck(this.getPixeljump(),0);
+                await this.adjustHeightOfMovable(this.getPixeljump(),this.currentLineElem.offsetHeight/5*4);
             }
             this.movableElem.style.top=this.targetElemTop+"px";
-
         }
         else if(this.targetElemTop==this.movableElem.offsetTop){
         }
         else{
             while(this.targetElemTop<this.movableElem.offsetTop){
                 await this.moveSleepCheck(-this.getPixeljump(),0);
+                await this.adjustHeightOfMovable(this.getPixeljump(),this.currentLineElem.offsetHeight/5*4);
             }
             this.movableElem.style.top=this.targetElemTop+"px";
-
         }
-        await sleepFor(500);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
         while(this.targetElemLeft<this.movableElem.offsetLeft){
             await this.moveSleepCheck(0,-this.getPixeljump());
         }
         this.movableElem.style.left=this.targetElemLeft+"px";
-        await sleepFor(200);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        this.turnMovableHidden();
+    }
+
+    async displayAddresserhoehung(i:number){
+        this.setMovableParameters((this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.currentLineElem.offsetHeight/5*4),this.descriptionTableBox.offsetLeft,this.descriptionTableBox.offsetWidth,this.currentLineElem.offsetHeight/5*4);
+        this.formatLineString("Erhöhe Adresszähler um: "+i);
+        this.turnMovableVisible();
+        await sleepFor(4*this.turnSleepTime/this.getPixeljump());
         this.turnMovableHidden();
     }
 
     async moveDetailToSpeicherabbild(line:string,id:number){
-        this.setMovableParameters((this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionTableBox.offsetLeft,this.descriptionTableBox.offsetWidth,this.vorgangElem.offsetHeight);
+        // this.setMovableParameters((this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.currentLineElem.offsetHeight/5*4),this.descriptionTableBox.offsetLeft,this.descriptionTableBox.offsetWidth,this.currentLineElem.offsetHeight/5*4);
+        this.setMovableParameters(this.addresszaehlerElem.offsetTop,this.descriptionTableBox.offsetLeft,this.descriptionTableBox.offsetWidth,this.currentLineElem.offsetHeight/5*4);
         this.formatLineString(line);
-        this.targetElemTop=this.outPutText.offsetTop+this.outPutText.offsetHeight-this.vorgangElem.offsetHeight;
+        this.targetElemTop=this.outPutText.offsetTop+this.outPutText.offsetHeight-this.currentLineElem.offsetHeight/5*4;
         this.targetElemLeft=this.outPutText.offsetLeft;
         this.turnMovableVisible();
-        await sleepFor(500);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
 
         while(this.targetElemTop>this.movableElem.offsetTop){
             await this.moveSleepCheck(this.getPixeljump(),0);
         }
         this.movableElem.style.top=this.targetElemTop+"px";
 
-        await sleepFor(200);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
         while(this.targetElemLeft>this.movableElem.offsetLeft){
             await this.moveSleepCheck(0,this.getPixeljump());
             await this.adjustWidthOfMovable(this.getPixeljump(),this.outPutText.offsetWidth);
@@ -218,7 +217,7 @@ export class Animator{
         this.movableElem.style.left=this.targetElemLeft+"px";
         this.movableElem.style.width=this.outPutText.offsetWidth+"px";
         await this.setTargetTopToSpeicherabbild(id);
-        await sleepFor(200);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
         if(this.targetElemTop>this.movableElem.offsetTop){
             while(this.targetElemTop>this.movableElem.offsetTop){
                 await this.moveSleepCheck(this.getPixeljump(),0);
@@ -235,7 +234,7 @@ export class Animator{
             this.movableElem.style.top=this.targetElemTop+"px";
 
         }
-        await sleepFor(500);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
         this.turnMovableHidden();
     }
 
@@ -243,6 +242,34 @@ export class Animator{
         await this.updateMovingElement(t,l);
         await sleepUntilNextFrame(this.frameSleepTime);
         await checkIfPaused();
+    }
+
+    private formatLineString(line:string){
+        this.movableElem.innerHTML=`<h3 style="margin:0px 0px; padding: 5px 10px; font: bold;">${line}</h3>`;
+    }
+
+    async adjustWidthOfMovable(n:number,w:number){
+        if(this.movableElem.offsetWidth+n>w && this.movableElem.offsetWidth-n<w){
+            this.movableElem.style.width=this.movableElem.offsetWidth+"px";
+        }
+        else if(this.movableElem.offsetWidth>w){
+            this.movableElem.style.width=(this.movableElem.offsetWidth-n)+"px";
+        }
+        else{
+            this.movableElem.style.width=(this.movableElem.offsetWidth+n)+"px";
+        }
+    }
+
+    async adjustHeightOfMovable(n:number,h:number){
+        if(this.movableElem.offsetHeight+n>h && this.movableElem.offsetHeight-n<h){
+            this.movableElem.style.height=this.movableElem.offsetHeight+"px";
+        }
+        else if(this.movableElem.offsetHeight>h){
+            this.movableElem.style.height=(this.movableElem.offsetHeight-n)+"px";
+        }
+        else{
+            this.movableElem.style.height=(this.movableElem.offsetHeight+n)+"px";
+        }
     }
 
     private createMovable=():HTMLDivElement=>{
@@ -255,7 +282,7 @@ export class Animator{
         newElem.style.width=`${50}px`;
         newElem.style.height=`${50}px`;
         newElem.style.visibility="hidden";
-        newElem.style.zIndex="5";
+        newElem.style.zIndex="2";
 
         getHtmlElement("body").appendChild(newElem);
         return newElem;

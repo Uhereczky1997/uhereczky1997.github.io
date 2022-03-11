@@ -10,7 +10,7 @@ p{
 .backgroundContainer{
     grid-row: 1/13;
     grid-column: 1/11;
-    z-index: 1;
+    z-index: 3;
     display:grid;
     grid-template-columns: 1fr 80% 1fr;
     grid-template-rows: 1fr 80% 1fr;
