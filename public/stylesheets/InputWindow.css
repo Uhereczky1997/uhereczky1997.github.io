@@ -57,7 +57,12 @@ p{
     /* font-size: 20px; */
     font-weight: bold;
     font-family: 'Courier New', Courier, monospace;
-};
+}
+/* textarea:focus { 
+    outline: none !important;
+    border-color: #719ECE;
+    box-shadow: 0 0 10px #719ECE;
+} */
 #InputWindow>button{
     grid-column: span 1;
     grid-row:5;
@@ -80,7 +85,7 @@ p{
 }
 #InputWindow>#ErrorDescription{
     grid-column: span 1;
-    grid-row:span 4;
+    grid-row:span 5;
     overflow-y: scroll;
 }
 .backgroundNoError{

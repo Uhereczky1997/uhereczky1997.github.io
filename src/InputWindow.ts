@@ -138,8 +138,18 @@ export class InputWindow{
             console.log(e);
         }
     }
+    // private setAutoPreview()
     
     public createEventListeners=()=>{
+        try {
+            const inputTextArea:HTMLTextAreaElement=document.getElementById("InputTextArea") as HTMLTextAreaElement
+            if(inputTextArea!=null){
+                inputTextArea.addEventListener("blur",this.previewTranslation);
+            }
+
+        } catch (error) {  
+            console.log(error);
+        }
         try{
             
             const a= document.getElementById('EditWindowOpenButton');
