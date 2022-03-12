@@ -88,7 +88,7 @@ body>* h1{
 }
 #translatedinfo{
     display:grid;
-    grid-template-columns: 30% 70%;
+    grid-template-columns: 15% 85%;
     grid-template-rows: 40% 1px 1fr;
 }
 /* GRID CONFIG */
@@ -144,8 +144,8 @@ grid-template-columns: 1fr;
     display: none;
 }
 .noScrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;   /* IE and Edge  */
+    scrollbar-width: none;      /* Firefox      */
 }  
 
 .p10px{
@@ -185,9 +185,7 @@ grid-template-columns: 1fr;
     box-sizing: border-box;
  */
 }
-.bold{
-    font-weight: bold;
-}
+
 .button1:hover{
     background-color: rgb(85, 151, 252);
     -webkit-transition: all .1s linear;

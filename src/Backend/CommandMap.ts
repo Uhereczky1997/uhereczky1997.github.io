@@ -234,7 +234,7 @@ export class CommandMap{
                 return false;
             }
             else{
-                i.saveDescriptionLine(this.formatGefunden("Doppelpunkte ",`Label '<span class="labelBlue">${strings[0]}</span>'`));
+                i.saveDescriptionLine(this.formatGefunden("Doppelpunkte ",`Label ${strings[0]}`));
                 i.setLabelTo(strings[0]);
                 this.symbollist.setLabelWithoutPosition(strings[0]);
                 saveInput(i,2);
@@ -405,20 +405,20 @@ export class CommandMap{
                                 break;
                             case DataType.CONSTANT:
 
-                                if(!consoletostring.includes("dat_8")||!consoletostring.includes("dat_16")){
+                                /* if(!consoletostring.includes("dat_8")||!consoletostring.includes("dat_16")){
                                     i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist ein ungülitger Operand!`));
                                     i.setError(strings[1]);
                                     i.setValid(false);
                                     return false;
-                                }
-                                let value = this.symbollist.getSpecificConstantByName(strings[1])?.getValue()
+                                } */
+                                let value = this.symbollist.getSpecificConstantByName(strings[1])?.getValue();
                                 //i.saveDescriptionLine(`Gefunden Constante mit dem Wert ${value}`);
                                 if(value==undefined){
                                     i.saveDescriptionLine(this.formatErrorMassage(`Wert für Konstante ${strings[1]} nicht gefunden!`));
                                     i.setError(strings[1]);
                                     return false;
                                 }
-                                i.saveDescriptionLine(this.formatGefunden("Konstante"+strings[1]+" mit dem Wert "+value,i.getFirstPart()+" "+i.getSecondPart()+", "+strings[1]));
+                                i.saveDescriptionLine(this.formatGefunden("Konstante "+`<span class="labelBlue">${strings[1]}</span>`+" mit dem Wert "+value,i.getFirstPart().toLocaleUpperCase()+" "+strings[0]+", "+strings[1]));
                                 type = this.getDataType(value)
                                 if(consoletostring.includes("dat_8")&&type==DataType.dat_8){ //Konstante hat Datentyp 'dat_8'
                                     //i.saveDescriptionLine(`Größe von ${strings[1]} ist 'dat_8'`);

@@ -27,6 +27,7 @@ export let InputID:HTMLElement=getHtmlElement('InputID');
 export let InputLines:HTMLElement=getHtmlElement('InputLines');
 export let OutputAddresses:HTMLElement=getHtmlElement('OutputAddresses');
 export let OutputLines:HTMLElement=getHtmlElement('OutputLines');
+export let currentLineLine =getHtmlElement("currentLineLine");
 
 export const removeClassOfAll=(s:string)=>{
     let elements = Array.from(document.querySelectorAll("."+s+""));
@@ -79,7 +80,8 @@ export class ProjectWindow{
     
     public partialReset =async () =>{
         this.inputLines=[];
-        currentLine.innerHTML="";
+        // currentLine.innerHTML="";
+        currentLineLine.innerHTML="";
         symbolTableLines.innerHTML="";
         descriptionLines.innerHTML="";
         addresszahler.innerHTML="0000h";
@@ -143,6 +145,8 @@ export class ProjectWindow{
     public refreshInputListItems=()=>{
         InputID.innerHTML="";
         InputLines.innerHTML="";
+        OutputAddresses.innerHTML="";
+        OutputLines.innerHTML="";
         let ss:string[]=[];
         //inputTextDiv.innerHTML="";
         let e:InputLine;
@@ -156,10 +160,14 @@ export class ProjectWindow{
                     InputID.innerHTML+=`<p  class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
                     InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.commandLinetoString(false))}${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
                 }
+                OutputAddresses.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}oAddress">&nbsp;</p>`;
+                OutputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}outputP">&nbsp;</p>`;
             }
             else{
                 InputID.innerHTML+=`<p class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
                 InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP"  class="overflowElipsis">${this.inputstrings[i]}&nbsp;</p>`;
+                OutputAddresses.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}oAddress">&nbsp;</p>`;
+                OutputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}outputP">&nbsp;</p>`;
             }
         }
     }
@@ -179,7 +187,7 @@ export class ProjectWindow{
         }
     }
 
-    public repushSpeicherabbildOf=(i:number)=>{
+    public repushSpeicherabbildOf=(i:number,b:boolean)=>{
 
         if(i<this.inputLines.length){
             let e:InputLine=this.inputLines[i];
@@ -187,6 +195,9 @@ export class ProjectWindow{
             let outputLineHTML:HTMLElement = getHtmlElement(idString);
             console.log(outputLineHTML);
             if(e.getType() == InputLineType.TRANSLATED){
+                if(b){
+                    getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}oAddress`).innerHTML=`<span class="gray">${Manipulator.formatHextoDat16(e.getStartingAddr())+":"}</span>`;
+                }
                 if(e.getTranslation().includes("????")){
                     outputLineHTML.innerHTML=`${this.inputLineControl.getSpeicherAbbild(e,false)}&nbsp;`;
                 }
@@ -206,19 +217,19 @@ export class ProjectWindow{
         let n,p;
         symbolTableLines.innerHTML="";
         if(this.symbols.length!=0){
-            for(let i=this.symbols.length-1;i>=0;i--){
+            for(let i=0;i<this.symbols.length;i++){
 
                 if(this.symbols[i]!=null){
                     s=this.symbols[i];
                     if(s instanceof Label){
                         n=s.getName();
                         p=s.getPosition()!;
-                        symbolTableLines.innerHTML+=`<h4><span class="gray">Label:</span> &nbsp;&nbsp;${n} Wert:${this.inputLineControl.fHD16(p)} (little endian:${this.inputLineControl.getLittleEndianOf(p)})</h4>`;
+                        symbolTableLines.innerHTML+=`<h4><span class="gray">L:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} Wert:${this.inputLineControl.fHD16(p)} (little endian:${this.inputLineControl.getLittleEndianOf(p)})</h4>`;
                     }
                     if(s instanceof Constant){
                         n=s.getName();
                         p=s.getValue();
-                        symbolTableLines.innerHTML+=`<h4><span class="gray">Konst.:</span> &nbsp;${n} Wert:${this.inputLineControl.fHD16(p)} (little endian:${this.inputLineControl.getLittleEndianOf(p)})</h4>`
+                        symbolTableLines.innerHTML+=`<h4><span class="gray">K:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} Wert:${this.inputLineControl.fHD16(p)} (little endian:${this.inputLineControl.getLittleEndianOf(p)})</h4>`
                     }
                 }
             }
@@ -258,18 +269,20 @@ export class ProjectWindow{
                     }
                 })!;
                 // console.log(this.getLinkerAufloesungLine(e.getId()));
+                await updateScrollOfIn_Out("OutputText",`${(e.getId()+1)<10?"0"+(e.getId()+1):(e.getId()+1)}outputP`);
                 if(aniControl.start){
 
                     await this.anim.pushAufzulosendestoCurrentLine(e.getId(),this.getLinkerAufloesungLine(e.getId(),false));
                 }
-                currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${this.getLinkerAufloesungLine(e.getId(),false)}</h2>`
+                // currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${this.getLinkerAufloesungLine(e.getId(),false)}</h2>`
+                currentLineLine.innerHTML=`${this.getLinkerAufloesungLine(e.getId(),false)}`
                 addresszahler.innerHTML= `${e.getStartingAddr()}`;
                 machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(e,false)}`;
 
                 descriptionLines.innerHTML += `<p>Suche Label ${k.getName()} in SymbolTabelle</p>`;
                 if(aniControl.start){
-                    await sleepUntilNextStep();
                     updateScroll(descriptionLines.id);
+                    await sleepUntilNextStep();
                 }
                 if(k.getPosition()=="????"){
                     descriptionLines.innerHTML += `<p><span class="errorRed">Label '${k.getName()}' konnte nicht aufgelöst werden!</span></p>`;
@@ -283,32 +296,29 @@ export class ProjectWindow{
                     this.inputLineControl.retranslate(e);
                     n=this.inputLineControl.getSpeicherAbbild(e,true);
                     if(aniControl.start){
-                        await sleepUntilNextStep();
                         await this.anim.exchangeLabelWithSymbolTable("Label '"+k.getName()+"'?","Label '"+k.getName()+"' Wert:"+Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")");
                     }
 
                     descriptionLines.innerHTML += `<p>Label '${k.getName()}' in Symboltabelle gefunden, Wert: ${Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")"}</p>`;
                     if(aniControl.start){
-                        await sleepUntilNextStep();
                         updateScroll(descriptionLines.id);
+                        await sleepUntilNextStep();
                     }
                     
                     descriptionLines.innerHTML += `<p>Ersetzung im Speicherabbild: ${s}-->${n}</p>`;
                     if(aniControl.start){
-                        await sleepUntilNextStep();
                         updateScroll(descriptionLines.id);
+                        await sleepUntilNextStep();
                     }
                     
                     this.repushTranslations();
                     machinenbefehl.innerHTML= `${n}`;
                     if(aniControl.start){
-                        await sleepUntilNextStep();
                         await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(e.getId(),true),e.getId());
                     }
-                    this.repushSpeicherabbildOf(e.getId());
+                    this.repushSpeicherabbildOf(e.getId(),false);
                     descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
                     if(aniControl.start){
-                        await sleepUntilNextStep();
                         updateScroll(descriptionLines.id);
                     }
                     
@@ -374,20 +384,21 @@ export class ProjectWindow{
                 if(this.inputLines.length>i){
                     input = this.inputLines[i];
                     iP= getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}inputP`);
-                    await updateScrollOfIn_Out("InputText",`${(i+1)<10?"0"+(i+1):(i+1)}inputP`,i+1);
+                    await updateScrollOfIn_Out("InputText",`${(i+1)<10?"0"+(i+1):(i+1)}inputP`);
                     // await this.anim.animationInputLineToCurrentLine(iP.offsetTop,iP.offsetLeft,iP.offsetWidth,iP.offsetHeight,"");
                     // console.log(i+" corresponds to -> "+input.getType()+" :: "+input.getInitialLine());
                     if(input.getType()==InputLineType.EMPTY){
-                        OutputAddresses.innerHTML+=`<p><span class="gray">&nbsp;</span></p>`;
-                        OutputLines.innerHTML+=`<p id="${(input.getId()+1)<10?"0"+(input.getId()+1):(input.getId()+1)}outputP">&nbsp;&nbsp;&nbsp;</p>`;
+                        /* OutputAddresses.innerHTML+=`<p><span class="gray">&nbsp;</span></p>`;
+                        OutputLines.innerHTML+=`<p id="${(input.getId()+1)<10?"0"+(input.getId()+1):(input.getId()+1)}outputP">&nbsp;</p>`; */
                     }
                     else{
                         if(aniControl.start){
-                            await this.anim.animationInputLineToCurrentLine(iP.offsetTop,iP.offsetLeft,iP.offsetWidth,iP.offsetHeight,this.inputstrings[i]);
+                            await this.anim.animationInputLineToCurrentLine(i,this.inputstrings[i]);
                         }
                         this.nextParseID=0;
                         // currentLine.innerHTML=this.pushCurrentLine(input.getAll());
-                        currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${input.getCommandLineToCurrentLine()}</h2>`
+                        // currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${input.getCommandLineToCurrentLine()}</h2>`
+                        currentLineLine.innerHTML=`${input.getCommandLineToCurrentLine()}`;
                         machinenbefehl.innerHTML="";
                         await this.pushDescriptionLinesOf(i);
                     }
@@ -434,23 +445,25 @@ export class ProjectWindow{
                 if(e.includes("gefunden: Doppelpunkte")){
                     if(aniControl.start){
                         await sleepUntilNextStep();
-                        await this.anim.moveLabeltoSymboltable("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"+l.getLabel()+" Wert:"+this.symbolList.getPositionOfSpecificLabel(l.getLabel()));
+                        await this.anim.moveLabeltoSymboltable(l.getLabel()+" Wert:"+this.symbolList.getPositionOfSpecificLabel(l.getLabel()));
                     }
                     this.rePushSymbols(); 
                 }
                 if(j-1>0){
                     if(ss[j-1].includes("gesamter")){
                         if(l.getFirstPart().toUpperCase()=="ORG"){
-                            this.pushTranslationOf(i);
+                            // this.pushTranslationOf(i);
+                            this.repushSpeicherabbildOf(i,true);
                         }
                         else if(l.getEndAddr()!=""){
                             machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(l,false)}`;
             
                             if(aniControl.start){
                                 await sleepUntilNextStep();
-                                await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(i,false),-1);
+                                await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(i,false),i);
                             }
-                            this.pushTranslationOf(i);
+                            // this.pushTranslationOf(i);
+                            this.repushSpeicherabbildOf(i,true);
                         }
                     }
                 }
@@ -462,10 +475,12 @@ export class ProjectWindow{
                     await this.anim.moveLabeltoSymboltable(this.symbolList.getSpecificConstantByName(l.getFirstPart())!.toStringtoMovable());
                 }
                 this.rePushSymbols();
-                this.pushTranslationOf(i);
+                // this.pushTranslationOf(i);
+                this.repushSpeicherabbildOf(i,true);
             }
             else if(l.getType()==InputLineType.PSEUDOTRANSLATED){
-                this.pushTranslationOf(i);
+                // this.pushTranslationOf(i);
+                this.repushSpeicherabbildOf(i,true);
             }
             else{
                 if(aniControl.start){
@@ -487,22 +502,7 @@ export class ProjectWindow{
         }
     }
 
-    private pushTranslationOf=async(e:number)=>{
-        let i:InputLine;
-        if(this.inputLines.length>e){
-            i =this.inputLines[e];
-            if(i.getType() == InputLineType.TRANSLATED){
-                OutputAddresses.innerHTML+=`<p><span class="gray">${Manipulator.formatHextoDat16(i.getStartingAddr())}: </span></p>`;
-                OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">${this.inputLineControl.getSpeicherAbbild(i,false)}&nbsp;</p>`;
-                OutputTextAreaElement.innerHTML+=":"+i.getTranslation()+"\n";
-            }
-            else{
-                OutputAddresses.innerHTML+=`<p><span class="gray">&nbsp;</span></p>`;
-                OutputLines.innerHTML+=`<p id="${(i.getId()+1)<10?"0"+(i.getId()+1):(i.getId()+1)}outputP">&nbsp;&nbsp;&nbsp;</p>`;
-                
-            }
-        }
-    }
+    
     
     private aufzulosendeLabel=():boolean=>{
         let b=false;
@@ -541,7 +541,7 @@ export class ProjectWindow{
                 console.log(e);
             }
             console.log("finished");
-            currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">&nbsp;</h2>`
+            currentLineLine.innerHTML=`&nbsp;`;
         }
         else{
             console.log("no Input");
@@ -594,9 +594,9 @@ export class ProjectWindow{
         // console.log(this);
     }
 
-    public displayInputLines=()=>{        
-        this.partialReset();
-        this.refreshInputListItems();
+    public displayInputLines=async()=>{        
+        await this.partialReset();
+        await this.refreshInputListItems();
         // console.log(this);
     }
 

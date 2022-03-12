@@ -14,7 +14,8 @@ export const onscrollIn_Out = () =>{
                 }
             }
             outputText.onscroll = function (){
-                if(inputText!=null && outputText!=null&&!aniControl.play){
+                // if(inputText!=null && outputText!=null&&!aniControl.play){
+                if(inputText!=null && outputText!=null){
                     /* if(inputText.scrollTop>outputText.scrollTop && inputText.scrollTop+inputText.clientHeight>outputText.scrollHeight){
 
                     } */

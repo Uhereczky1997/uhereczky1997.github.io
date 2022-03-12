@@ -1,18 +1,26 @@
 h1
 {
     font-size: calc(var(--maxfontsize32) - 0px);
+    font-family: monospace;
+
 }
 h2 
 {
     font-size: calc(var(--maxfontsize32) - 2px);
+    font-family: monospace;
 }
 h3 
 {
     font-size: calc(var(--maxfontsize32) - 4px);
+    font-family: monospace;
 }
 h4 
 {
     font-size: calc(var(--maxfontsize32) - 8px);
+    font-family: 'Courier New', Courier, monospace;
+}
+h5{
+    font-size: calc(var(--maxfontsize32) - 14px);
 }
 p
 {
@@ -48,6 +56,9 @@ textarea{
     h4 
     {
         font-size: calc(var(--maxfontsize14) - 8px);
+    }
+    h5{
+        font-size: calc(var(--maxfontsize14) - 12px);
     }
     p
     {
@@ -90,6 +101,9 @@ textarea{
     {
         font-size: calc(var(--maxfontsize20) - 8px);
     }
+    h5{
+        font-size: calc(var(--maxfontsize20) - 14px);
+    }
     p
     {
         font-size: calc(var(--maxfontsize20) - 8px);
@@ -129,6 +143,9 @@ textarea{
     {
         font-size: calc(var(--maxfontsize28) - 8px);
     }
+    h5{
+        font-size: calc(var(--maxfontsize28) - 14px);
+    }
     p
     {
         font-size: calc(var(--maxfontsize28) - 8px);
@@ -167,6 +184,9 @@ textarea{
     {
         font-size: calc(var(--maxfontsize30) - 8px);
     }
+    h5{
+        font-size: calc(var(--maxfontsize30) - 14px);
+    }
     p
     {
         font-size: calc(var(--maxfontsize30) - 8px);
@@ -204,6 +224,9 @@ textarea{
     h4 
     {
         font-size: calc(var(--maxfontsize32) - 8px);
+    }
+    h5{
+        font-size: calc(var(--maxfontsize32) - 14px);
     }
     p
     {

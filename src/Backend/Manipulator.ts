@@ -196,6 +196,18 @@ export class Manipulator {
         toReturn = b? s:ss
         return toReturn;
     }
+    static formatLabelDisplaytoSymbolTable(s:string):string{
+        let ss="";
+        while(s.length<9){
+            s=s.concat(" ");
+        }
+        ss= s;
+        while(ss.includes(" ")){
+            ss = ss.replace(" ","&nbsp;");
+        }
+        // console.log(ss+" --> "+ss.length);
+        return ss;
+    }
     static formatBefehlDisplay(s:string,b:boolean):string{
         let ss="";
         let toReturn="";

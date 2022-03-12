@@ -64,7 +64,6 @@ export class InputLineControl{
     }
     addInputLine=(inputString:string):void=>{
         let i:InputLine= new InputLine(inputString,this.IDcounter);
-        console.log(this.IDcounter);
         if(i.getType()==InputLineType.EMPTY){
             this.inputlines.push(i);
             this.IDcounter=this.IDcounter +1;
@@ -174,11 +173,15 @@ export class InputLineControl{
                         return this.fHD8WH(h)+this.fHD8WH(i.getSecondPart());
                     }
                     else if(this.symbolliste.isConst(i.getSecondPart())){
-                        l = this.symbolliste.getSpecificConstantByName(i.getSecondPart())?.getValue();
-                        return this.fHD8WH(h)+l;
+                        l = this.symbolliste.getSpecificConstantByName(i.getSecondPart())!.getValue();
+                        return this.fHD8WH(h)+this.fHD8WH(l);
                     }
                     else if(Manipulator.isDat_8(i.getThirdPart())){
                         return this.fHD8WH(h)+this.fHD8WH(i.getThirdPart());
+                    }
+                    else if(this.symbolliste.isConst(i.getThirdPart())){
+                        l = this.symbolliste.getSpecificConstantByName(i.getThirdPart())!.getValue();
+                        return this.fHD8WH(h)+this.fHD8WH(l);
                     }
                     else{
                         return this.fHD16WH(h);
@@ -203,7 +206,8 @@ export class InputLineControl{
                     break;
                 case 4:
                     if(this.symbolliste.isConst(i.getThirdPart())){
-                        return this.fHD16WH(h)+this.symbolliste.getSpecificConstantByName(i.getThirdPart());
+                        l= this.symbolliste.getSpecificConstantByName(i.getThirdPart())?.getValue();
+                        return this.fHD16WH(h)+(l!=undefined?this.getLittleEndianOf(l):l);
                     }
                     else if(this.symbolliste.isLabel(i.getSecondPart())){
                         l = this.symbolliste.getPositionOfSpecificLabel(i.getSecondPart());
@@ -295,196 +299,156 @@ export class InputLineControl{
     }
     calculateTranslation=(i:InputLine,flag:boolean):void=>{
         let e= (i!=null?i:this.inputlines[this.IDcounter]);
-        if(e.getType()==InputLineType.TRANSLATED){
-            let rest:string="";
-            let addr:string="";
-            let h:string|undefined="";
-            let hex:string=e.getHCode();
-            if(e.getStartingAddr()=='0000h'){
-                addr='0000h'
-            }
-            else{
-                addr=this.fHD16(e.getStartingAddr());
-            }
-            if(e.getFirstPart().toUpperCase()=='RS'){
-                rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr));
-                e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${hex}${this.fHD8WH(rest)}`);
-            }
-            else if(e.getFirstPart().toUpperCase()=='DB'){
-                h=e.getSecondPart();
-                rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(h)}${this.fHD8WH(rest)}`);
-            }
-            else if(e.getFirstPart().toUpperCase()=='DW'){
-                h=e.getSecondPart();
-                rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
-            }
-            else{
-                switch(e.getLength()){
-                    case 1:
-                        if(Manipulator.isDat_8(hex)){
-                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr))
-                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.fHD8WH(rest)}`);
+        if(e.getType()!=InputLineType.TRANSLATED){
+            return;
+        }
+        let rest:string="";
+        let addr:string="";
+        let h:string|undefined="";
+        let hex:string=e.getHCode();
+        if(e.getStartingAddr()=='0000h'){
+            addr='0000h'
+        }
+        else{
+            addr=this.fHD16(e.getStartingAddr());
+        }
+        if(e.getFirstPart().toUpperCase()=='RS'){
+            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr));
+            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${hex}${this.fHD8WH(rest)}`);
+        }
+        else if(e.getFirstPart().toUpperCase()=='DB'){
+            h=e.getSecondPart();
+            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(h)}${this.fHD8WH(rest)}`);
+        }
+        else if(e.getFirstPart().toUpperCase()=='DW'){
+            h=e.getSecondPart();
+            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
+        }
+        else{
+            switch(e.getLength()){
+                case 1:
+                    if(Manipulator.isDat_8(hex)){
+                        rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr))
+                        e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.fHD8WH(rest)}`);
+                    }
+                    else{
+                        console.log(`${e.getId()} cannot be translated! ${hex} is no dat_8`);
+                    }
+                    break;
+                case 2:
+                    if(Manipulator.isDat_8(hex)){
+                        /* let type= this.map.getDataType(e.getSecondPart()); */
+                        if(Manipulator.isDat_8(e.getSecondPart())){
+                            h=e.getSecondPart();
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.fHD8WH(h)}${this.fHD8WH(rest)}`);
+                        }
+                        else if(Manipulator.isDat_8(e.getThirdPart())){
+                            h=e.getThirdPart();
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,e.getThirdPart()));
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.fHD8WH(h)}${this.fHD8WH(rest)}`);
+                        }
+                        else if(this.symbolliste.isConst(e.getSecondPart())){
+                            h=this.symbolliste.getSpecificConstantByName(e.getSecondPart())!.getValue();
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.fHD8WH(h)}${this.fHD8WH(rest)}`);
+                        }
+                        else if(this.symbolliste.isConst(e.getThirdPart())){
+                            h=this.symbolliste.getSpecificConstantByName(e.getThirdPart())!.getValue();
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.fHD8WH(h)}${this.fHD8WH(rest)}`);
                         }
                         else{
-                            console.log(`${e.getId()} cannot be translated! ${hex} is no dat_8`);
+                            console.log(`${e.getId()} cannot be translated! Case2 failed!`);
                         }
-                        break;
-                    case 2:
-                        if(Manipulator.isDat_8(hex)){
-                            /* let type= this.map.getDataType(e.getSecondPart()); */
-                            if(this.map.getDataType(e.getSecondPart())==DataType.dat_8){
-                                /* if(type==DataType.LABEL){
-                                    h=(this.symbolliste.getSpecificLabelByName(e.getSecondPart())==undefined)
-                                } */
-                                h=e.getSecondPart();
-                                rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.fHD8WH(h)}${this.fHD8WH(rest)}`);
-                            }
-                            else if(this.map.getDataType(e.getThirdPart())==DataType.dat_8){
-                                h=e.getThirdPart();
-                                rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,e.getThirdPart()));
-                                e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.fHD8WH(h)}${this.fHD8WH(rest)}`);
-                            }
-                            else{
-                                console.log(`${e.getId()} cannot be translated! Case2 failed!`);
-                            }
+                    }
+                    else if(Manipulator.isDat_16(hex)){
+                        rest=this.fHD8(this.calculateRest(String(e.getLength()),hex,addr));
+                        e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${this.fHD8WH(rest)}`);
+                    }
+                    else{
+                        console.log(`${e.getId()} cannot be translated! ${hex} is no dat_8 or dat_16`);
+                    }
+                    break;
+                case 3:
+                    if(Manipulator.isDat_8(hex)){
+                        if(this.symbolliste.isLabel(e.getSecondPart())){
+                            h=this.symbolliste.getPositionOfSpecificLabel(e.getSecondPart());
+                            h=(h==undefined?"????":h);
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+                            // e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${flag?this.getLittleEndianOf(h.replace(/h$/,"")):"????"}${this.fHD8WH(rest)}`);
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.getSpeicherAbbild(e,flag)}${this.fHD8WH(rest)}`);
+                        } 
+                        else if(this.symbolliste.isLabel(e.getThirdPart())){
+                            h=this.symbolliste.getPositionOfSpecificLabel(e.getThirdPart());
+                            h=(h==undefined?"????":h);
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+                            // e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${flag?this.getLittleEndianOf(h.replace(/h$/,"")):"????"}${this.fHD8WH(rest)}`);
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.getSpeicherAbbild(e,flag)}${this.fHD8WH(rest)}`);
                         }
-                        else if(Manipulator.isDat_16(hex)){
-
-                            rest=this.fHD8(this.calculateRest(String(e.getLength()),hex,addr));
-                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${this.fHD8WH(rest)}`);
+                        else if(Manipulator.isDat_16(e.getThirdPart())){
+                            h=e.getThirdPart();
+                            console.log(h);
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
                         }
-                        else{
-                            console.log(`${e.getId()} cannot be translated! ${hex} is no dat_8 or dat_16`);
-                        }
-                        break;
-                    case 3:
-                        if(Manipulator.isDat_8(hex)){
-                            /* let type= this.map.getDataType(e.getSecondPart()); */
-                            if(this.map.getDataType(e.getSecondPart())!=DataType.NONE){
-                                if(!Manipulator.isDat_16(e.getSecondPart())&&this.symbolliste.isLabel(e.getSecondPart())){
-                                //if(this.map.getDataType(e.getSecondPart())==DataType.LABEL||this.map.getDataType(e.getSecondPart())==DataType.ELLIGIBLE){
-                                    h=this.symbolliste.getPositionOfSpecificLabel(e.getSecondPart());
-                                    //console.log(this.symbolliste.getPositionOfSpecificLabel(e.getSecondPart()));
-                                    h=(h==undefined?"????":h);
-                                    rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                    //console.log(h+'\n'+rest)
-                                    
-                                    e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
-                                }
-                                else{
-                                    h=e.getSecondPart();
-                                    rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                    //console.log(h+'\n'+rest)
-                                    e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
-                                }
-                                //rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                //e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
-                            } 
-                            else if(this.map.getDataType(e.getThirdPart())!=DataType.NONE){
-                                if(!Manipulator.isDat_16(e.getThirdPart())&&this.symbolliste.isLabel(e.getThirdPart())){
-                                //if(this.map.getDataType(e.getThirdPart())==DataType.LABEL||this.map.getDataType(e.getThirdPart())==DataType.ELLIGIBLE){
-                                    h=this.symbolliste.getPositionOfSpecificLabel(e.getThirdPart());
-                                    
-
-                                    h=(h==undefined?"????":h);
-                                    rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                    
-                                    e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
-                                }else{
-                                    h=e.getThirdPart();
-                                    rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                    
-                                    e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
-                                }
-                                //rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                //e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
-                            }
-                            else{
-                                console.log(`${e.getId()} cannot be translated! Case3 failed!`);
-                            }
-                        }
-                        else if(Manipulator.isDat_16(hex)){
-                            if(this.map.getDataType(e.getSecondPart())==DataType.dat_8){
-                                /* if(type==DataType.LABEL){
-                                    h=(this.symbolliste.getSpecificLabelByName(e.getSecondPart())==undefined)
-                                } */
-                                h=e.getSecondPart();
-                                rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${this.fHD8WH(h)}${this.fHD8WH(rest)}`);
-                            }
-                            else if(this.map.getDataType(e.getThirdPart())==DataType.dat_8){
-                                h=e.getThirdPart();
-                                rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${this.fHD8WH(h)}${this.fHD8WH(rest)}`);
-                            }
-                            else{
-                                console.log(`${e.getId()} cannot be translated! Case3 failed!`);
-                            }
-
+                        else if(this.symbolliste.isConst(e.getThirdPart())){
+                            h=this.symbolliste.getSpecificConstantByName(e.getThirdPart())!.getValue();
+                            console.log(h);
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
                         }
                         else{
-                            console.log(`${e.getId()} cannot be translated! ${hex} is no dat_8 or dat_16`);
+                            console.log(`${e.getId()} cannot be translated! Case3 failed!`);
                         }
-                        break;
-                    case 4:
-                        if(Manipulator.isDat_16(hex)){
-                            if(this.map.getDataType(e.getSecondPart())!=DataType.NONE){
-                                if(!Manipulator.isDat_16(e.getSecondPart())&&this.symbolliste.isLabel(e.getSecondPart())){
-                                //if(this.map.getDataType(e.getSecondPart())==DataType.LABEL||this.map.getDataType(e.getSecondPart())==DataType.ELLIGIBLE){
-                                    h=this.symbolliste.getPositionOfSpecificLabel(e.getSecondPart());
-                                    h=h==undefined?"????":h;
-
-
-                                    rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                    
-                                    e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
-                                }
-                                else{
-                                    h=e.getSecondPart();
-
-                                    rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                    
-                                    e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
-                                }
-                                //rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                //e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
-                            } 
-                            else if(this.map.getDataType(e.getThirdPart())!=DataType.NONE){
-                                if(!Manipulator.isDat_16(e.getThirdPart())&&this.symbolliste.isLabel(e.getThirdPart())){
-                                //if(this.map.getDataType(e.getThirdPart())==DataType.LABEL||this.map.getDataType(e.getThirdPart())==DataType.ELLIGIBLE){
-                                    h=this.symbolliste.getPositionOfSpecificLabel(e.getThirdPart());
-                                    h=h==undefined?"????":h;
-
-                                    rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                    
-                                    e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
-                                }else{
-                                    h=e.getThirdPart();
-
-                                    rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                    //console.log(h+'\n'+rest);
-                                    e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
-                                }
-                                //rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                                //e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
-                            }
-                            else{
-                                console.log(`${e.getId()} cannot be translated! Case4 failed!`);
-                            }
+                    }
+                    else{
+                        console.log(`${e.getId()} cannot be translated! ${hex} is no dat_8`);
+                    }
+                    break;
+                case 4:
+                    if(Manipulator.isDat_16(hex)){
+                        if(this.symbolliste.isLabel(e.getSecondPart())){
+                            h=this.symbolliste.getPositionOfSpecificLabel(e.getSecondPart());
+                            h=(h==undefined?"????":h);
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+                            // e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
+                        } 
+                        else if(this.symbolliste.isLabel(e.getThirdPart())){
+                            h=this.symbolliste.getPositionOfSpecificLabel(e.getThirdPart());
+                            h=(h==undefined?"????":h);
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+                            // e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
+                        }
+                        else if(Manipulator.isDat_16(e.getThirdPart())){
+                            h=e.getThirdPart();
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+                            // e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
+                        }
+                        else if(this.symbolliste.isConst(e.getThirdPart())){
+                            h=this.symbolliste.getSpecificConstantByName(e.getThirdPart())!.getValue();
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+                            // e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
                         }
                         else{
-                            console.log(`${e.getId()} cannot be translated! ${hex} is no dat_8 or dat_16`);
+                            console.log(`${e.getId()} cannot be translated! Case4 failed!`);
                         }
-                        break;    
-                   /*  default:
-                        rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr));
-                        e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${hex}${this.fHD8WH(rest)}`);
-                        break;
-                 */
-                }
+                    }
+                    else{
+                        console.log(`${e.getId()} cannot be translated! ${hex} is not dat_16`);
+                    }
+                    break;    
+               /*  default:
+                    rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr));
+                    e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${hex}${this.fHD8WH(rest)}`);
+                    break;
+             */
             }
         }
     }
