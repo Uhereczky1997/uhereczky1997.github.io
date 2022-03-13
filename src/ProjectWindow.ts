@@ -209,7 +209,6 @@ export class ProjectWindow{
             let e:InputLine=this.inputLines[i];
             let idString = `${(i+1)<10?"0"+(i+1):(i+1)}outputP`;
             let outputLineHTML:HTMLElement = getHtmlElement(idString);
-            console.log(outputLineHTML);
             if(e.getType() == InputLineType.TRANSLATED){
                 if(b){
                     getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}oAddress`).innerHTML=`<span class="gray">${Manipulator.formatHextoDat16(e.getStartingAddr())+":"}</span>`;
@@ -499,7 +498,6 @@ export class ProjectWindow{
                     }
                 }
             }
-            console.log(l.getType());
             if(this.symbolList.isConst(l.getFirstPart())){
                 if(aniControl.start){
                     await sleepUntilNextStep();

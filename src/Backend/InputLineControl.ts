@@ -109,8 +109,6 @@ export class InputLineControl{
             this.invalidIDs.push(this.IDcounter);
         }
         this.IDcounter=this.IDcounter +1;
-        
-        // console.log(i);
     }
 
     getLittleEndianOf(h:string):string{
@@ -144,7 +142,6 @@ export class InputLineControl{
         let s = i.commandLinetoString(true);
         let h = i.getHCode();
         let l:string|undefined = "";
-        let temp:string[];
         // console.log(i.getCommandLine()+" ... "+i.getLength()+" ... "+i.getHCode());
         if(i.getFirstPart().toUpperCase()=="RS"){
             return (h.length>4?"0000...("+i.getLength()+"x)":h);
@@ -166,9 +163,6 @@ export class InputLineControl{
         else{
             switch(i.getLength()){
                 case 1:
-                    if(i.getFirstPart().toUpperCase()=="NOP"){
-                        return '00';
-                    }
                     return this.fHD8WH(h);
                     break;
                 case 2:

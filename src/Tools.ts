@@ -20,13 +20,13 @@ export const updateScrollOfIn_Out=(id:string,targetID:string)=>{
     var elem = getHtmlElement(id);
     var targetElem = getHtmlElement(targetID);
     if(targetElem.offsetTop+targetElem.offsetHeight>elem.scrollTop+elem.clientHeight){
-        console.log((targetElem.offsetTop-elem.offsetTop-elem.clientHeight)+" <-> "+elem.scrollTop);
-        console.log("-------------------------");
+        /* console.log((targetElem.offsetTop-elem.offsetTop-elem.clientHeight)+" <-> "+elem.scrollTop);
+        console.log("-------------------------"); */
         elem.scrollTop=(targetElem.offsetTop-elem.offsetTop-elem.clientHeight+targetElem.offsetHeight+targetElem.offsetHeight);
     }
     else if(targetElem.offsetTop<elem.scrollTop){
-        console.log(targetElem.offsetTop+" <-> "+elem.scrollTop);
-        console.log("-------------------------");
+       /*  console.log(targetElem.offsetTop+" <-> "+elem.scrollTop);
+        console.log("-------------------------"); */
         elem.scrollTop=(targetElem.offsetTop-elem.clientHeight);
     }
 }

@@ -8,7 +8,7 @@ export class Manipulator {
     }
     static hexToDec=(addr:string):number =>{
        /*  if(addr.indexOf("h")!=-1){ */
-            addr=addr.replace(/h/g,"");
+            addr=addr.replace(/h$/g,"");
             return Number(parseInt(addr,16).toString(10));
 /*         }
         else return Number(addr); */
@@ -26,11 +26,16 @@ export class Manipulator {
     static removeExcessWhiteSpace(addr:string):string{
         return addr.replace(/\s+/g,' ').trim();
     }
-    static isHex(addr:string):boolean{
-        let newS:string=addr.replace(/^0+/,'');
+    static isHex(addr:string):boolean{    
         if(addr.endsWith("h")||addr.endsWith("H")){
-            newS=addr.replace(/h$/i,"");
-            if(!/[^0-9A-F]/i.test(newS)){
+            addr=addr.replace(/h$/i,"");
+            if(addr=="h"){
+                addr="0h";
+            }
+            else if(addr==""){
+                addr = "0";
+            }
+            if(!/[^0-9A-F]/i.test(addr)){
                 return true;
             }
             else return false;
@@ -48,6 +53,12 @@ export class Manipulator {
     }
     static isDat_8(addr:string):boolean{
         addr =addr.replace(/^0+/,'');
+        if(addr=="h"){
+            addr="0h";
+        }
+        else if(addr==""){
+            addr = "0";
+        }
         if(this.isDec(addr)){
             if(this.decToHex(addr).length<=3){
                 return true;
@@ -63,6 +74,13 @@ export class Manipulator {
         else return false;
     }
     static isDat_16(addr:string):boolean{
+        addr =addr.replace(/^0+/,'');
+        if(addr=="h"){
+            addr="0h";
+        }
+        else if(addr==""){
+            addr = "0";
+        }
         if(this.isDec(addr)){
             if(this.decToHex(addr).length<=5){
                 return true;
@@ -79,6 +97,9 @@ export class Manipulator {
     }
     static formatHex(addr:string):string{
         addr=addr.replace(/^0+/,'');
+        if(addr=="h" || addr==""){
+            return "0000h";
+        }
         //addr=addr.replace(/^0/,'');
         if(Manipulator.isDat_8(addr)){
             if(this.isDec(addr)){
@@ -103,6 +124,9 @@ export class Manipulator {
 
     static formatHextoDat8(addr:string):string{
         addr=addr.replace(/^0+/,'');
+        if(addr=="h" || addr==""){
+            return "00h";
+        }
         //addr=addr.replace(/^0/,'');
         if(Manipulator.isDat_8(addr)){
             if(this.isDec(addr)){
@@ -117,6 +141,9 @@ export class Manipulator {
     }
     static formatHextoDat8WithoutH(addr:string):string{
         addr=addr.replace(/^0+/,'');
+        if(addr=="h" || addr==""){
+            return "00";
+        }
         //addr=addr.replace(/^0/,'');
         if(Manipulator.isDat_8(addr)){
             if(this.isDec(addr)){
@@ -131,6 +158,9 @@ export class Manipulator {
     }
     static formatHextoDat16(addr:string):string{
         addr=addr.replace(/^0+/,'');
+        if(addr=="h" || addr==""){
+            return "0000h";
+        }
         if(this.isDat_16(addr)){
             if(this.isDec(addr)){
                 addr=this.decToHex(addr);
@@ -151,6 +181,9 @@ export class Manipulator {
     }
     static formatHextoDat16WithoutH(addr:string):string{
         addr=addr.replace(/^0+/,'');
+        if(addr=="h" || addr==""){
+            return "0000";
+        }
         if(this.isDat_16(addr)){
             if(this.isDec(addr)){
                 addr=this.decToHex(addr);
