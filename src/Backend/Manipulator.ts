@@ -208,26 +208,30 @@ export class Manipulator {
         // console.log(ss+" --> "+ss.length);
         return ss;
     }
-    static formatBefehlDisplay(s:string,b:boolean):string{
+    static formatBefehlDisplay(s1:string,s2:string,b:boolean):string{
         let ss="";
-        let toReturn="";
-        while(s.length<16){
-            s=s.concat(" ");
+        let toReturn=s1;
+        while(toReturn.length<5){
+            toReturn=toReturn.concat(" ");
         }
-        ss= s;
+        s2=s2.replace(s1,toReturn);
+        while(s2.length<16){
+            s2=s2.concat(" ");
+        }
+        ss= s2;
         while(ss.includes(" ")){
             ss = ss.replace(" ","&nbsp;");
         }
-        toReturn = b? s:ss
+        toReturn = b? s2:ss
         return toReturn;
     }
-    static formatLabelandBefehlDisplay(s1:string,s2:string):string{
+    static formatLabelandBefehlDisplay(s1:string,s2:string,s3:string):string{
         let ss ="";
         if(s1.length<8){
-            return this.formatLabelDisplay(s1,false).concat(this.formatBefehlDisplay(s2,false));
+            return this.formatLabelDisplay(s1,false).concat(this.formatBefehlDisplay(s2,s3,false));
         }
+        s2= this.formatBefehlDisplay(s2,s3,true);
         s1= this.formatLabelDisplay(s1,true);
-        s2= this.formatBefehlDisplay(s2,true);
         ss= (s1.concat(s2)).trim();
         if(ss.length<26){
             while(ss.length<26){

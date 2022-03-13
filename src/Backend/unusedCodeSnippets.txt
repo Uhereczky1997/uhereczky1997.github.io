@@ -1845,3 +1845,95 @@ case 3:
             }
         }
     }
+
+    private pushDescriptionLinesOf=async(i:number)=>{
+        let e:string;
+        let ss:string[];
+        let l:InputLine;
+        let newElem:HTMLDivElement;
+        newElem = document.createElement("div");
+        newElem.id=`${(i+1)<10?"0"+(i+1):(i+1)}DescriptionDiv`;
+        newElem.classList.add("noMP");
+        descriptionLines.appendChild(newElem);
+        if(this.inputLines.length>i){
+            l=this.inputLines[i];
+            ss=l.getDescriptionLine();
+            descriptionLines.innerHTML += `<p style=" white-space: nowrap; overflow: hidden;"> ----<span class="bold">${(i+1)<10?"0"+(i+1):(i+1)}}</span>------------------------------------------------ </p>`;
+            for(let j=0;j<ss.length;j++){
+                e=ss[j]
+                if(aniControl.start){
+                    await sleepUntilNextStep();
+                }
+                if(e.includes("parse")){
+                    await this.nextInverted(l.getAllV());
+                }
+                if(e.includes('error')){
+                    console.log("error has been found");
+                    await this.nextInverted(l.getAllV());
+                    aniControl.setStop();
+                    
+                    descriptionLines.innerHTML += `<p>${e}</p>`;
+                    updateScroll(descriptionLines.id);
+                    throw Error('Stop pressed');
+                }else{
+                    
+                    descriptionLines.innerHTML += `<p>${e}</p>`;
+                    updateScroll(descriptionLines.id);
+                }
+                if(e.includes("gefunden: Doppelpunkte")){
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        await this.anim.moveLabeltoSymboltable(l.getLabel()+" Wert:"+this.symbolList.getPositionOfSpecificLabel(l.getLabel()));
+                    }
+                    this.rePushSymbols(); 
+                }
+                if(j-1>0){
+                    if(ss[j-1].includes("gesamter")){
+                        if(l.getFirstPart().toUpperCase()=="ORG"){
+                            // this.pushTranslationOf(i);
+                            this.repushSpeicherabbildOf(i,true);
+                        }
+                        else if(l.getEndAddr()!=""){
+                            machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(l,false)}`;
+            
+                            if(aniControl.start){
+                                await sleepUntilNextStep();
+                                await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(i,false),i);
+                            }
+                            // this.pushTranslationOf(i);
+                            this.repushSpeicherabbildOf(i,true);
+                        }
+                    }
+                }
+            }
+            console.log(l.getType());
+            if(this.symbolList.isConst(l.getFirstPart())){
+                if(aniControl.start){
+                    await sleepUntilNextStep();
+                    await this.anim.moveLabeltoSymboltable(this.symbolList.getSpecificConstantByName(l.getFirstPart())!.toStringtoMovable());
+                }
+                this.rePushSymbols();
+                // this.pushTranslationOf(i);
+                this.repushSpeicherabbildOf(i,true);
+            }
+            else if(l.getType()==InputLineType.PSEUDOTRANSLATED){
+                // this.pushTranslationOf(i);
+                this.repushSpeicherabbildOf(i,true);
+            }
+            else{
+                if(aniControl.start){
+                    await sleepUntilNextStep();
+                    await this.anim.displayAddresserhoehung(l.getLength());
+                }
+                addresszahler.innerHTML= `${l.getEndAddr()}`;
+            }
+
+            if(aniControl.start){
+                await sleepUntilNextStep();
+            }
+
+            l.formatInputToDisplay();
+            this.refreshInputListItem(i);
+            updateScroll(descriptionLines.id);
+        }
+    }

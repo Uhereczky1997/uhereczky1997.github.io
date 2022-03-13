@@ -1,6 +1,6 @@
 
 .displayText{
-    text-align: start;
+    text-align: end;
 }
 .displayText>p{
     margin: 0;
@@ -11,9 +11,11 @@
     padding-right:3px;
     line-height: 140%;
     display: block;
+    text-align: end;
 }
 .displayText + .hoverable>p{
     font-weight: bold;
+    text-align: start;
 }
 
 .displayText + .hoverable>p:hover{

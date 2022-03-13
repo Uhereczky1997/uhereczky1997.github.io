@@ -203,6 +203,9 @@ export class CommandMap{
         // return 'erwarte: '+s1;
         return `<span class="eingeruckt">erwarte: ${s1}</span>`;
     }
+    formatErkannt(s1:string):string{
+        return `<span class="eingeruckt">erkannt: ${s1}</span>`;
+    }
     formatErrorMassage(s1:string):string{
         return `<span class="errorRed">error: ${s1}</span>`;
     }
@@ -270,6 +273,14 @@ export class CommandMap{
             return false;
         }        
     }
+    /* 
+    i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
+    i.saveDescriptionLine(this.formatErkannt("indirekte Register Addressierung"));
+    i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+    i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
+    i.saveDescriptionLine(this.formatErkannt("Stackbefehl"));
+
+    */
 
     parseToMnemoCode(i:InputLine,strings:string[]):boolean{
         let consoletostring="";
@@ -327,171 +338,12 @@ export class CommandMap{
                             //ÄNDERUNG
                             i.setThirdPart(toSave);
                             // i.setThirdPart(strings[1]);
-                            i.setType(InputLineType.TRANSLATED);
-                            i.setLength(matches[0].getSize());
-                            i.setHCode(matches[0].getHexCode());
-                            i.setValid(true);
-                            //console.log(matches[0].toString());
-                            return true;
-                        }
-                        else{
-                            i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
-                            return false;
-                        }
-                    }
-                    else if(this.getDataType(strings[1]) != DataType.NONE){
-                        let type:DataType=this.getDataType(strings[1]);
-                        switch(type){
-
-                            case DataType.dat_8:
-                                if(consoletostring.includes("dat_8")){
-                                    //i.saveDescriptionLine(`Gefunden -> 'dat_8'`);
-                                    i.saveDescriptionLine(this.formatGefunden("Wert/Konstante (8-bit) "+Manipulator.formatHextoDat8(strings[1]),i.getFirstPart()+" "+i.getSecondPart()+", "+Manipulator.formatHextoDat8(strings[1])));
-
-                                    matches=matches.filter(e=>{
-                                        if(e.getSource()=="dat_8"){
-                                            return e;
-                                        }
-                                    });
-                                    // Änderung
-                                    // i.setThirdPart(Manipulator.formatHextoDat8(strings[1]));
-                                    i.setThirdPart((strings[1]));
-                                    break;
-                                }else if(consoletostring.includes("dat_16")){
-                                    //i.saveDescriptionLine(`Gefunden -> 'dat_16'`);
-                                    i.saveDescriptionLine(this.formatGefunden("Wert/Konstante (16-bit) "+Manipulator.formatHextoDat16(strings[1]),i.getFirstPart()+" "+i.getSecondPart()+", "+Manipulator.formatHextoDat16(strings[1])));
-                                    matches=matches.filter(e=>{
-                                        if(e.getSource()=="dat_16"){
-                                            return e;
-                                        }
-                                    });
-                                    // Änderung
-                                    i.setThirdPart((strings[1]));
-                                    // i.setThirdPart(Manipulator.formatHextoDat16(strings[1]));
-                                    break;
-                                }
-                                else if(consoletostring.includes("dat_8")){
-                                    i.saveDescriptionLine(this.formatErrorMassage(`erwartet war Wert/Konstante (8-bit), ${strings[1]} ist kein gültiger Operand`));
-                                    i.setError(strings[1]);
-                                    i.setValid(false);
-                                    return false;
-                                }
-                                else{
-                                    i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand`));
-                                    i.setError(strings[1]);
-                                    i.setValid(false);
-                                    return false;
-                                }
-                            case DataType.dat_16:
-                                if(consoletostring.includes("dat_16") && ['HL','SP','IX'].includes(strings[0])){
-                                    //i.saveDescriptionLine(`Gefunden -> 'dat_16'`);
-                                    i.saveDescriptionLine(this.formatGefunden("Wert/Konstante (16-bit) "+Manipulator.formatHextoDat16(strings[1]),i.getFirstPart()+" "+i.getSecondPart()+", "+Manipulator.formatHextoDat16(strings[1])));
-                                    matches=matches.filter(e=>{
-                                        if(e.getSource()=="dat_16"){
-                                            return e;
-                                        }
-                                    });
-                                    // Änderung
-                                    // i.setThirdPart(Manipulator.formatHextoDat16(strings[1]));
-                                    i.setThirdPart((strings[1]));
-                                    break;
-                                }
-                                else{
-                                    i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist ein ungültiger Operand!`));
-                                    i.setError(strings[1]);
-                                    i.setValid(false);
-                                    return false;
-                                }
-                                break;
-                            case DataType.CONSTANT:
-
-                                /* if(!consoletostring.includes("dat_8")||!consoletostring.includes("dat_16")){
-                                    i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist ein ungülitger Operand!`));
-                                    i.setError(strings[1]);
-                                    i.setValid(false);
-                                    return false;
-                                } */
-                                let value = this.symbollist.getSpecificConstantByName(strings[1])?.getValue();
-                                //i.saveDescriptionLine(`Gefunden Constante mit dem Wert ${value}`);
-                                if(value==undefined){
-                                    i.saveDescriptionLine(this.formatErrorMassage(`Wert für Konstante ${strings[1]} nicht gefunden!`));
-                                    i.setError(strings[1]);
-                                    return false;
-                                }
-                                i.saveDescriptionLine(this.formatGefunden("Konstante "+`<span class="labelBlue">${strings[1]}</span>`+" mit dem Wert "+value,i.getFirstPart().toLocaleUpperCase()+" "+strings[0]+", "+strings[1]));
-                                type = this.getDataType(value)
-                                if(consoletostring.includes("dat_8")&&type==DataType.dat_8){ //Konstante hat Datentyp 'dat_8'
-                                    //i.saveDescriptionLine(`Größe von ${strings[1]} ist 'dat_8'`);
-                                    matches=matches.filter(e=>{
-                                        if(e.getSource()=="dat_8"){
-                                            return e;
-                                        }
-                                    });
-                                    break;
-                                }
-                                else if(consoletostring.includes("dat_16")){ //Konstante hat Datentyp 'dat_16'
-                                    //i.saveDescriptionLine(`Größe von ${strings[1]} ist 'dat_16'`);
-                                    matches=matches.filter(e=>{
-                                    if(e.getSource()=="dat_16"){
-                                        return e;
-                                    }
-                                    });
-                                    break;
-                                }
-                                else if(consoletostring.includes("dat_8")){
-                                    i.saveDescriptionLine(this.formatErrorMassage(`erwartet war Wert/Konstante (8-bit), ${strings[1]} ist ein ungültiger Operand`));
-                                    i.setError(strings[1]);
-                                    i.setValid(false);
-                                    return false;
-                                }
-                                else{
-                                    i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist ein ungültiger Operand!`));
-                                    i.setError(strings[1]);
-                                    return false;
-                                }
-                                break;
-                            case DataType.LABEL:
-                                if(!consoletostring.includes("label")){
-                                    i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist ein ungültiger Operand!`));
-                                    i.setError(strings[1]);
-                                    i.setValid(false);
-                                    return false;
-                                }
-                                //i.saveDescriptionLine(`Gefunden 'label'\n ${commands[1]} ist ein bereits existierender 'label'`);
-                                let value1 = this.symbollist.getSpecificLabelByName(strings[1]);
-                                // i.saveDescriptionLine(this.formatGefunden("Label "+`'${value1?.getName()}'`,i.getFirstPart()+" "+i.getSecondPart()+", "+value1?.getName()));
-                                i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${value1?.getName()}</span>'`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+value1?.getName()));
-                                i.setThirdPart(strings[1]);
-                                matches=matches.filter(e=>{
-                                    if(e.getSource()=="label"){
-                                        return e;
-                                    }
-                                })
-                                break;
-                            case DataType.ELLIGIBLE:
-                                if(!consoletostring.includes("label")){
-                                    i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist ein ungültiger Operand!`));
-                                    i.setError(strings[1]);
-                                    i.setValid(false);
-                                    return false;
-                                }
-                                //i.saveDescriptionLine(`Gefunden 'label'\n ${strings[1]} als neue 'label' definiert`);
-                                this.symbollist.setLabelWithoutPosition(strings[1]);
-                                i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[1]}</span>'`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+strings[1]));
-                                i.setThirdPart(strings[1]);
-                                matches=matches.filter(e=>{
-                                    if(e.getSource()=="label"){
-                                        return e;
-                                    }
-                                })
-
-                                break;
-                            default: 
-                                i.saveDescriptionLine(this.formatErrorMassage("Something went wrong!"));
-                                return false;
-                        }
-                        if(matches.length==1){
-                            i.setThirdPart(strings[1]);
+                            if(strings[0] == "[HL]" || strings[1]=="[HL]"){
+                                i.saveDescriptionLine(this.formatErkannt("indirekte Register Addressierung"));
+                            }
+                            else{
+                                i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
+                            }
                             i.setType(InputLineType.TRANSLATED);
                             i.setLength(matches[0].getSize());
                             i.setHCode(matches[0].getHexCode());
@@ -505,10 +357,250 @@ export class CommandMap{
                         }
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} kein gültiger Operand`));
-                        i.setError(strings[1]);
-                        return false;
-                    }
+                        if(this.getDataType(strings[1]) != DataType.NONE){
+                            let type:DataType=this.getDataType(strings[1]);
+                            switch(type){
+    
+                                case DataType.dat_8:
+                                    if(consoletostring.includes("dat_8")){
+                                        //i.saveDescriptionLine(`Gefunden -> 'dat_8'`);
+                                        i.saveDescriptionLine(this.formatGefunden("Wert/Konstante (8-bit) "+Manipulator.formatHextoDat8(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat8(strings[1])));
+    
+                                        matches=matches.filter(e=>{
+                                            if(e.getSource()=="dat_8"){
+                                                return e;
+                                            }
+                                        });
+                                        // Änderung
+                                        // i.setThirdPart(Manipulator.formatHextoDat8(strings[1]));
+                                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+                                        i.setThirdPart((strings[1]));
+                                        break;
+                                    }else if(consoletostring.includes("dat_16")){
+                                        //i.saveDescriptionLine(`Gefunden -> 'dat_16'`);
+                                        i.saveDescriptionLine(this.formatGefunden("Wert/Konstante (16-bit) "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
+                                        matches=matches.filter(e=>{
+                                            if(e.getSource()=="dat_16"){
+                                                return e;
+                                            }
+                                        });
+                                        // Änderung
+                                        i.setThirdPart((strings[1]));
+                                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+
+                                        // i.setThirdPart(Manipulator.formatHextoDat16(strings[1]));
+                                        break;
+                                    }
+                                    else if(consoletostring.includes("dat_8")){
+                                        i.saveDescriptionLine(this.formatErrorMassage(`erwartet war Wert/Konstante (8-bit), ${strings[1]} ist kein gültiger Operand`));
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    }
+                                    else{
+                                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand`));
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    }
+                                case DataType.dat_16:
+                                    if(consoletostring.includes("dat_16") && ['HL','SP','IX'].includes(strings[0])){
+                                        //i.saveDescriptionLine(`Gefunden -> 'dat_16'`);
+                                        i.saveDescriptionLine(this.formatGefunden("Wert/Konstante (16-bit) "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
+                                        matches=matches.filter(e=>{
+                                            if(e.getSource()=="dat_16"){
+                                                return e;
+                                            }
+                                        });
+                                        // Änderung
+                                        // i.setThirdPart(Manipulator.formatHextoDat16(strings[1]));
+                                        i.setThirdPart((strings[1]));
+                                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+
+                                        break;
+                                    }
+                                    else{
+                                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    }
+                                    break;
+                                case DataType.CONSTANT:
+    
+                                    /* if(!consoletostring.includes("dat_8")||!consoletostring.includes("dat_16")){
+                                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist ein ungülitger Operand!`));
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    } */
+                                    let value = this.symbollist.getSpecificConstantByName(strings[1])?.getValue();
+                                    //i.saveDescriptionLine(`Gefunden Constante mit dem Wert ${value}`);
+                                    if(value==undefined){
+                                        i.saveDescriptionLine(this.formatErrorMassage(`Wert für Konstante ${strings[1]} nicht gefunden!`));
+                                        i.setError(strings[1]);
+                                        return false;
+                                    }
+                                    i.saveDescriptionLine(this.formatGefunden("Konstante "+`<span class="labelBlue">${strings[1]}</span>`+" mit dem Wert "+value,i.getFirstPart().toUpperCase()+" "+strings[0]+", "+strings[1]));
+                                    type = this.getDataType(value)
+                                    if(consoletostring.includes("dat_8")&&type==DataType.dat_8){ //Konstante hat Datentyp 'dat_8'
+                                        //i.saveDescriptionLine(`Größe von ${strings[1]} ist 'dat_8'`);
+                                        matches=matches.filter(e=>{
+                                            if(e.getSource()=="dat_8"){
+                                                return e;
+                                            }
+                                        });
+                                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+                                        break;
+                                    }
+                                    else if(consoletostring.includes("dat_16")){ //Konstante hat Datentyp 'dat_16'
+                                        //i.saveDescriptionLine(`Größe von ${strings[1]} ist 'dat_16'`);
+                                        matches=matches.filter(e=>{
+                                        if(e.getSource()=="dat_16"){
+                                            return e;
+                                        }
+                                        });
+                                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+
+                                        break;
+                                    }
+                                    else if(consoletostring.includes("dat_8")){
+                                        i.saveDescriptionLine(this.formatErrorMassage(`erwartet war Wert/Konstante (8-bit), ${strings[1]} ist kein gültiger Operand`));
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    }
+                                    else{
+                                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                                        i.setError(strings[1]);
+                                        return false;
+                                    }
+                                    break;
+                                case DataType.LABEL:
+                                    if(!consoletostring.includes("label")){
+                                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    }
+                                    //i.saveDescriptionLine(`Gefunden 'label'\n ${commands[1]} ist ein bereits existierender 'label'`);
+                                    let value1 = this.symbollist.getSpecificLabelByName(strings[1]);
+                                    // i.saveDescriptionLine(this.formatGefunden("Label "+`'${value1?.getName()}'`,i.getFirstPart()+" "+i.getSecondPart()+", "+value1?.getName()));
+                                    i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${value1?.getName()}</span>'`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+value1?.getName()));
+                                    i.setThirdPart(strings[1]);
+                                    matches=matches.filter(e=>{
+                                        if(e.getSource()=="label"){
+                                            return e;
+                                        }
+                                    })
+                                    i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
+
+                                    break;
+                                case DataType.ELLIGIBLE:
+                                    if(!consoletostring.includes("label")){
+                                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    }
+                                    //i.saveDescriptionLine(`Gefunden 'label'\n ${strings[1]} als neue 'label' definiert`);
+                                    this.symbollist.setLabelWithoutPosition(strings[1]);
+                                    i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[1]}</span>'`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+strings[1]));
+                                    i.setThirdPart(strings[1]);
+                                    matches=matches.filter(e=>{
+                                        if(e.getSource()=="label"){
+                                            return e;
+                                        }
+                                    })
+                                    i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
+    
+                                    break;
+                                default: 
+                                    i.saveDescriptionLine(this.formatErrorMassage("Something went wrong!"));
+                                    return false;
+                            }
+                            if(matches.length==1){
+                                i.setThirdPart(strings[1]);
+                                i.setType(InputLineType.TRANSLATED);
+                                i.setLength(matches[0].getSize());
+                                i.setHCode(matches[0].getHexCode());
+                                i.setValid(true);
+                                //console.log(matches[0].toString());
+                                return true;
+                            }
+                            else{
+                                i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                                return false;
+                            }
+                        }
+                        else if(strings[1].toUpperCase().startsWith("OFFSET")){
+                            let temp:string[]=Manipulator.splitStringHalf(strings[1]," ");
+                            if(temp.length<2){
+                                i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} kein gültiger Operand`));
+                                // i.saveDescriptionLine(this.formatErrorMassage(`gefunden wurde OFFSET aber kein passender Label!`));
+                                i.setError(strings[1]);
+                                return false;
+                            }
+                            if(this.getDataType(temp[1]) == DataType.LABEL){
+                                if(!consoletostring.includes("dat_16")){
+                                    i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                                    i.setError(strings[1]);
+                                    i.setValid(false);
+                                    return false;
+                                }
+                                //i.saveDescriptionLine(`Gefunden 'label'\n ${commands[1]} ist ein bereits existierender 'label'`);
+                                // i.saveDescriptionLine(this.formatGefunden("Label "+`'${value1?.getName()}'`,i.getFirstPart()+" "+i.getSecondPart()+", "+value1?.getName()));
+                                i.saveDescriptionLine(this.formatGefunden(`OFFSET Label (OFFSET <span class="labelBlue">${temp[1]}</span>)`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
+                                matches=matches.filter(e=>{
+                                    if(e.getSource()=="dat_16"){
+                                        return e;
+                                    }
+                                })
+                            }
+                            else if(this.getDataType(temp[1]) == DataType.ELLIGIBLE){
+                                if(!consoletostring.includes("dat_16")){
+                                    i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                                    i.setError(strings[1]);
+                                    i.setValid(false);
+                                    return false;
+                                }
+                                this.symbollist.setLabelWithoutPosition(temp[1]);
+                                i.saveDescriptionLine(this.formatGefunden(`OFFSET Label (OFFSET <span class="labelBlue">${temp[1]}</span>)`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
+                                matches=matches.filter(e=>{
+                                    if(e.getSource()=="dat_16"){
+                                        return e;
+                                    }
+                                })
+                            }
+                            else{
+                                i.saveDescriptionLine(this.formatErrorMassage(`gefunden wurde OFFSET aber kein gültiger label!`));
+                                i.setError(strings[1]);
+                                return false;
+                            }
+                            if(matches.length==1){
+                                i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+
+                                i.setThirdPart(strings[1]);
+                                i.setType(InputLineType.TRANSLATED);
+                                i.setLength(matches[0].getSize());
+                                i.setHCode(matches[0].getHexCode());
+                                i.setOffsetLabel(true);
+                                i.setValid(true);
+                                //console.log(matches[0].toString());
+                                return true;
+                            }
+                            else{
+                                i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} kein gültiger Operand`));
+                                i.setError(strings[1]);
+                                return false;
+                            }
+                        }
+                        else{
+                            i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} kein gültiger Operand`));
+                            i.setError(strings[1]);
+                            return false;
+                        }
+                    } 
                 }
                 else if(this.symbollist.isLabel(strings[0]) || this.symbollist.isEligible(strings[0])){ // MUSS label sein
                     i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[0]}</span>'`,i.getFirstPart().toUpperCase()+" "+strings[0]+" ..."))
@@ -542,6 +634,7 @@ export class CommandMap{
                         if(matches.length==1){
                             //ÄNDERUNG
                             i.setThirdPart(toSave);
+                            i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
                             // i.setThirdPart(strings[1]);
                             i.setType(InputLineType.TRANSLATED);
                             i.setLength(matches[0].getSize());
@@ -580,6 +673,8 @@ export class CommandMap{
                     return false;
                 }
                 else{
+                    i.saveDescriptionLine(this.formatErkannt("Stackbefehl"));
+
                     i.setType(InputLineType.TRANSLATED);
                     i.setLength(matches[0].getSize());
                     i.setHCode(matches[0].getHexCode());
@@ -597,6 +692,8 @@ export class CommandMap{
                     return false;
                 }
                 else{
+                    i.saveDescriptionLine(this.formatErkannt("Stackbefehl"));
+
                     i.setType(InputLineType.TRANSLATED);
                     i.setLength(matches[0].getSize());
                     i.setHCode(matches[0].getHexCode());
@@ -617,7 +714,7 @@ export class CommandMap{
                 strings = Manipulator.splitStringHalf(strings[1],",");
                 strings = this.filterForEmtpyStrings(strings);
                 if(strings[0].toUpperCase() =="A"){
-                    i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+strings[0]+" ..."));
+                    i.saveDescriptionLine(this.formatGefunden("Register A","IN A ..."));
                     i.setSecondPart(strings[0]);
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8-bit)"));
@@ -626,7 +723,9 @@ export class CommandMap{
                         return false;
                     }
                     if(this.symbollist.isConst(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],i.getFirstPart().toUpperCase()+" "+i.getSecondPart()+", "+strings[1]))
+                        i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],"IN A, "+strings[1]));
+                        i.saveDescriptionLine(this.formatErkannt("IO Addressierung"));
+
                         i.setThirdPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -635,7 +734,9 @@ export class CommandMap{
                         return true;
                     }
                     else if(Manipulator.isDat_8(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[1]),i.getFirstPart().toUpperCase()+" "+i.getSecondPart()+", "+Manipulator.formatHextoDat8(strings[1])));
+                        i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[1]),"IN A, "+Manipulator.formatHextoDat8(strings[1])));
+                        i.saveDescriptionLine(this.formatErkannt("IO Addressierung"));
+                        
                         // Änderung
                         // i.setThirdPart(Manipulator.formatHextoDat8(strings[1]));
                         i.setThirdPart((strings[1]));
@@ -684,6 +785,8 @@ export class CommandMap{
                     }
                     if(strings[1].toUpperCase() =="A"){
                         i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+strings[0]+", A"));
+                        i.saveDescriptionLine(this.formatErkannt("IO Addressierung"));
+
                         //ÄNDERUNG
                         i.setThirdPart(strings[1])
                         i.setType(InputLineType.TRANSLATED);
@@ -699,7 +802,9 @@ export class CommandMap{
                     }
                 }
                 else if(Manipulator.isDat_8(strings[0])){
+                    
                     i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[0]),i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+" ..."));
+                    
                     // Änderung
                     // i.setSecondPart(Manipulator.formatHextoDat8(strings[0]));
                     i.setSecondPart((strings[0]));
@@ -710,7 +815,9 @@ export class CommandMap{
                         return false;
                     }
                     if(strings[1].toUpperCase() =="A"){
-                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+strings[0]+", A"));
+                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+", A"));
+                        i.saveDescriptionLine(this.formatErkannt("IO Addressierung"));
+
                         //ÄNDERUNG
                         i.setThirdPart(strings[1])
                         i.setType(InputLineType.TRANSLATED);
@@ -754,6 +861,8 @@ export class CommandMap{
                         }
                     });
                     if(matches.length==1){
+                        i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
+
                         //ÄNDERUNG
                         i.setSecondPart(toSave);
                         i.setType(InputLineType.TRANSLATED);
@@ -797,6 +906,8 @@ export class CommandMap{
                         }
                     });
                     if(matches.length==1){
+                        i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
+
                         //ÄNDERUNG
                         i.setSecondPart(toSave);
                         i.setType(InputLineType.TRANSLATED);
@@ -820,6 +931,8 @@ export class CommandMap{
                         }
                     });
                     if(matches.length==1){
+                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -843,6 +956,8 @@ export class CommandMap{
                     if(matches.length==1){
                         // Änderung
                         // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
+                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+
                         i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -885,6 +1000,8 @@ export class CommandMap{
                     });
                     if(matches.length==1){
                         //ÄNDERUNG
+                        i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
+
                         i.setSecondPart(toSave);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -907,6 +1024,8 @@ export class CommandMap{
                         }
                     });
                     if(matches.length==1){
+                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -930,6 +1049,8 @@ export class CommandMap{
                     if(matches.length==1){
                         // Änderung
                         // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
+                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+
                         i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -959,6 +1080,8 @@ export class CommandMap{
                     return false;
                 }
                 if(matches.length==1){
+                    i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
+
                     i.setType(InputLineType.TRANSLATED);
                     i.setLength(matches[0].getSize());
                     i.setHCode(matches[0].getHexCode());
@@ -970,6 +1093,7 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
                     return false;
                 }
+                break;
             case 'RCL':case'ROL':case'RCR':case'ROR':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
 
@@ -980,6 +1104,8 @@ export class CommandMap{
                     return false;
                 }
                 if(matches.length==1){
+                    i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
+
                     i.setType(InputLineType.TRANSLATED);
                     i.setLength(matches[0].getSize());
                     i.setHCode(matches[0].getHexCode());
@@ -991,6 +1117,7 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
                     return false;
                 }
+                break;
             case 'JPNZ':case'JPZ':case'JPNC':case'JPC':case'JPNO':case'JPO':case'JPNS':case'JPS':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
 
@@ -1014,6 +1141,8 @@ export class CommandMap{
                         // i.saveDescriptionLine(`Neue Label angesetzt!`);
                     }
                     if(matches.length==1){
+                        i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
+
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -1056,6 +1185,8 @@ export class CommandMap{
                         // i.saveDescriptionLine(`Neue Label angesetzt!`);
                     }
                     if(matches.length==1){
+                        i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
+
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -1069,13 +1200,34 @@ export class CommandMap{
                         return false;
                     }
                 }
+                else if(strings[1].toUpperCase()=="[IX]"){
+                    matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
+                        if(e.getDestination() =="[IX]"){
+                            return e;
+                        }
+                    });
+                    if(matches.length==1){
+                        i.saveDescriptionLine(this.formatGefunden(`Register [IX]`,"JP [IX]"));
+                        i.saveDescriptionLine(this.formatErkannt("indirekte Register Addressierung"));
+                        i.setSecondPart(strings[1]);
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setLength(matches[0].getSize());
+                        i.setHCode(matches[0].getHexCode());
+                        i.setValid(true);
+                        return true;
+                    }
+                    else{
+                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                        i.setError(strings[1]);
+                        return false;
+                    }
+                }
                 else{
                     i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
                     i.setError(strings[1]);
                     return false;
                 }
                 break;
-
             case 'CALL':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
 
@@ -1090,6 +1242,8 @@ export class CommandMap{
                 if(strings[1]=="[IX]"){
                     matches=this.mnemoCommands.filter(e=>{return e.getDestination()=="[IX]"});
                     if(matches.length==1){
+                        i.saveDescriptionLine(this.formatErkannt("indirekte Register Addressierung"));
+                        
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -1115,6 +1269,7 @@ export class CommandMap{
                         // i.saveDescriptionLine(`Neue Label angesetzt!`);
                     }
                     if(matches.length==1){
+                        i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -1134,7 +1289,7 @@ export class CommandMap{
                     return false;
                 }
                 break;
-            case 'RET':case 'HALT':
+            case 'HALT':case 'NOP':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
 
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
@@ -1156,16 +1311,18 @@ export class CommandMap{
                     return false;
                 }
                 break;
-            case 'NOP':
+            case 'RET':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
 
-                matches=this.mnemoCommands.filter(e=>{return e.getMCode()=="NOP"});
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()=="RET"});
                 if(strings.length>1){
                     i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
                     i.setError(strings[1]);
                     return false;
                 }
                 if(matches.length==1){
+                    i.saveDescriptionLine(this.formatErkannt("Stackbefehl"));
+
                     i.setType(InputLineType.TRANSLATED);
                     i.setLength(matches[0].getSize());
                     i.setHCode(matches[0].getHexCode());
@@ -1185,6 +1342,7 @@ export class CommandMap{
     }
 
     parsetoPseudoMnemoCode(i:InputLine,strings:string[]):boolean{
+        let temp: string[];
         if(this.pseudoMCodes.includes(strings[0].toUpperCase())){
             i.setFirstPart(strings[0]);
             strings[0]=strings[0].toUpperCase();
@@ -1233,8 +1391,36 @@ export class CommandMap{
                         i.setValid(true);
                         return true;
                     }
+                    else if(strings[1].toUpperCase().startsWith("OFFSET")){
+                            temp=Manipulator.splitStringHalf(strings[1]," ");
+                            if(temp.length<2){
+                                i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} kein gültiger Operand`));
+                                i.setError(strings[1]);
+                                return false;
+                            }
+                            if(this.getDataType(temp[1]) == DataType.LABEL){
+                                i.saveDescriptionLine(this.formatGefunden(`OFFSET Label (OFFSET <span class="labelBlue">${temp[1]}</span>)`,"DW OFFSET "+temp[1]));
+                            }
+                            else if(this.getDataType(temp[1]) == DataType.ELLIGIBLE){
+                                this.symbollist.setLabelWithoutPosition(temp[1]);
+                                i.saveDescriptionLine(this.formatGefunden(`OFFSET Label (OFFSET <span class="labelBlue">${temp[1]}</span>)`,"DW OFFSET "+temp[1]));
+                            }
+                            else{
+                                i.saveDescriptionLine(this.formatErrorMassage(`gefunden wurde OFFSET aber kein gültiger label!`));
+                                i.setError(strings[1]);
+                                return false;
+                            }
+                            i.setType(InputLineType.TRANSLATED);
+                            i.setLength(2);
+                        // Änderung
+                        // i.setSecondPart(Manipulator.formatHextoDat16(strings[1]));
+                            i.setSecondPart((strings[1]));
+                            i.setOffsetLabel(true);
+                            i.setValid(true);
+                            return true;
+                    }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} is keine Konstante (16-bit)!`));
+                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} is keine Konstante (16-bit) oder OFFSET Label!`));
                         i.setError(strings[1]);
                         return false;
                     }
@@ -1386,6 +1572,23 @@ export class CommandMap{
             i.setError(strings[0]);
             
             return false;
+        }
+    }
+    getAddressierungsart(i:InputLine){
+        let first=i.getFirstPart().toUpperCase(),second=i.getSecondPart(),third =i.getThirdPart();
+        if(i.getType()!=InputLineType.TRANSLATED && this.mCodes.includes(first)){
+            if(first=="INC" || first == "DEC"){
+
+            }
+            if(first[0]=="P"){
+
+            }
+            else if(first[0]=="J"){
+                if(second=="[IX]"){
+                    
+                }
+
+            }
         }
     }
 

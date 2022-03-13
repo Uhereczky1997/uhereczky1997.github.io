@@ -1,6 +1,7 @@
 .gray{
     color:grey;
     font-family: 'Courier New', Courier, monospace;
+    text-align: center;
 }
 .errorRed{
   color:rgb(221, 6, 6);

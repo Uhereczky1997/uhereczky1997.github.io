@@ -144,7 +144,7 @@ export class InputLineControl{
         let s = i.commandLinetoString(true);
         let h = i.getHCode();
         let l:string|undefined = "";
-        let c:Constant;
+        let temp:string[];
         // console.log(i.getCommandLine()+" ... "+i.getLength()+" ... "+i.getHCode());
         if(i.getFirstPart().toUpperCase()=="RS"){
             return (h.length>4?"0000...("+i.getLength()+"x)":h);
@@ -157,8 +157,11 @@ export class InputLineControl{
             return `${this.fHD8WH(h)}`;
         }
         else if(i.getFirstPart().toUpperCase()=='DW'){
+            /* if(i.hasOffsetLabel()){
+                return this.getLittleEndianOf(M)
+            } */
             h=i.getSecondPart();
-            return `${this.getLittleEndianOf(h)}`;
+            return this.getLittleEndianOf(h);
         }
         else{
             switch(i.getLength()){
@@ -200,6 +203,10 @@ export class InputLineControl{
                         l= this.symbolliste.getSpecificConstantByName(i.getThirdPart())?.getValue();
                         return this.fHD8WH(h)+(l!=undefined?this.getLittleEndianOf(l):l);
                     }
+                    else if(i.hasOffsetLabel()){
+                        l = this.symbolliste.getPositionOfSpecificLabel(i.getLabelOfOffset());
+                        return this.fHD8WH(h)+(l!=undefined&&flag?this.getLittleEndianOf(l):"????");
+                    }
                     else {
                         return this.fHD8WH(h)+this.getLittleEndianOf(i.getThirdPart());
                     }
@@ -215,6 +222,10 @@ export class InputLineControl{
                     }
                     else if(this.symbolliste.isLabel(i.getThirdPart())){
                         l = this.symbolliste.getPositionOfSpecificLabel(i.getThirdPart());
+                        return this.fHD16WH(h)+(l!=undefined&&flag?this.getLittleEndianOf(l):"????");
+                    }
+                    else if(i.hasOffsetLabel()){
+                        l = this.symbolliste.getPositionOfSpecificLabel(i.getLabelOfOffset());
                         return this.fHD16WH(h)+(l!=undefined&&flag?this.getLittleEndianOf(l):"????");
                     }
                     else {
@@ -241,9 +252,9 @@ export class InputLineControl{
                 i.saveDescriptionLine(`<span class="eingeruckt">`+s+" -> "+(h.length>4?"00 ("+i.getLength()+"x)":h)+`</span>`);
                 i.saveDescriptionLine(`<span class="eingeruckt">`+"Anzahl der Bytes: "+i.getLength()+`</span>`);
             }
-            else if(i.getFirstPart().toUpperCase()=="ORG"){
+            /* else if(i.getFirstPart().toUpperCase()=="ORG"){
                 i.saveDescriptionLine(`<span class="eingeruckt">`+"Addresszähler = "+this.fHD16WH(String(i.getLength()))+`</span>`);
-            }
+            } */
             else
             {
                 i.saveDescriptionLine(`<span class="eingeruckt">`+s+" -> "+this.getSpeicherAbbild(i,false)+`</span>`);
@@ -400,6 +411,12 @@ export class InputLineControl{
                             rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
                             e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
                         }
+                        else if(e.hasOffsetLabel()){
+                            h=this.symbolliste.getPositionOfSpecificLabel(e.getLabelOfOffset());
+                            h=(h==undefined?"????":h);
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.getSpeicherAbbild(e,flag)}${this.fHD8WH(rest)}`);
+                        }
                         else{
                             console.log(`${e.getId()} cannot be translated! Case3 failed!`);
                         }
@@ -414,15 +431,15 @@ export class InputLineControl{
                             h=this.symbolliste.getPositionOfSpecificLabel(e.getSecondPart());
                             h=(h==undefined?"????":h);
                             rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                            // e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
-                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
+                            // e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.getSpeicherAbbild(e,flag)}${this.fHD8WH(rest)}`);
                         } 
                         else if(this.symbolliste.isLabel(e.getThirdPart())){
                             h=this.symbolliste.getPositionOfSpecificLabel(e.getThirdPart());
                             h=(h==undefined?"????":h);
                             rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-                            // e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
-                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
+                            // e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${flag?h.replace(/h$/,""):"????"}${this.fHD8WH(rest)}`);
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.getSpeicherAbbild(e,flag)}${this.fHD8WH(rest)}`);
                         }
                         else if(Manipulator.isDat_16(e.getThirdPart())){
                             h=e.getThirdPart();
@@ -435,6 +452,12 @@ export class InputLineControl{
                             rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
                             // e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
                             e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD16WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
+                        }
+                        else if(e.hasOffsetLabel()){
+                            h=this.symbolliste.getPositionOfSpecificLabel(e.getLabelOfOffset());
+                            h=(h==undefined?"????":h);
+                            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
+                            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.getSpeicherAbbild(e,flag)}${this.fHD8WH(rest)}`);
                         }
                         else{
                             console.log(`${e.getId()} cannot be translated! Case4 failed!`);

@@ -1,17 +1,6 @@
 
-1. 
-    adressierungsarten, welche gehoren zu welchen?
-
-2.
-    OFFSET label
-3.
-    2. Animations typ
-4.
-    Auswählbare selectionen (descriptionLine  würde zum ausgewählten springen)
-5.
-    rot hervorhebung von gerade angezeigten wenn fehler auftritt
-6.
-
+1.
+    dw offset label????
 
 
 x-----------------------------------------------------------------------
@@ -93,8 +82,8 @@ ADDRESSIERUNGSART:
 7. Uebungsblock:
 2:30 (2 Stunde, 32-33 Minuten);
 
-label - absolute ausnahme OFFSET
-zahl - immidate -> OFFSET, Zahl
+absolute label ausnahme OFFSET
+immidate -> OFFSET, Zahl
 [register] - register indirekt -> []
 register - register (direkt)
 in, out - input output addressierung
@@ -122,3 +111,5 @@ mov sp, const2
 
 
 label:
+
+

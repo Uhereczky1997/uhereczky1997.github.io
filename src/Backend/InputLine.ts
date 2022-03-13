@@ -17,6 +17,7 @@ export class InputLine{
     private rest:string="";
     private commentary:string="";
     private label:string="";
+    private offsetLabel:boolean=false;
     private translation:string="";
     private description:string[]=[];
 
@@ -43,6 +44,12 @@ export class InputLine{
     }
     setError(s:string){
         this.error=s;
+    }
+    hasOffsetLabel():boolean{
+        return this.offsetLabel;
+    }
+    setOffsetLabel(b:boolean){
+        this.offsetLabel=b
     }
     setStartingAddr(s:string){this.startingAddr=s;}
     setLength(n:number|string){
@@ -147,16 +154,34 @@ export class InputLine{
         }
         return addr.trim();
     }
+    getLabelOfOffset():string{
+        if(this.offsetLabel){
+            if(this.secondPart.toUpperCase().startsWith("OFFSET")){
+                return Manipulator.splitStringHalf(this.secondPart," ")[1];
+            }
+            if(this.thirdPart.toUpperCase().startsWith("OFFSET")){
+                return Manipulator.splitStringHalf(this.thirdPart," ")[1];
+            }
+        }
+        return "";
+    }
     formatInputToDisplay(){
+        let temp:string[];
         if(this.valid){
             if(this.secondPart.toUpperCase()=="EQU"){
                 this.secondPart=this.secondPart.toUpperCase();
             }
             else{
+                temp = Manipulator.splitStringHalf(this.secondPart," ");
                 this.firstPart=this.firstPart.toUpperCase();
-                if(!SymbolL.isLabel(this.secondPart) && !SymbolL.isConst(this.secondPart) && !Manipulator.isDat_16(this.secondPart)){
+                if(!SymbolL.isLabel(this.secondPart) && !SymbolL.isConst(this.secondPart) && !Manipulator.isDat_16(this.secondPart)&&!(temp[0].toUpperCase()=="OFFSET")){
                     this.secondPart=this.secondPart.toUpperCase();
-                }else if(this.secondPart!=""){
+                }else if(this.hasOffsetLabel()){
+                    if(temp[0].toUpperCase()=="OFFSET"){
+                        this.secondPart="OFFSET "+temp[1];
+                    }
+                }
+                else if(this.secondPart!=""){
                     if(Manipulator.isDat_8(this.secondPart)){
                         this.secondPart=Manipulator.formatHextoDat8(this.secondPart);
                     }
@@ -164,9 +189,16 @@ export class InputLine{
                         this.secondPart=Manipulator.formatHextoDat16(this.secondPart);
                     }
                 }
-                if(!SymbolL.isLabel(this.thirdPart) && !SymbolL.isConst(this.thirdPart) && !Manipulator.isDat_16(this.thirdPart)){
+                temp = Manipulator.splitStringHalf(this.thirdPart," ");
+                if(!SymbolL.isLabel(this.thirdPart) && !SymbolL.isConst(this.thirdPart) && !Manipulator.isDat_16(this.thirdPart) &&!(temp[0].toUpperCase()=="OFFSET")){
                     this.thirdPart=this.thirdPart.toUpperCase();
-                }if(this.thirdPart!=""){
+                }
+                else if(this.hasOffsetLabel()){
+                    if(temp[0].toUpperCase()=="OFFSET"){
+                        this.thirdPart="OFFSET "+temp[1];
+                    }
+                }
+                else if(this.thirdPart!=""){
 
                     if(Manipulator.isDat_8(this.thirdPart)){
                         this.thirdPart=Manipulator.formatHextoDat8(this.thirdPart);
@@ -212,6 +244,7 @@ export class InputLine{
     }
     commandLinetoString=(b:boolean):string=>{
         let first:string=this.firstPart,second:string=this.secondPart,third:string=this.thirdPart;
+        let temp:string[];
 
         if(this.valid==true){
             if(b){
@@ -220,8 +253,14 @@ export class InputLine{
                 }
                 else{
                     first=first.toUpperCase();
-                    if(!SymbolL.isLabel(second) && !SymbolL.isConst(second) && !Manipulator.isDat_16(second)){
+                    temp = Manipulator.splitStringHalf(second," ");
+                    if(!SymbolL.isLabel(second) && !SymbolL.isConst(second) && !Manipulator.isDat_16(second) &&!(temp[0].toUpperCase()=="OFFSET")){
                         second=second.toUpperCase();
+                    }
+                    if(this.hasOffsetLabel()){
+                        if(temp[0].toUpperCase()=="OFFSET"){
+                            second="OFFSET "+temp[1];
+                        }
                     }
                     else if(second !=""){
                         if(Manipulator.isDat_8(second)){
@@ -231,8 +270,14 @@ export class InputLine{
                             second=Manipulator.formatHextoDat16(second);
                         }
                     }
-                    if(!SymbolL.isLabel(third) && !SymbolL.isConst(third) && !Manipulator.isDat_16(third)){
+                    temp = Manipulator.splitStringHalf(third," ");
+                    if(!SymbolL.isLabel(third) && !SymbolL.isConst(third) && !Manipulator.isDat_16(third) &&!(temp[0].toUpperCase()=="OFFSET")){
                         third=third.toUpperCase();
+                    }
+                    else if(this.hasOffsetLabel()){
+                        if(temp[0].toUpperCase()=="OFFSET"){
+                            third="OFFSET "+temp[1];
+                        }
                     }
                     else if(third !=""){
                         if(Manipulator.isDat_8(third)){

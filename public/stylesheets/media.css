@@ -68,7 +68,7 @@ textarea{
         font-size: calc(var(--maxfontsize14) - 8px);
         
     }
-    #descriptionLines>p{
+    #descriptionLines>* p{
         margin: 2px;
         font-size: calc(var(--maxfontsize14) - 12px);
 
@@ -111,7 +111,7 @@ textarea{
     textarea{
         font-size: calc(var(--maxfontsize20) - 8px);
     }
-    #descriptionLines>p{
+    #descriptionLines>* p{
         margin: 2px;
         font-size: calc(var(--maxfontsize20) - 12px);
 
@@ -153,7 +153,7 @@ textarea{
     textarea{
         font-size: calc(var(--maxfontsize28) - 8px);
     }
-    #descriptionLines>p{
+    #descriptionLines>* p{
         margin: 2px;
         font-size: calc(var(--maxfontsize28) - 12px);
 
@@ -193,6 +193,10 @@ textarea{
     }
     textarea{
         font-size: calc(var(--maxfontsize30) - 8px);
+    }
+    #descriptionLines>* p{
+        margin: 2px;
+        font-size: calc(var(--maxfontsize30) - 12px);
     }
     #descriptionLines>p{
         margin: 2px;
@@ -235,7 +239,7 @@ textarea{
     textarea{
         font-size: calc(var(--maxfontsize32) - 8px);
     }
-    #descriptionLines>p{
+    #descriptionLines>* p{
         margin: 2px;
         font-size: calc(var(--maxfontsize32) - 12px);
     }

@@ -44,6 +44,22 @@ export const addClassTo=(id:string,cls:string)=>{
 export const getIDOfSelected=(s:string):string=>{
     return s[0]+s[1];
 }
+const setScrollbarOfDescriptionLine = async (e: any) =>{ //Eventbubbling is f-ing sick!
+    let id:string;
+    if(e instanceof PointerEvent){
+        if(e.target instanceof HTMLElement){
+            id=getIDOfSelected(e.target.id);
+            if(e.target.classList.contains("hoverableID") && !aniControl.play){
+                updateScrollOfDescriptionLines(id+"DescriptionDiv",descriptionLines.id);
+            }
+        }
+    }
+}
+const updateScrollOfDescriptionLines=(id:string,targetID:string)=>{
+    var elem = getHtmlElement(id);
+    var targetElem = getHtmlElement(targetID);
+    targetElem.scrollTop=elem.offsetTop-targetElem.offsetTop;
+}
 
 export class ProjectWindow{
     private inputLineControl:InputLineControl=InputLineControl.getInstance();
@@ -154,17 +170,17 @@ export class ProjectWindow{
             e=this.inputLines[i];
             if(e !=null){
                 if(e.getType()==InputLineType.EMPTY){
-                    InputID.innerHTML+=`<p  class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
+                    InputID.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputLineId" class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
                     InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
                 }else{
                     InputID.innerHTML+=`<p  class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
-                    InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.commandLinetoString(false))}${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
+                    InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.getFirstPart(),e.commandLinetoString(false))}${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
                 }
                 OutputAddresses.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}oAddress">&nbsp;</p>`;
                 OutputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}outputP">&nbsp;</p>`;
             }
             else{
-                InputID.innerHTML+=`<p class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
+                InputID.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputLineId" class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
                 InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP"  class="overflowElipsis">${this.inputstrings[i]}&nbsp;</p>`;
                 OutputAddresses.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}oAddress">&nbsp;</p>`;
                 OutputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}outputP">&nbsp;</p>`;
@@ -181,7 +197,7 @@ export class ProjectWindow{
             if(e.getType()==InputLineType.EMPTY){
                 inputLineHTML.innerHTML=`${e.getCommentary()==""?"":";"+e.getCommentary()}`;
             }else{
-                inputLineHTML.innerHTML=`${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.commandLinetoString(true))}${e.getCommentary()==""?"":";"+e.getCommentary()}`;
+                inputLineHTML.innerHTML=`${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.getFirstPart(),e.commandLinetoString(true))}${e.getCommentary()==""?"":";"+e.getCommentary()}`;
             }
             
         }
@@ -244,10 +260,13 @@ export class ProjectWindow{
             addr = e.getStartingAddr();
             spa = this.inputLineControl.getSpeicherAbbild(e,b);
             if(spa.includes("??")){
-                if(this.symbolList.isLabel(e.getSecondPart())){
+                if(e.hasOffsetLabel()){
+                    l = "("+e.getLabelOfOffset()+")";
+                }
+                else if(this.symbolList.isLabel(e.getSecondPart())){
                     l = "("+e.getSecondPart()+")";
                 }
-                if(this.symbolList.isLabel(e.getThirdPart())){
+                else if(this.symbolList.isLabel(e.getThirdPart())){
                     l = "("+e.getThirdPart()+")";
                 }
             }
@@ -264,6 +283,11 @@ export class ProjectWindow{
             if(e.getTranslation().includes("????")){
 
                 k=this.symbolList.getLabels().find(i=>{
+                    if(e.hasOffsetLabel()){
+                        if(i.getName().toLowerCase()==e.getLabelOfOffset().toLowerCase()){
+                            return i;
+                        }
+                    }
                     if(i.getName().toLowerCase()==e.getSecondPart().toLowerCase() || i.getName().toLowerCase()== e.getThirdPart().toLowerCase()){
                         return i;
                     }
@@ -364,7 +388,6 @@ export class ProjectWindow{
         }
     }
     
-    
     private translateInputStringOfId=(n:number):boolean=>{
         // console.log(n+" corresponds to -> "+this.inputstrings[n]);
         if(n<this.inputstrings.length){
@@ -407,6 +430,8 @@ export class ProjectWindow{
             if(aniControl.start){
                 this.toggleStop();
             }
+            descriptionLines.innerHTML += `<p style=" white-space: nowrap; overflow: hidden;"> -------------------------------------------------------- </p>`;
+
             this.linkerAuflosungB=this.aufzulosendeLabel();
             await this.linkerAuflosung();
             console.log("finished");
@@ -418,9 +443,15 @@ export class ProjectWindow{
         let e:string;
         let ss:string[];
         let l:InputLine;
+        let newElem:HTMLDivElement;
+        newElem = document.createElement("div");
+        newElem.id=`${(i+1)<10?"0"+(i+1):(i+1)}DescriptionDiv`;
+        newElem.classList.add("noMP");
+        descriptionLines.appendChild(newElem);
         if(this.inputLines.length>i){
-            l=this.inputLines[i]
-            ss=l.getDescriptionLine()
+            l=this.inputLines[i];
+            ss=l.getDescriptionLine();
+            newElem.innerHTML += `<p style=" white-space: nowrap; overflow: hidden;"> ----<span class="bold"><${(i+1)<10?"0"+(i+1):(i+1)}></span>------------------------------------------------ </p>`;
             for(let j=0;j<ss.length;j++){
                 e=ss[j]
                 if(aniControl.start){
@@ -434,12 +465,12 @@ export class ProjectWindow{
                     await this.nextInverted(l.getAllV());
                     aniControl.setStop();
                     
-                    descriptionLines.innerHTML += `<p>${e}</p>`;
+                    newElem.innerHTML += `<p>${e}</p>`;
                     updateScroll(descriptionLines.id);
                     throw Error('Stop pressed');
                 }else{
                     
-                    descriptionLines.innerHTML += `<p>${e}</p>`;
+                    newElem.innerHTML += `<p>${e}</p>`;
                     updateScroll(descriptionLines.id);
                 }
                 if(e.includes("gefunden: Doppelpunkte")){
@@ -490,8 +521,6 @@ export class ProjectWindow{
                 addresszahler.innerHTML= `${l.getEndAddr()}`;
             }
 
-            descriptionLines.innerHTML += `<p style=" white-space: nowrap; overflow: hidden;"> --------------------------------------------------------- </p>`;
-
             if(aniControl.start){
                 await sleepUntilNextStep();
             }
@@ -499,11 +528,10 @@ export class ProjectWindow{
             l.formatInputToDisplay();
             this.refreshInputListItem(i);
             updateScroll(descriptionLines.id);
+            addClassTo(`${(i+1)<10?"0"+(i+1):(i+1)}inputLineId`,"hoverableID");
         }
     }
 
-    
-    
     private aufzulosendeLabel=():boolean=>{
         let b=false;
         this.inputLines.forEach(e=>{
@@ -619,6 +647,7 @@ export class ProjectWindow{
             createClickListener('speed',this.speed);
             createClickListener('skip',this.skipToFinish);
             createClickListener('reset',this.reset);
+            createClickListener(InputID.id,setScrollbarOfDescriptionLine);
         }catch(e){
             console.log(e);
         }

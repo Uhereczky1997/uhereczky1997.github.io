@@ -29,7 +29,7 @@ export const onscrollIn_Out = () =>{
         console.log(e);
     }
 }
-export const consoleClicked = async (e: any) =>{ //Eventbubbling is f-ing sick!
+export const setCurrentlyHovered = async (e: any) =>{ //Eventbubbling is f-ing sick!
     let id:string;
     if(e instanceof PointerEvent){
         if(e.target instanceof HTMLElement){
@@ -47,8 +47,8 @@ const main = ()=>{
     let p = new ProjectWindow();
     p.createListeners();
     onscrollIn_Out();
-    createClickListener("InputLines",consoleClicked);
-    createClickListener("OutputLines",consoleClicked);
+    createClickListener("InputLines",setCurrentlyHovered);
+    createClickListener("OutputLines",setCurrentlyHovered);
 }
 main();
 

@@ -1,0 +1,26 @@
+
+MOV A/B/C, dat_8 / MOV HL/SP/IX, dat_16     - Immediate
+
+MOV A,B / MOV B,A / MOV B,C ...             - Register (direkt)
+
+MOV A,label / MOV label,A / ...             - Absolute
+
+MOV A,[HL] / MOV [HL],A                     - indirekte Register
+
+PUSH / POP                                  - Stackbefehl    
+
+IN A,port / OUT port,A                      - IO Befehl
+
+INC/DEC A/B/C/HL/IX                         - Register (direkt)
+
+ADD/SUB/AND/OR/XOR/CP A/B/C                 - Register (direkt)
+
+ADD/SUB/AND/OR/XOR/CP dat_8                 - Immediate
+
+JP/JPNZ/JPZ ...JPNS/JPS label               - Absolute
+
+JP [IX]                                     - indirekte Register
+
+RET                                         - Stackbefehl    
+
+NOP/HALT                                    - Keine Adressierung
