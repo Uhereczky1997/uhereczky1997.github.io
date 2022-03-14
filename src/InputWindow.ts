@@ -14,12 +14,10 @@ let inputWindowContainer:HTMLElement = getHtmlElement('InputWindowContainter');
 
 export class InputWindow{
     private inputcontrol:InputLineControl=InputLineControl.getInstance();
-    private InputWindowElement:HTMLElement;
     private InputTextAreaElement:HTMLTextAreaElement;
     private pWindow:ProjectWindow;
 
     constructor(p:ProjectWindow){
-        this.InputWindowElement=getHtmlElement('InputWindow');
         this.InputTextAreaElement=getHtmlElement('InputTextArea')as HTMLTextAreaElement;
         this.pWindow=p;
     }
@@ -28,22 +26,22 @@ export class InputWindow{
         let inputs:InputLine[] = this.inputcontrol.getInputLines();
         let ss:string[];
         let toReturn:string="";
-        
-        //console.log(ss.find(e=>{return e.includes("error")}));
-        toReturn += `<div class="backgroundError"><p class="grey">Syntaxfehler in folgenden Zeilen:</p>`;
+        let anzahl= 0;
         inputs.forEach(e=>{
             ss=e.getDescriptionLine();
             if(ss.find(e=>{return e.includes("error")})!=undefined){                
-                toReturn += `<p>${e.getId()+1}</p>`; 
+                anzahl +=1;
             } 
-            // console.log(e.commandLinetoString())
         })
-        toReturn +=`</div>`;
+        if(anzahl!=0){
+            toReturn += `<div class="backgroundError"><p class="bold">Anzahl der Syntaxfehler: ${anzahl}</p></div>`;
+        }
         return toReturn;
     }
     public translate = ():void=>{
         try{
             let s:string[]=this.InputTextAreaElement.value.split("\n");
+            // this.InputTextAreaElement.
             /* s=s.filter(e=>{
                 e=Manipulator.removeExcessWhiteSpace(e);
                 if(e.length>0){
@@ -68,12 +66,12 @@ export class InputWindow{
         this.translate();
         s = this.displayError();
         // console.log(s.length);
-        if(s.length>88){
-            errorDescriptionDiv.innerHTML=s;
+        errorDescriptionDiv.innerHTML=s;
+        /* if(s.length>88){
         }
         else{
             errorDescriptionDiv.innerHTML= `<div class="backgroundNoError"><p>Keine syntaktische Fehler!</p></div>`
-        }
+        } */
         /* 
         errorDescriptionDiv.innerHTML="";
         let inputs:InputLine[] = this.inputcontrol.getInputLines();
@@ -83,10 +81,6 @@ export class InputWindow{
             // this.displaySummary(inputs[i]);
         } 
         */
-    }
-    public consolescreensize=()=>{
-        console.log(screen.height);
-        console.log(screen.width);
     }
     private pushPreview = async (e:InputLine,n:number) =>{
         await sleepFor(n);
@@ -176,8 +170,6 @@ export class InputWindow{
         createClickListener('Preview',this.previewTranslation);
         createClickListener('GenerateDummy',this.generateDummy);
         createClickListener('CloseInputWindow',this.openEditWindow);
-        // createClickListener('TestThing',this.consolescreensize);
-        //errorOnlyCheckBox.addEventListener('change',this.setChecked);
     }
     public generateDummy = ():void=>{
         this.addLinetoTextArea([

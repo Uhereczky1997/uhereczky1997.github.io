@@ -107,7 +107,7 @@ body>* h1{
 }
 .MiddleBoxAlt{
     display: grid;
-    grid-template-rows:72px 50px 1px 40px 1px 1fr 72px;
+    grid-template-rows:72px min-content 1px min-content 1px 1fr  12%;
     grid-template-columns: 1fr;
 }
 .SideBox{

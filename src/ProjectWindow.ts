@@ -97,7 +97,7 @@ export class ProjectWindow{
     public partialReset =async () =>{
         this.inputLines=[];
         // currentLine.innerHTML="";
-        currentLineLine.innerHTML="";
+        currentLineLine.innerHTML="&nbsp;";
         symbolTableLines.innerHTML="";
         descriptionLines.innerHTML="";
         addresszahler.innerHTML="0000h";
@@ -386,6 +386,24 @@ export class ProjectWindow{
             }
         }
     }
+    public repushTranslationOf=async(i:number)=>{
+        let e:InputLine;
+        if(this.inputLines.length==this.inputstrings.length){
+            e=this.inputLines[i];
+            if(i==this.inputLines.length-1){
+                if(e.getType()==InputLineType.TRANSLATED){
+                    OutputTextAreaElement.innerHTML+=":"+e.getTranslation()+"\n";
+                }
+                OutputTextAreaElement.innerHTML+=":00000001FF";
+            }
+        }
+        if(i<this.inputLines.length){
+            e=this.inputLines[i];
+            if(e.getType()==InputLineType.TRANSLATED){
+                OutputTextAreaElement.innerHTML+=":"+e.getTranslation()+"\n";
+            }
+        }
+    }
     
     private translateInputStringOfId=(n:number):boolean=>{
         // console.log(n+" corresponds to -> "+this.inputstrings[n]);
@@ -424,6 +442,7 @@ export class ProjectWindow{
                         machinenbefehl.innerHTML="";
                         await this.pushDescriptionLinesOf(i);
                     }
+                    await this.repushTranslationOf(i);
                 }
             }
             if(aniControl.start){
@@ -568,6 +587,7 @@ export class ProjectWindow{
             }
             console.log("finished");
             currentLineLine.innerHTML=`&nbsp;`;
+            machinenbefehl.innerHTML=`&nbsp;`;
         }
         else{
             console.log("no Input");
@@ -583,6 +603,8 @@ export class ProjectWindow{
                 console.log(e);
             }
             aniControl.setEnd();
+            currentLineLine.innerHTML=`&nbsp;`;
+            machinenbefehl.innerHTML=`&nbsp;`;
         }
         else{
             console.log("no Input");
