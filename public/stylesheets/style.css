@@ -107,12 +107,12 @@ body>* h1{
 }
 .MiddleBoxAlt{
     display: grid;
-    grid-template-rows:72px min-content 1px min-content 1px 1fr  12%;
+    grid-template-rows:minmax(min-content,max-content) min-content 1px min-content 1px 1fr  12%;
     grid-template-columns: 1fr;
 }
 .SideBox{
     display: grid;
-    grid-template-rows: 72px 1fr 72px;
+    grid-template-rows: minmax(min-content,max-content) 1fr 70px;
     grid-template-columns: 1fr;
 }
 /* .MiddleBox{

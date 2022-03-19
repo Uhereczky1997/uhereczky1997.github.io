@@ -11,15 +11,18 @@
     padding-right:3px;
     line-height: 140%;
     display: block;
+
+}
+.displayText + .end>p{
     text-align: end;
 }
-.displayText + .hoverable>p{
-    font-weight: bold;
+.displayText + .start>p{
     text-align: start;
+    font-weight: bold;
 }
 
 .displayText + .hoverable>p:hover{
-    background-color: yellow;
+    background-color: var(--yellow);
     cursor: pointer;
 }
 #InputText{

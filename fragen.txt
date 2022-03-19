@@ -2,9 +2,6 @@
 1. 
     adressierungsarten, welche gehoren zu welchen?
 
-2.
-    OFFSET label
-    dw offset label
 3.
     2. Animations typ
 4.
@@ -62,8 +59,8 @@ Warnung bei zu langen constanten-Namen
 
 FEHLERANZEIGE BOX:
 nichts bei keinem Fehler
-anzahl der fehler       -anstatt Zeilennummer ausgeben  | Rotes rufzeichen auf der Seite
-anzahl der warnungen    -                               | Orangenes Fragezeichen auf der Seite
+anzahl der fehler       - anstatt Zeilennummer ausgeben  | Rotes rufzeichen auf der Seite
+anzahl der warnungen    -                                | Orangenes Fragezeichen auf der Seite
 
 EINRÜCKUNGEN:
 
@@ -123,3 +120,25 @@ mov sp, const2
 label:
 
 
+Label name zu symboltabelle
+dann aus adresszähler die Wert mit dem Label verheiratet
+
+hervorhebung deutlicher - nicht wie mauszeigerhervorhebung
+
+dw offset Label
+
+8-bit Wert / 16 ´-bit Wert anstatt Wert/Konstante (16-bit) bzw dat_8/dat_16
+scroll animation
+bewegung beim anclicken von quelltext zeile
+constante selbe höhe wie label  -> EQU mit MNEMO 
+
+K/L name     Wert        litte endian
+L: Label1    Wert:0000h (little endian:0000)
+K: const1    Wert:0064h (little endian:6400)
+K: const123  Wert:04D2h (little endian:D204)
+
+
+FÜR KONSTANTEN
+K: const1    = 23h
+K: const2    = 1234h
+L: label1    = 1200h    (0012)

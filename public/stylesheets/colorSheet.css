@@ -4,22 +4,39 @@
     text-align: center;
 }
 .errorRed{
-  color:rgb(221, 6, 6);
+  color:var(--red);
 }
 .labelBlue{
-  color:rgb(1, 169, 224);
+  color:var(--blue);
 }
 .eingeruckt{
   margin: 0 0;
   padding-left: 1vw;
 }
 .highlighted{
-  background-color: yellow;
+  background-color: var(--yellow);
 }
 .crInvert{
-  background-color: black;
+  padding: 0.1em 0.2em;
+  /* color: white; */
+  background-color: var(--green);
+  border: 1px solid black;
+}
+
+.bkError{
+  background-color: var(--red);
+
+}
+/* .crInvert::after{
+  content: " ";
+  background-color: var(--green);
   color: white;
 }
+.crInvert::before{
+  content: " ";
+  background-color: var(--green);
+  co lor: white;
+}*/
 .bold{
   font-weight: bold;
 }

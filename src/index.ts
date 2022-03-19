@@ -48,7 +48,7 @@ const main = ()=>{
     p.createListeners();
     onscrollIn_Out();
     createClickListener("InputLines",setCurrentlyHovered);
-    createClickListener("OutputLines",setCurrentlyHovered);
+    // createClickListener("OutputLines",setCurrentlyHovered);
 }
 main();
 

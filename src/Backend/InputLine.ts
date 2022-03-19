@@ -211,7 +211,7 @@ export class InputLine{
         }
     }
     getCommandLineToCurrentLine(){
-        let dsrl="";
+        /* let dsrl="";
         if(this.label!=""){
             dsrl+=`<span id="crLabel">${this.label}</span>: `;
         }
@@ -235,8 +235,44 @@ export class InputLine{
         }
         if(this.rest!=""){
             dsrl+=`<span id="crRest">${this.rest}</span>`;
+        } */
+
+        let dsrl=this.initialLine.split(";")[0];
+        let ss = [];
+        if(this.label!=""){
+            ss.push(dsrl.split(this.label)[0]);
+            ss.push(`<span id="crLabel">${this.label}</span>`);
+            dsrl =dsrl.split(this.label)[1];
         }
-        return dsrl;
+        if(this.firstPart!=""){
+            ss.push(dsrl.split(this.firstPart)[0]);
+            ss.push(`<span id="crFirst">${this.firstPart}</span>`);
+            dsrl =dsrl.split(this.firstPart)[1];
+        }
+        if(this.secondPart!=""){
+            ss.push(dsrl.split(this.secondPart)[0]);
+            ss.push(`<span id="crSecond">${this.secondPart}</span>`);
+            dsrl =dsrl.split(this.secondPart)[1];
+        }
+        if(this.thirdPart!=""){
+            ss.push(dsrl.split(this.thirdPart)[0]);
+            ss.push(`<span id="crThird">${this.thirdPart}</span>`);
+            dsrl =dsrl.split(this.thirdPart)[1];
+        }
+        if(this.error!=""){
+            ss.push(dsrl.split(this.error)[0]);
+            ss.push(`<span id="crError">${this.error}</span>`);
+            dsrl =dsrl.split(this.error)[1];
+        }
+        ss.push(dsrl);
+        /* if(this.rest!=""){
+            dsrl+=`<span id="crRest">${this.rest}</span>`;
+        } */
+        console.log(ss)
+        console.log(dsrl);
+        console.log(this.commandLine);
+
+        return ss.join("");
     }
 
     getAllV():number[]{

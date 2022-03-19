@@ -201,10 +201,10 @@ export class CommandMap{
     
     formatErwartet(s1:string):string{
         // return 'erwarte: '+s1;
-        return `<span class="eingeruckt">erwarte: ${s1}</span>`;
+        return `<span class="eingeruckt">erwarte&nbsp;: ${s1}</span>`;
     }
     formatErkannt(s1:string):string{
-        return `<span class="eingeruckt">erkannt: ${s1}</span>`;
+        return `<span class="eingeruckt"> (${s1})</span>`;
     }
     formatErrorMassage(s1:string):string{
         return `<span class="errorRed">error: ${s1}</span>`;
@@ -222,6 +222,7 @@ export class CommandMap{
         i.saveDescriptionLine(this.formatErwartet(`Labeldefinition, Mnemocode oder Konstante (+EQU)`));
         if(commandLine.includes(":")){
             strings=Manipulator.splitStringHalf(commandLine,":");
+            i.setLabelTo("");
             if(this.symbollist.isLabel(strings[0])){
                 if(this.symbollist.getPositionOfSpecificLabel(strings[0])!=undefined){
                     i.saveDescriptionLine(this.formatErrorMassage(`Label ${strings[0]} ist schon bereits besetzt`));
@@ -237,7 +238,7 @@ export class CommandMap{
                 return false;
             }
             else{
-                i.saveDescriptionLine(this.formatGefunden("Doppelpunkte ",`Label ${strings[0]}`));
+                i.saveDescriptionLine(this.formatGefunden("Doppelpunkt ",`Label '${strings[0]}'`));
                 i.setLabelTo(strings[0]);
                 this.symbollist.setLabelWithoutPosition(strings[0]);
                 saveInput(i,2);
@@ -550,7 +551,8 @@ export class CommandMap{
                                 }
                                 //i.saveDescriptionLine(`Gefunden 'label'\n ${commands[1]} ist ein bereits existierender 'label'`);
                                 // i.saveDescriptionLine(this.formatGefunden("Label "+`'${value1?.getName()}'`,i.getFirstPart()+" "+i.getSecondPart()+", "+value1?.getName()));
-                                i.saveDescriptionLine(this.formatGefunden(`OFFSET Label (OFFSET <span class="labelBlue">${temp[1]}</span>)`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
+                                // i.saveDescriptionLine(this.formatGefunden(`OFFSET Label (OFFSET <span class="labelBlue">${temp[1]}</span>)`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
+                                i.saveDescriptionLine(this.formatGefunden(`OFFSET`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
                                 matches=matches.filter(e=>{
                                     if(e.getSource()=="dat_16"){
                                         return e;
@@ -565,7 +567,8 @@ export class CommandMap{
                                     return false;
                                 }
                                 this.symbollist.setLabelWithoutPosition(temp[1]);
-                                i.saveDescriptionLine(this.formatGefunden(`OFFSET Label (OFFSET <span class="labelBlue">${temp[1]}</span>)`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
+                                // i.saveDescriptionLine(this.formatGefunden(`OFFSET Label (OFFSET <span class="labelBlue">${temp[1]}</span>)`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
+                                i.saveDescriptionLine(this.formatGefunden(`OFFSET`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
                                 matches=matches.filter(e=>{
                                     if(e.getSource()=="dat_16"){
                                         return e;

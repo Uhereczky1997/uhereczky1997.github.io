@@ -1,3 +1,7 @@
+const erlaubteLängeL_C:number= 8;
+const erlaubteLängeMNEMO:number=4;
+
+
 export class Manipulator {
     constructor(){}
     static binToHex = (addr:string):string  =>{
@@ -121,7 +125,6 @@ export class Manipulator {
         }
         return addr;
     }
-
     static formatHextoDat8(addr:string):string{
         addr=addr.replace(/^0+/,'');
         if(addr=="h" || addr==""){
@@ -218,7 +221,25 @@ export class Manipulator {
             return "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
         }
         s=s.concat(": ");
-        while(s.length<10){
+        while(s.length<erlaubteLängeL_C+2){
+            s=s.concat(" ");
+        }
+        ss= s;
+        while(ss.includes(" ")){
+            ss = ss.replace(" ","&nbsp;");
+        }
+        // console.log(ss+" --> "+ss.length);
+        toReturn = b? s:ss
+        return toReturn;
+    }
+    static formatConstantDisplay(s:string,b:boolean):string{
+        let ss="";
+        let toReturn="";
+        if(s.length<1){
+            return "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+        }
+        s=s.concat("  ");
+        while(s.length<erlaubteLängeL_C+2){
             s=s.concat(" ");
         }
         ss= s;
@@ -231,7 +252,7 @@ export class Manipulator {
     }
     static formatLabelDisplaytoSymbolTable(s:string):string{
         let ss="";
-        while(s.length<9){
+        while(s.length<erlaubteLängeL_C+1){
             s=s.concat(" ");
         }
         ss= s;
@@ -244,10 +265,11 @@ export class Manipulator {
     static formatBefehlDisplay(s1:string,s2:string,b:boolean):string{
         let ss="";
         let toReturn=s1;
-        while(toReturn.length<5){
+        while(toReturn.length<erlaubteLängeMNEMO){
             toReturn=toReturn.concat(" ");
         }
-        s2=s2.replace(s1,toReturn);
+        // s2=s2.replace(s1,toReturn);
+        s2=toReturn+s2.split(s1)[1];
         while(s2.length<16){
             s2=s2.concat(" ");
         }
@@ -260,11 +282,31 @@ export class Manipulator {
     }
     static formatLabelandBefehlDisplay(s1:string,s2:string,s3:string):string{
         let ss ="";
-        if(s1.length<8){
+        if(s1.length<erlaubteLängeL_C){
             return this.formatLabelDisplay(s1,false).concat(this.formatBefehlDisplay(s2,s3,false));
         }
         s2= this.formatBefehlDisplay(s2,s3,true);
         s1= this.formatLabelDisplay(s1,true);
+        ss= (s1.concat(s2)).trim();
+        if(ss.length<26){
+            while(ss.length<26){
+                ss=ss.concat(" ");
+            }
+        }
+        console.log(ss);
+        while(ss.includes(" ")){
+            ss = ss.replace(" ","&nbsp;");
+        }
+        console.log(ss);
+        return ss;
+    }
+    static formatConstandBefehlDisplay(s1:string,s2:string,s3:string){
+        let ss ="";
+        if(s1.length<erlaubteLängeL_C){
+            return this.formatConstantDisplay(s1,false).concat(this.formatBefehlDisplay(s2,s3,false));
+        }
+        s2= this.formatBefehlDisplay(s2,s3,true);
+        s1= this.formatConstantDisplay(s1,true);
         ss= (s1.concat(s2)).trim();
         if(ss.length<26){
             while(ss.length<26){

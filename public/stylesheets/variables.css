@@ -11,4 +11,9 @@
     --maxfontsize18:18px;
     --maxfontsize16:16px;
     --maxfontsize14:14px;
+
+    --green: rgb(187, 241, 37);
+    --red: rgb(221, 6, 6);
+    --blue: rgb(1, 169, 224);
+    --yellow: rgba(255, 255, 0, 0.925);
 }

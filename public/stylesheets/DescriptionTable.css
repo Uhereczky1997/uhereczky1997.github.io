@@ -16,10 +16,12 @@
 }
 .overflowY{
     overflow-y: scroll;
+    scroll-behavior: smooth;
 }
 #descriptionLines{
     height: auto;
     overflow-y: scroll;
+    scroll-behavior: smooth;
 }
 #descriptionLines>p{
     margin: 2px;
