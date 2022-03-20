@@ -265,6 +265,47 @@ export class ProjectWindow{
         updateScroll("symbolTableLines");
     }
 
+    private rePushLastSymbolEmpty(){
+        this.symbols=this.symbolList.getSequence();
+        let s:Constant|Label;
+        let n,p;
+        symbolTableLines.innerHTML="";
+        
+        if(this.symbols.length!=0){
+            for(let i=0;i<this.symbols.length;i++){
+                if(this.symbols[i]!=null){
+                    if(i==this.symbols.length-1){
+                        s=this.symbols[this.symbols.length-1];
+                        if(s instanceof Label){
+                            n=s.getName();
+                            p=s.getPosition()!;
+                            symbolTableLines.innerHTML+=`<h4><span class="gray">L:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} = <span id="labelValuePlaceholder"> </span></h4>`;
+                        }
+                        break;
+                    }
+                    s=this.symbols[i];
+                    if(s instanceof Label){
+                        n=s.getName();
+                        p=s.getPosition()!;
+                        symbolTableLines.innerHTML+=`<h4><span class="gray">L:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} = ${this.inputLineControl.fHD16(p)} (${this.inputLineControl.getLittleEndianOf(p)})</h4>`;
+                    }
+                    if(s instanceof Constant){
+                        n=s.getName();
+                        p=s.getValue();
+                        if(Manipulator.isDat_8(p)){
+                            symbolTableLines.innerHTML+=`<h4><span class="gray">K:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} = &nbsp;&nbsp;${this.inputLineControl.fHD8(p)}</h4>`
+                        }
+                        else{
+                            symbolTableLines.innerHTML+=`<h4><span class="gray">K:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} = ${this.inputLineControl.fHD16(p)}</h4>`
+                        }
+                    }
+                }
+            }
+            symbolTableLines.innerHTML+=`<h4> &nbsp; </h4>`;
+        }
+        updateScroll("symbolTableLines");
+    }
+
     public getLinkerAufloesungLine(i:number,b:boolean):string{
         let e:InputLine;
         let addr:string,spa:string,l:string="";
@@ -293,7 +334,7 @@ export class ProjectWindow{
         let n:string="";
         let k:Label|undefined;
         if(e.getType()==InputLineType.TRANSLATED){
-            if(e.getTranslation().includes("????")){
+            if(e.getTranslation().includes("????") || e.hasOffsetLabel()){
 
                 k=this.symbolList.getLabels().find(i=>{
                     if(e.hasOffsetLabel()){
@@ -473,6 +514,7 @@ export class ProjectWindow{
     }
 
     private pushDescriptionLinesOf=async(i:number)=>{
+        let bruvBOOL = false;
         let e:string;
         let ss:string[];
         let l:InputLine;
@@ -508,9 +550,20 @@ export class ProjectWindow{
                     updateScroll(descriptionLines.id);
                 }
                 if(e.includes("gefunden: Doppelpunkt")){
-                    if(aniControl.start){
-                        await sleepUntilNextStep();
-                        await this.anim.moveLabeltoSymboltable(l.getLabel()," Wert:"+this.symbolList.getPositionOfSpecificLabel(l.getLabel()));
+                    if(bruvBOOL){
+                        if(aniControl.start){
+                            await sleepUntilNextStep();
+                            await this.anim.moveLabeltoSymboltable(l.getLabel()," Wert:"+this.symbolList.getPositionOfSpecificLabel(l.getLabel()));
+                        }
+                    }
+                    else{
+                        if(aniControl.start){
+                            await sleepUntilNextStep();
+                            await this.anim.moveLabeltoSymboltableALTMoveable(l.getLabel());
+                            await this.rePushLastSymbolEmpty();
+                            await sleepUntilNextStep();
+                            await this.anim.moveLabeltoSymboltableALTMoveableHelper(this.symbolList.getPositionOfSpecificLabel(l.getLabel())!);
+                        }
                     }
                     this.rePushSymbols(); 
                 }
@@ -522,7 +575,7 @@ export class ProjectWindow{
                         }
                         else if(l.getEndAddr()!=""){
                             machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(l,false)}`;
-            
+                            
                             if(aniControl.start){
                                 await sleepUntilNextStep();
                                 await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(i,false),i);
@@ -536,7 +589,7 @@ export class ProjectWindow{
             if(this.symbolList.isConst(l.getFirstPart())){
                 if(aniControl.start){
                     await sleepUntilNextStep();
-                    await this.anim.moveLabeltoSymboltable(this.symbolList.getSpecificConstantByName(l.getFirstPart())!.toStringtoMovable(),"");
+                    await this.anim.moveConstToSymbolTable(this.symbolList.getSpecificConstantByName(l.getFirstPart())!.toStringtoMovable());
                 }
                 this.rePushSymbols();
                 // this.pushTranslationOf(i);
@@ -576,6 +629,9 @@ export class ProjectWindow{
         let b=false;
         this.inputLines.forEach(e=>{
             if(e.getTranslation().includes("????")){
+                b=true;
+            }
+            if(e.hasOffsetLabel()){
                 b=true;
             }
         });

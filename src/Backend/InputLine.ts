@@ -268,9 +268,6 @@ export class InputLine{
         /* if(this.rest!=""){
             dsrl+=`<span id="crRest">${this.rest}</span>`;
         } */
-        console.log(ss)
-        console.log(dsrl);
-        console.log(this.commandLine);
 
         return ss.join("");
     }

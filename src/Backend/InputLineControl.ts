@@ -109,6 +109,7 @@ export class InputLineControl{
             this.invalidIDs.push(this.IDcounter);
         }
         this.IDcounter=this.IDcounter +1;
+        console.log(i);
     }
 
     getLittleEndianOf(h:string):string{
@@ -154,10 +155,10 @@ export class InputLineControl{
             return `${this.fHD8WH(h)}`;
         }
         else if(i.getFirstPart().toUpperCase()=='DW'){
-            /* if(i.hasOffsetLabel()){
-                return this.getLittleEndianOf(M)
-            } */
-            h=i.getSecondPart();
+            if(i.hasOffsetLabel()){
+                return ((this.symbolliste.getPositionOfSpecificLabel(i.getLabelOfOffset())==undefined ||!flag)?"????":this.getLittleEndianOf(this.symbolliste.getPositionOfSpecificLabel(i.getLabelOfOffset())!));
+            }  
+            else h=i.getSecondPart();
             return this.getLittleEndianOf(h);
         }
         else{
@@ -327,9 +328,13 @@ export class InputLineControl{
             e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(h)}${this.fHD8WH(rest)}`);
         }
         else if(e.getFirstPart().toUpperCase()=='DW'){
-            h=e.getSecondPart();
-            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
-            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
+            if(e.hasOffsetLabel()){
+                h= (this.symbolliste.getPositionOfSpecificLabel(i.getLabelOfOffset())==undefined?"????":this.symbolliste.getPositionOfSpecificLabel(i.getLabelOfOffset()));
+                h= flag?"????":h;
+            }  
+            else h=e.getSecondPart(); 
+            rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h!));
+            e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.getSpeicherAbbild(e,flag)}${this.fHD8WH(rest)}`);
         }
         else{
             switch(e.getLength()){

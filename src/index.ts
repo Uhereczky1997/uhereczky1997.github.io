@@ -3,18 +3,31 @@ import { createClickListener } from "./Tools";
 import { aniControl } from "./AnimationUtil";
 import { addClassTo, getIDOfSelected, inputText, outputText, removeClassOfAll } from "./ProjectWindow";
 
+
 export const onscrollIn_Out = () =>{
     /* let inputText= document.getElementById("InputText");
     let outputText= document.getElementById("OutputText"); */
+    var ignoreScrollEvents = false
     try{
         if(inputText!=null && outputText!=null){
             inputText.onscroll = function(){
+                
+                var ignore = ignoreScrollEvents
+                ignoreScrollEvents = false
+                if (ignore) return
+
+                ignoreScrollEvents = true
                 if(inputText!=null && outputText!=null){
                     outputText.scrollTop=inputText.scrollTop;
                 }
             }
             outputText.onscroll = function (){
                 // if(inputText!=null && outputText!=null&&!aniControl.play){
+                var ignore = ignoreScrollEvents
+                ignoreScrollEvents = false
+                if (ignore) return
+
+                ignoreScrollEvents = true
                 if(inputText!=null && outputText!=null){
                     /* if(inputText.scrollTop>outputText.scrollTop && inputText.scrollTop+inputText.clientHeight>outputText.scrollHeight){
 
@@ -42,15 +55,17 @@ export const setCurrentlyHovered = async (e: any) =>{ //Eventbubbling is f-ing s
         }
     }
 }
+let p = new ProjectWindow();
 
 const main = ()=>{
-    let p = new ProjectWindow();
+    
     p.createListeners();
     onscrollIn_Out();
     createClickListener("InputLines",setCurrentlyHovered);
     // createClickListener("OutputLines",setCurrentlyHovered);
 }
 main();
+
 
 /* const b = createClickListener("InputLines",consoleClicked);
 const a = createClickListener("OutputLines",consoleClicked); */

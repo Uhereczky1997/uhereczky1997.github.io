@@ -62,8 +62,9 @@ nichts bei keinem Fehler
 anzahl der fehler       - anstatt Zeilennummer ausgeben  | Rotes rufzeichen auf der Seite
 anzahl der warnungen    -                                | Orangenes Fragezeichen auf der Seite
 
-EINRÜCKUNGEN:
+8-bit Wert / 16 ´-bit Wert anstatt Wert/Konstante (16-bit) bzw dat_8/dat_16
 
+EINRÜCKUNGEN:
 MNEMOCODE 5 ZEICHEN (inc. SPACE) -> REST
 
 
@@ -105,18 +106,6 @@ WEITERER FUNKTIONALITÄTEN:
 
 id von Zeilen anclickbar -> Detailfenster springt zu der bestimmte einrückung
 
-mov hl,label
-const1 EQU 34h
-const2 equ 1234h
-
-mov label,hl
-mov a,34h
-
-mov ix, const2
-mov hl, const2
-mov sp, const2
-
-
 label:
 
 
@@ -127,7 +116,6 @@ hervorhebung deutlicher - nicht wie mauszeigerhervorhebung
 
 dw offset Label
 
-8-bit Wert / 16 ´-bit Wert anstatt Wert/Konstante (16-bit) bzw dat_8/dat_16
 scroll animation
 bewegung beim anclicken von quelltext zeile
 constante selbe höhe wie label  -> EQU mit MNEMO 
@@ -142,3 +130,15 @@ FÜR KONSTANTEN
 K: const1    = 23h
 K: const2    = 1234h
 L: label1    = 1200h    (0012)
+
+
+mov hl,label
+const1 EQU 34h
+const2 equ 1234h
+
+mov label,hl
+mov a,34h
+
+mov ix, const2
+mov hl, const2
+mov sp, const2

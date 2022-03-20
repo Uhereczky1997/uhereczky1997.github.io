@@ -96,6 +96,26 @@ export class Animator{
         await sleepFor(this.turnSleepTime/this.getPixeljump());
         this.turnMovableHidden();
     }
+    async moveConstToSymbolTable(line:string){
+        
+        this.formatLineString("h4",line);
+        this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft,this.descriptionLineElem.offsetWidth,this.vorgangElem.offsetHeight);
+        if(-this.symbolTableBox.offsetTop+this.symbolTableElem.offsetTop+this.symbolTableElem.scrollHeight>this.symbolTableBox.clientHeight){
+            this.targetElemTop = this.symbolTableBox.offsetTop+this.symbolTableBox.clientHeight-this.movableElem.offsetHeight;
+        }
+        else{
+            console.log(this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight+"  "+(this.symbolTableElem.children.item(0)!.scrollHeight*1.5));
+            this.targetElemTop=this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight-(this.symbolTableElem.children.item(0)!.scrollHeight*1.5);
+        }
+        this.turnMovableVisible();
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        while(this.targetElemTop>this.movableElem.offsetTop){
+            await this.moveSleepCheck(this.getPixeljump(),0);
+        }
+        this.movableElem.style.top=this.targetElemTop+"px";
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        this.turnMovableHidden();
+    }
 
     async moveLabeltoSymboltable(line:string,hex:string){
         // console.log([this.descriptionLineElem.offsetTop,this.descriptionLineElem.offsetHeight,this.vorgangElem.offsetHeight])
@@ -143,6 +163,53 @@ export class Animator{
         await sleepFor(this.turnSleepTime/this.getPixeljump());
         this.turnMovableHidden();
     }
+    async moveLabeltoSymboltableALTMoveableHelper(hex:string){
+        this.movableHelper.style.top=this.addresszaehlerElem.offsetTop+"px";
+        this.movableHelper.style.left=this.addresszaehlerElem.offsetLeft+"px";
+        this.movableHelper.innerHTML=`<h4 style="margin:0px 0px; padding: 5px 10px; font: bold;">${hex}</h4}>`;
+        
+        this.turnMovableHelperVisible();
+        let placeholder:HTMLSpanElement = document.getElementById("labelValuePlaceholder") as HTMLSpanElement;
+        if(placeholder==null){
+            throw new Error("BRUV");
+        }
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        while(placeholder.offsetLeft>this.movableHelper.offsetLeft){
+            await this.moveHelperSleepCheck(0,this.getPixeljump());
+        }
+        this.movableHelper.style.left=placeholder.offsetLeft+"px";
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        while(placeholder.offsetTop+placeholder.offsetHeight*1/2>this.movableHelper.offsetTop+this.movableHelper.offsetHeight*1/2){
+            await this.moveHelperSleepCheck(this.getPixeljump(),0);
+        }
+        // this.movableHelper.style.top=placeholder.offsetTop+"px";
+
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        this.turnMovableHelperHidden();
+    }
+    async moveLabeltoSymboltableALTMoveable(line:string){
+        // console.log([this.descriptionLineElem.offsetTop,this.descriptionLineElem.offsetHeight,this.vorgangElem.offsetHeight])
+        this.formatLineString("h4",line);
+        this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft,this.descriptionLineElem.offsetWidth,this.vorgangElem.offsetHeight);
+        if(-this.symbolTableBox.offsetTop+this.symbolTableElem.offsetTop+this.symbolTableElem.scrollHeight>this.symbolTableBox.clientHeight){
+            this.targetElemTop = this.symbolTableBox.offsetTop+this.symbolTableBox.clientHeight-this.movableElem.offsetHeight;
+        }
+        else{
+            console.log(this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight+"  "+(this.symbolTableElem.children.item(0)!.scrollHeight*1.5));
+            this.targetElemTop=this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight-(this.symbolTableElem.children.item(0)!.scrollHeight*1.5);
+        }
+        this.turnMovableVisible();
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        while(this.targetElemTop>this.movableElem.offsetTop){
+            await this.moveSleepCheck(this.getPixeljump(),0);
+        }
+        this.movableElem.style.top=this.targetElemTop+"px";
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        this.turnMovableHidden();
+    }
+    
 
     async exchangeLabelWithSymbolTable(toLine:string,returnLine:string){
         this.movableElem.innerHTML=`<h3 style="margin:0px 0px; padding: 5px 10px; font: bold; text-align: center;">${toLine}</h3>`;
@@ -294,6 +361,11 @@ export class Animator{
 
     private async moveSleepCheck(t:number,l:number){
         await this.updateMovingElement(t,l);
+        await sleepUntilNextFrame(this.frameSleepTime);
+        await checkIfPaused();
+    }
+    private async moveHelperSleepCheck(t:number,l:number){
+        await this.updateMovingHelperElement(t,l);
         await sleepUntilNextFrame(this.frameSleepTime);
         await checkIfPaused();
     }
