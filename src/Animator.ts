@@ -179,8 +179,6 @@ export class Animator{
         }
         this.movableHelper.style.left=placeholder.offsetLeft+"px";
         await sleepFor(this.turnSleepTime/this.getPixeljump());
-        await sleepFor(this.turnSleepTime/this.getPixeljump());
-        await sleepFor(this.turnSleepTime/this.getPixeljump());
         while(placeholder.offsetTop+placeholder.offsetHeight*1/2>this.movableHelper.offsetTop+this.movableHelper.offsetHeight*1/2){
             await this.moveHelperSleepCheck(this.getPixeljump(),0);
         }
@@ -248,30 +246,8 @@ export class Animator{
         let childElem=document.getElementById(`${(id+1)<10?"0"+(id+1):(id+1)}outputP`);
         if(childElem!=null){
 
-            this.targetElemTop = childElem.offsetTop-this.inputText.scrollTop;
+            this.targetElemTop = childElem.offsetTop-this.inputText.scrollTop-1/2*this.movableElem.offsetHeight+1/2*childElem.offsetHeight;
         }
-        /* if(id<0){
-            if(this.outPutLinesElem.firstChild == null){
-                this.targetElemTop=this.outPutLinesElem.offsetTop;
-            }
-            else{
-                childElem=getHtmlElement("01outputP");
-                // console.log(this.outPutLinesElem.childElementCount*childElem.offsetHeight);
-                // console.log(this.outPutLinesElem.offsetHeight);
-                // console.log(this.outPutLinesElem.offsetTop+this.outPutLinesElem.childElementCount*childElem.offsetHeight);
-                if(this.outPutLinesElem.childElementCount*childElem.offsetHeight<this.outPutText.offsetHeight){
-                    this.targetElemTop=this.outPutLinesElem.offsetTop+this.outPutLinesElem.childElementCount*childElem.offsetHeight;
-                }
-                else{
-                    this.targetElemTop=this.outPutLinesElem.offsetTop+this.outPutText.offsetHeight-childElem.offsetHeight;
-                }
-            }
-        }
-        else{
-        }
-            
-        */
-
     }
  
     async pushAufzulosendestoCurrentLine(i:number,line:string){
@@ -331,7 +307,7 @@ export class Animator{
         this.targetElemLeft=this.outPutText.offsetLeft;
         this.turnMovableVisible();
         await sleepFor(this.turnSleepTime/this.getPixeljump());
-        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        // await sleepFor(this.turnSleepTime/this.getPixeljump());
         while(this.targetElemLeft>this.movableElem.offsetLeft){
             await this.moveSleepCheck(0,this.getPixeljump());
             // await this.adjustWidthOfMovable(this.getPixeljump(),this.outPutText.offsetWidth);

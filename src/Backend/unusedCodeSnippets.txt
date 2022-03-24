@@ -1937,3 +1937,15 @@ case 3:
             updateScroll(descriptionLines.id);
         }
     }
+
+    const setScrollbarOfDescriptionLine = async (e: any) =>{ //Eventbubbling is f-ing sick!
+    let id:string;
+    if(e instanceof PointerEvent){
+        if(e.target instanceof HTMLElement){
+            id=getIDOfSelected(e.target.id);
+            if(e.target.classList.contains("hoverableID") && !aniControl.play){
+                updateScrollOfDescriptionLines(id+"DescriptionDiv",descriptionLines.id);
+            }
+        }
+    }
+}

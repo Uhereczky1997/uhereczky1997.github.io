@@ -22,12 +22,16 @@ css variables : https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custo
 
 
 
-label am ende von speicherabbild anzeigen (wenn umbekannt)
-hervorheben von gerade geparse-ten Befehl
-register adressierungs art erkannt-> was für eine adressierung
-farben-wechsel bei Error (hintergrund von inputtext, )
-wechseln auf fertigen Section beim erfolgreichen Übersetzen
+label am ende von speicherabbild anzeigen (wenn unbekannt)
+animation von hervorhebung bis zum nächsten delimiter ( in Folge sind sie -> xy ":" xc " " xa "," xv) (":"," ",",")
+animierte rahmen
+beim linker auflösung den aufzulösenden label auch hervorheben + (fehler -> rot)
 
-OFFSET label !!!!
+Padding für auszuwählenden vornhin haben damit keine sprung vom text bei dem nächsten hervorhebung (wegen parsen) passiert
+animations knöpfe schöner
+css 
+bibliothek?
+warnung bei zu langen label
+text editing bei Linkerauflösung
 
-erwarte zeile kennzeichnen was gefunden wurde
+

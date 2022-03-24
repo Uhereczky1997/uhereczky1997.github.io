@@ -46,6 +46,12 @@ const save3 =(i:InputLine) =>{
 const save4 =(i:InputLine) =>{
     saveInput(i,4);
 }
+const registerAdressierung:string = "Registeradressierung"
+const indirekteRegAdressierung:string = "indirekte Registeradressierung"
+const immediateAdressierung:string = "Immediateadressierung"
+const absoluteAdressierung:string = "Absolutadressierung"
+const stackBefehl:string = "Stackbefehl"
+const ioAdressierung:string = "IO Adressierung"
 
 
 export class CommandMap{
@@ -275,11 +281,11 @@ export class CommandMap{
         }        
     }
     /* 
-    i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
-    i.saveDescriptionLine(this.formatErkannt("indirekte Register Addressierung"));
-    i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
-    i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
-    i.saveDescriptionLine(this.formatErkannt("Stackbefehl"));
+    i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
+    i.saveDescriptionLine(this.formatErkannt(indirekteRegAdressierung));
+    i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
+    i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
+    i.saveDescriptionLine(this.formatErkannt(stackBefehl));
 
     */
 
@@ -340,10 +346,10 @@ export class CommandMap{
                             i.setThirdPart(toSave);
                             // i.setThirdPart(strings[1]);
                             if(strings[0] == "[HL]" || strings[1]=="[HL]"){
-                                i.saveDescriptionLine(this.formatErkannt("indirekte Register Addressierung"));
+                                i.saveDescriptionLine(this.formatErkannt(indirekteRegAdressierung));
                             }
                             else{
-                                i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
+                                i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
                             }
                             i.setType(InputLineType.TRANSLATED);
                             i.setLength(matches[0].getSize());
@@ -374,7 +380,7 @@ export class CommandMap{
                                         });
                                         // Änderung
                                         // i.setThirdPart(Manipulator.formatHextoDat8(strings[1]));
-                                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+                                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
                                         i.setThirdPart((strings[1]));
                                         break;
                                     }else if(consoletostring.includes("dat_16")){
@@ -387,7 +393,7 @@ export class CommandMap{
                                         });
                                         // Änderung
                                         i.setThirdPart((strings[1]));
-                                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+                                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
 
                                         // i.setThirdPart(Manipulator.formatHextoDat16(strings[1]));
                                         break;
@@ -416,7 +422,7 @@ export class CommandMap{
                                         // Änderung
                                         // i.setThirdPart(Manipulator.formatHextoDat16(strings[1]));
                                         i.setThirdPart((strings[1]));
-                                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+                                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
 
                                         break;
                                     }
@@ -451,7 +457,7 @@ export class CommandMap{
                                                 return e;
                                             }
                                         });
-                                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+                                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
                                         break;
                                     }
                                     else if(consoletostring.includes("dat_16")){ //Konstante hat Datentyp 'dat_16'
@@ -461,7 +467,7 @@ export class CommandMap{
                                             return e;
                                         }
                                         });
-                                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+                                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
 
                                         break;
                                     }
@@ -494,7 +500,7 @@ export class CommandMap{
                                             return e;
                                         }
                                     })
-                                    i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
+                                    i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
 
                                     break;
                                 case DataType.ELLIGIBLE:
@@ -513,7 +519,7 @@ export class CommandMap{
                                             return e;
                                         }
                                     })
-                                    i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
+                                    i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
     
                                     break;
                                 default: 
@@ -581,7 +587,7 @@ export class CommandMap{
                                 return false;
                             }
                             if(matches.length==1){
-                                i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+                                i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
 
                                 i.setThirdPart(strings[1]);
                                 i.setType(InputLineType.TRANSLATED);
@@ -637,7 +643,7 @@ export class CommandMap{
                         if(matches.length==1){
                             //ÄNDERUNG
                             i.setThirdPart(toSave);
-                            i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
+                            i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
                             // i.setThirdPart(strings[1]);
                             i.setType(InputLineType.TRANSLATED);
                             i.setLength(matches[0].getSize());
@@ -676,7 +682,7 @@ export class CommandMap{
                     return false;
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErkannt("Stackbefehl"));
+                    i.saveDescriptionLine(this.formatErkannt(stackBefehl));
 
                     i.setType(InputLineType.TRANSLATED);
                     i.setLength(matches[0].getSize());
@@ -695,7 +701,7 @@ export class CommandMap{
                     return false;
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErkannt("Stackbefehl"));
+                    i.saveDescriptionLine(this.formatErkannt(stackBefehl));
 
                     i.setType(InputLineType.TRANSLATED);
                     i.setLength(matches[0].getSize());
@@ -727,7 +733,7 @@ export class CommandMap{
                     }
                     if(this.symbollist.isConst(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],"IN A, "+strings[1]));
-                        i.saveDescriptionLine(this.formatErkannt("IO Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
 
                         i.setThirdPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
@@ -738,7 +744,7 @@ export class CommandMap{
                     }
                     else if(Manipulator.isDat_8(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[1]),"IN A, "+Manipulator.formatHextoDat8(strings[1])));
-                        i.saveDescriptionLine(this.formatErkannt("IO Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
                         
                         // Änderung
                         // i.setThirdPart(Manipulator.formatHextoDat8(strings[1]));
@@ -788,7 +794,7 @@ export class CommandMap{
                     }
                     if(strings[1].toUpperCase() =="A"){
                         i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+strings[0]+", A"));
-                        i.saveDescriptionLine(this.formatErkannt("IO Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
 
                         //ÄNDERUNG
                         i.setThirdPart(strings[1])
@@ -819,7 +825,7 @@ export class CommandMap{
                     }
                     if(strings[1].toUpperCase() =="A"){
                         i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+", A"));
-                        i.saveDescriptionLine(this.formatErkannt("IO Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
 
                         //ÄNDERUNG
                         i.setThirdPart(strings[1])
@@ -864,7 +870,7 @@ export class CommandMap{
                         }
                     });
                     if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
 
                         //ÄNDERUNG
                         i.setSecondPart(toSave);
@@ -909,7 +915,7 @@ export class CommandMap{
                         }
                     });
                     if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
 
                         //ÄNDERUNG
                         i.setSecondPart(toSave);
@@ -934,7 +940,7 @@ export class CommandMap{
                         }
                     });
                     if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
 
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
@@ -959,7 +965,7 @@ export class CommandMap{
                     if(matches.length==1){
                         // Änderung
                         // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
-                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
 
                         i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
@@ -1003,7 +1009,7 @@ export class CommandMap{
                     });
                     if(matches.length==1){
                         //ÄNDERUNG
-                        i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
 
                         i.setSecondPart(toSave);
                         i.setType(InputLineType.TRANSLATED);
@@ -1027,7 +1033,7 @@ export class CommandMap{
                         }
                     });
                     if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
 
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
@@ -1052,7 +1058,7 @@ export class CommandMap{
                     if(matches.length==1){
                         // Änderung
                         // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
-                        i.saveDescriptionLine(this.formatErkannt("Immediate Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
 
                         i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
@@ -1083,7 +1089,7 @@ export class CommandMap{
                     return false;
                 }
                 if(matches.length==1){
-                    i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
+                    i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
 
                     i.setType(InputLineType.TRANSLATED);
                     i.setLength(matches[0].getSize());
@@ -1107,7 +1113,7 @@ export class CommandMap{
                     return false;
                 }
                 if(matches.length==1){
-                    i.saveDescriptionLine(this.formatErkannt("Register (direkte-) Addressierung"));
+                    i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
 
                     i.setType(InputLineType.TRANSLATED);
                     i.setLength(matches[0].getSize());
@@ -1144,7 +1150,7 @@ export class CommandMap{
                         // i.saveDescriptionLine(`Neue Label angesetzt!`);
                     }
                     if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
 
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
@@ -1188,7 +1194,7 @@ export class CommandMap{
                         // i.saveDescriptionLine(`Neue Label angesetzt!`);
                     }
                     if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
 
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
@@ -1211,7 +1217,7 @@ export class CommandMap{
                     });
                     if(matches.length==1){
                         i.saveDescriptionLine(this.formatGefunden(`Register [IX]`,"JP [IX]"));
-                        i.saveDescriptionLine(this.formatErkannt("indirekte Register Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(indirekteRegAdressierung));
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -1245,7 +1251,7 @@ export class CommandMap{
                 if(strings[1]=="[IX]"){
                     matches=this.mnemoCommands.filter(e=>{return e.getDestination()=="[IX]"});
                     if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt("indirekte Register Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(indirekteRegAdressierung));
                         
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
@@ -1272,7 +1278,7 @@ export class CommandMap{
                         // i.saveDescriptionLine(`Neue Label angesetzt!`);
                     }
                     if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt("Absolute Addressierung"));
+                        i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -1324,7 +1330,7 @@ export class CommandMap{
                     return false;
                 }
                 if(matches.length==1){
-                    i.saveDescriptionLine(this.formatErkannt("Stackbefehl"));
+                    i.saveDescriptionLine(this.formatErkannt(stackBefehl));
 
                     i.setType(InputLineType.TRANSLATED);
                     i.setLength(matches[0].getSize());

@@ -17,11 +17,15 @@
   background-color: var(--yellow);
 }
 .crInvert{
-  padding: 0.1em 0.2em;
-  /* color: white; */
   background-color: var(--green);
-  border: 1px solid black;
+  border: 1px solid black!important;
 }
+/* .crInvert{
+  background: linear-gradient(to left,var(--green) 50%,  white 50%);
+  background-size: 200%;
+  transition: background-color .5s ease-in 1s;
+  border: 1px solid black!important;
+} */
 
 .bkError{
   background-color: var(--red);

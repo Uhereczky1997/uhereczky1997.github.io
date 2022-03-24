@@ -28,12 +28,13 @@
 #InputText{
     display:grid;
     grid-template-columns: 10% 90%;
-    overflow-y: scroll;
+    scroll-behavior: auto!important;
 }
 #OutputText{
     display: grid;
     grid-template-columns: 17.5% auto;
-    overflow-y: scroll;
+    scroll-behavior: auto!important;
+
 }
 
 .overflowText{

@@ -44,17 +44,7 @@ export const addClassTo=(id:string,cls:string)=>{
 export const getIDOfSelected=(s:string):string=>{
     return s[0]+s[1];
 }
-const setScrollbarOfDescriptionLine = async (e: any) =>{ //Eventbubbling is f-ing sick!
-    let id:string;
-    if(e instanceof PointerEvent){
-        if(e.target instanceof HTMLElement){
-            id=getIDOfSelected(e.target.id);
-            if(e.target.classList.contains("hoverableID") && !aniControl.play){
-                updateScrollOfDescriptionLines(id+"DescriptionDiv",descriptionLines.id);
-            }
-        }
-    }
-}
+
 const updateScrollOfDescriptionLines=(id:string,targetID:string)=>{
     var elem = getHtmlElement(id);
     var targetElem = getHtmlElement(targetID);
@@ -221,10 +211,11 @@ export class ProjectWindow{
                     getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}oAddress`).innerHTML=`<span class="gray">${Manipulator.formatHextoDat16(e.getStartingAddr())+":"}</span>`;
                 }
                 if(e.getTranslation().includes("????")){
-                    outputLineHTML.innerHTML=`${this.inputLineControl.getSpeicherAbbild(e,false)}&nbsp;`;
+                    // outputLineHTML.innerHTML=`${this.inputLineControl.getDisplayableSpeicherabbild(e,false)}&nbsp;${this.getLabelIfUnknown(i,b)}`;
+                    outputLineHTML.innerHTML=`${Manipulator.formatSpeicherabbildandLabel(this.inputLineControl.getDisplayableSpeicherabbild(e,false),this.getLabelIfUnknown(i,b))}`;
                 }
                 else{
-                    outputLineHTML.innerHTML=`${this.inputLineControl.getSpeicherAbbild(e,true)}&nbsp;`;
+                    outputLineHTML.innerHTML=`${this.inputLineControl.getDisplayableSpeicherabbild(e,true)}&nbsp;`;
                 }
             }
             else{
@@ -305,6 +296,28 @@ export class ProjectWindow{
         }
         updateScroll("symbolTableLines");
     }
+    private getLabelIfUnknown(i:number,b:boolean):string{
+        let e:InputLine;
+
+        let addr:string,spa:string,l:string="";
+        if(i<this.inputLines.length){
+            e = this.inputLines[i];
+            spa = this.inputLineControl.getDisplayableSpeicherabbild(e,b);
+            if(spa.includes("??")){
+                if(e.hasOffsetLabel()){
+                    l = "("+e.getLabelOfOffset()+")";
+                }
+                else if(this.symbolList.isLabel(e.getSecondPart())){
+                    l = "("+e.getSecondPart()+")";
+                }
+                else if(this.symbolList.isLabel(e.getThirdPart())){
+                    l = "("+e.getThirdPart()+")";
+                }
+            }
+        }
+        return l;
+    
+    }
 
     public getLinkerAufloesungLine(i:number,b:boolean):string{
         let e:InputLine;
@@ -312,7 +325,7 @@ export class ProjectWindow{
         if(i<this.inputLines.length){
             e = this.inputLines[i];
             addr = e.getStartingAddr();
-            spa = this.inputLineControl.getSpeicherAbbild(e,b);
+            spa = this.inputLineControl.getDisplayableSpeicherabbild(e,b);
             if(spa.includes("??")){
                 if(e.hasOffsetLabel()){
                     l = "("+e.getLabelOfOffset()+")";
@@ -353,37 +366,43 @@ export class ProjectWindow{
                     await this.anim.pushAufzulosendestoCurrentLine(e.getId(),this.getLinkerAufloesungLine(e.getId(),false));
                 }
                 // currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${this.getLinkerAufloesungLine(e.getId(),false)}</h2>`
-                currentLineLine.innerHTML=`${this.getLinkerAufloesungLine(e.getId(),false)}`
+                // currentLineLine.innerHTML=`${this.getLinkerAufloesungLine(e.getId(),false)}`
+                currentLineLine.innerHTML=`${e.getStartingAddr()}: ${this.inputLineControl.getDisplayableSpeicherabbild(e,false)} <span>${this.getLabelIfUnknown(e.getId(),false)}</span>`
                 addresszahler.innerHTML= `${e.getStartingAddr()}`;
-                machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(e,false)}`;
+                machinenbefehl.innerHTML= `${this.inputLineControl.getDisplayableSpeicherabbild(e,false)}`;
+                if(aniControl.start){
+                    await sleepUntilNextStep();
+                }
+                descriptionLines.innerHTML += `<p>Suche Label '<span class="labelBlue">${k.getName()}</span>' in SymbolTabelle</p>`;
+                currentLineLine.innerHTML=`${e.getStartingAddr()}: ${this.inputLineControl.getDisplayableSpeicherabbild(e,false)}<span class="crInvert">${this.getLabelIfUnknown(e.getId(),false)}</span>`
 
-                descriptionLines.innerHTML += `<p>Suche Label ${k.getName()} in SymbolTabelle</p>`;
                 if(aniControl.start){
                     updateScroll(descriptionLines.id);
                     await sleepUntilNextStep();
                 }
                 if(k.getPosition()=="????"){
-                    descriptionLines.innerHTML += `<p><span class="errorRed">Label '${k.getName()}' konnte nicht aufgelöst werden!</span></p>`;
+                    currentLineLine.innerHTML=`${e.getStartingAddr()}: ${this.inputLineControl.getDisplayableSpeicherabbild(e,false)}<span class="crInvert bkError">${this.getLabelIfUnknown(e.getId(),false)}</span>`
+                    descriptionLines.innerHTML += `<p><span class="errorRed">Label '<span class="labelBlue">${k.getName()}</span>' konnte nicht aufgelöst werden!</span></p>`;
                     updateScroll(descriptionLines.id);
                     await sleepFor(10);
                     aniControl.setStop();
                     throw Error('Stop pressed');
                 }
                 else{
-                    s=this.inputLineControl.getSpeicherAbbild(e,false);
+                    s=this.inputLineControl.getDisplayableSpeicherabbild(e,false);
                     this.inputLineControl.retranslate(e);
-                    n=this.inputLineControl.getSpeicherAbbild(e,true);
+                    n=this.inputLineControl.getDisplayableSpeicherabbild(e,true);
                     if(aniControl.start){
                         await this.anim.exchangeLabelWithSymbolTable("Label '"+k.getName()+"'?","Label '"+k.getName()+"' Wert:"+Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")");
                     }
 
-                    descriptionLines.innerHTML += `<p>Label '${k.getName()}' in Symboltabelle gefunden, Wert: ${Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")"}</p>`;
+                    descriptionLines.innerHTML += `<p class="eingeruckt">Label '<span class="labelBlue">${k.getName()}</span>' in Symboltabelle gefunden, Wert: ${Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")"}</p>`;
                     if(aniControl.start){
                         updateScroll(descriptionLines.id);
                         await sleepUntilNextStep();
                     }
                     
-                    descriptionLines.innerHTML += `<p>Ersetzung im Speicherabbild: ${s}-->${n}</p>`;
+                    descriptionLines.innerHTML += `<p class="eingeruckt">Ersetzung im Speicherabbild: ${s}-->${n}</p>`;
                     if(aniControl.start){
                         updateScroll(descriptionLines.id);
                         await sleepUntilNextStep();
@@ -574,7 +593,7 @@ export class ProjectWindow{
                             this.repushSpeicherabbildOf(i,true);
                         }
                         else if(l.getEndAddr()!=""){
-                            machinenbefehl.innerHTML= `${this.inputLineControl.getSpeicherAbbild(l,false)}`;
+                            machinenbefehl.innerHTML= `${this.inputLineControl.getDisplayableSpeicherabbild(l,false)}`;
                             
                             if(aniControl.start){
                                 await sleepUntilNextStep();

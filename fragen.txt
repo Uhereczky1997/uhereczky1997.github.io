@@ -1,13 +1,6 @@
 
 1. 
-    adressierungsarten, welche gehoren zu welchen?
-
-3.
-    2. Animations typ
-4.
-    rot hervorhebung von gerade angezeigten wenn fehler auftritt
-5.
-
+    speicherabbild von RS
 
 
 x-----------------------------------------------------------------------
@@ -51,87 +44,6 @@ rs 5
 constant2 equ 12
 constant3 EqU 2323h
 
-
-///////////////////////////////////////////////////////
-
-Warnung von zu langen label     -Namen
-Warnung bei zu langen constanten-Namen
-
-FEHLERANZEIGE BOX:
-nichts bei keinem Fehler
-anzahl der fehler       - anstatt Zeilennummer ausgeben  | Rotes rufzeichen auf der Seite
-anzahl der warnungen    -                                | Orangenes Fragezeichen auf der Seite
-
-8-bit Wert / 16 ´-bit Wert anstatt Wert/Konstante (16-bit) bzw dat_8/dat_16
-
-EINRÜCKUNGEN:
-MNEMOCODE 5 ZEICHEN (inc. SPACE) -> REST
-
-
-
-DETAILAUSGABE:
-
-parse Labelfeld/Befehlsfeld:
-    erwarte: Labeldefinition, Mnemocode oder Konstante (+EQU)
-    gefunden: Mnemocode MOV -> MOV ...
-parse Operandenfeld (1):
-    erwarte: A, B, C, IX, HL, SP, label, [HL]
-    gefunden: Register B -> Mov B ...
-parse Operandenfeld (2):
-    erwarte: Wert/Konstante (8-bit), A, C
-    gefunden: Register A -> MOV B, A
-    [[ADDRESSIERUNGSART]] (optional)
-gesamter Befehl:
-    MOV B,A -> 47
-    Anzahl der Bytes: 1
-
-
-ADDRESSIERUNGSART:
-7. Uebungsblock:
-2:30 (2 Stunde, 32-33 Minuten);
-
-label - absolute ausnahme OFFSET
-zahl - immidate -> OFFSET, Zahl
-[register] - register indirekt -> []
-register - register (direkt)
-in, out - input output addressierung
-ret, push, pop -> stackbefehel
-nop halt keine adressierung
-
-ÜBERSETZUNG + VALIDITÄT:
-+ OFFSET LABEL!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-
-WEITERER FUNKTIONALITÄTEN:
-
-id von Zeilen anclickbar -> Detailfenster springt zu der bestimmte einrückung
-
-label:
-
-
-Label name zu symboltabelle
-dann aus adresszähler die Wert mit dem Label verheiratet
-
-hervorhebung deutlicher - nicht wie mauszeigerhervorhebung
-
-dw offset Label
-
-scroll animation
-bewegung beim anclicken von quelltext zeile
-constante selbe höhe wie label  -> EQU mit MNEMO 
-
-K/L name     Wert        litte endian
-L: Label1    Wert:0000h (little endian:0000)
-K: const1    Wert:0064h (little endian:6400)
-K: const123  Wert:04D2h (little endian:D204)
-
-
-FÜR KONSTANTEN
-K: const1    = 23h
-K: const2    = 1234h
-L: label1    = 1200h    (0012)
-
-
 mov hl,label
 const1 EQU 34h
 const2 equ 1234h
@@ -142,3 +54,28 @@ mov a,34h
 mov ix, const2
 mov hl, const2
 mov sp, const2
+
+Label1:Mov A,95h
+Mov B,95h
+Mov C,95h
+Mov IX,offset label123
+
+DW offset label
+RS 3
+ORG 2323h
+const1 EQU 3434h
+
+
+///////////////////////////////////////////////////////
+
+Warnung von zu langen label      -Namen
+Warnung bei zu langen constanten -Namen
+
+FEHLERANZEIGE BOX:
+nichts bei keinem Fehler
+anzahl der fehler       - anstatt Zeilennummer ausgeben  | Rotes rufzeichen auf der Seite
+anzahl der warnungen    -                                | Orangenes Fragezeichen auf der Seite
+
+8-bit Wert / 16 ´-bit Wert anstatt Wert/Konstante (16-bit) bzw dat_8/dat_16
+
+

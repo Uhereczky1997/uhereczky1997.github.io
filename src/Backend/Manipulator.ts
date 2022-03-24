@@ -1,5 +1,6 @@
 const erlaubteLängeL_C:number= 8;
 const erlaubteLängeMNEMO:number=4;
+const speicherabbildL:number = 16;
 
 
 export class Manipulator {
@@ -300,7 +301,7 @@ export class Manipulator {
         console.log(ss);
         return ss;
     }
-    static formatConstandBefehlDisplay(s1:string,s2:string,s3:string){
+    static formatConstandBefehlDisplay(s1:string,s2:string,s3:string):string{
         let ss ="";
         if(s1.length<erlaubteLängeL_C){
             return this.formatConstantDisplay(s1,false).concat(this.formatBefehlDisplay(s2,s3,false));
@@ -319,5 +320,20 @@ export class Manipulator {
         }
         console.log(ss);
         return ss;
+    }
+    static formatSpeicherabbildandLabel(s1:string,s2:string):string{
+        if(s1.length>=speicherabbildL){
+            return s1+s2;
+        }
+
+        while(s1.length<speicherabbildL){
+            s1 = s1+" ";
+        }
+
+        while(s1.includes(" ")){
+            s1 = s1.replace(" ","&nbsp;")
+        }
+        return s1+s2;
+        
     }
 }

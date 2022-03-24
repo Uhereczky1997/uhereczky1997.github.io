@@ -139,13 +139,27 @@ export class InputLineControl{
     retranslate(i:InputLine){
         this.calculateTranslation(i,true);
     }
+    getDisplayableSpeicherabbild(i:InputLine,flag:boolean):string{
+        let s:string =this.getSpeicherAbbild(i,flag);
+        if(i.getFirstPart().toUpperCase() == "RS"){
+            return s;
+        }
+        let toReturn:string="";
+        for(let j = 0; j<s.length;j++){
+            if(j!=0 && (j % 2) == 0){
+                toReturn =toReturn.concat(" ");
+            }
+            toReturn = toReturn.concat(s[j]);
+        }
+        return toReturn;
+    }
     getSpeicherAbbild(i:InputLine,flag:boolean):string{
         let s = i.commandLinetoString(true);
         let h = i.getHCode();
         let l:string|undefined = "";
         // console.log(i.getCommandLine()+" ... "+i.getLength()+" ... "+i.getHCode());
         if(i.getFirstPart().toUpperCase()=="RS"){
-            return (h.length>4?"0000...("+i.getLength()+"x)":h);
+            return (h.length>4?"00 00 ... ("+i.getLength()+"x)":h);
         }
         else if(i.getFirstPart().toUpperCase()=="ORG"){
             return "";
@@ -252,7 +266,7 @@ export class InputLineControl{
             } */
             else
             {
-                i.saveDescriptionLine(`<span class="eingeruckt">`+s+" -> "+this.getSpeicherAbbild(i,false)+`</span>`);
+                i.saveDescriptionLine(`<span class="eingeruckt">`+s+" -> "+this.getDisplayableSpeicherabbild(i,false)+`</span>`);
                 i.saveDescriptionLine(`<span class="eingeruckt">`+"Anzahl der Bytes: "+i.getLength()+`</span>`);
             }
         }
