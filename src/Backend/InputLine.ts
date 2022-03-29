@@ -1,5 +1,5 @@
 import { InputLineType } from "./Enums";
-import { Manipulator } from "./Manipulator";
+import { erlaubteLängeL_C, Manipulator } from "./Manipulator";
 import { SymbolL } from "./SymbolList";
 
 export class InputLine{
@@ -63,18 +63,6 @@ export class InputLine{
     }
     setFirstPart(s:string){this.firstPart=s;}
     setSecondPart(s:string){
-        /* if(this.firstPart=="RS"){
-            this.secondPart=s;
-        }
-        if(Manipulator.isDat_8(s)){
-            this.secondPart=s=Manipulator.formatHextoDat8(s);
-        }
-        else if(Manipulator.isDat_16(s)){
-            this.secondPart=s=Manipulator.formatHextoDat16(s);
-        }
-        else{
-            this.secondPart=s;
-        } */
         this.secondPart=s;
     }
     getEndAddr():string{
@@ -87,19 +75,58 @@ export class InputLine{
         else return "";
     }
     setThirdPart(s:string){
-        /* if(Manipulator.isDat_8(s)){
-            this.thirdPart=Manipulator.formatHextoDat8(s);
-        }
-        else if(Manipulator.isDat_16(s)){
-            this.thirdPart=Manipulator.formatHextoDat16(s);
-        }
-        else{
-            this.thirdPart=s;
-        } */
         this.thirdPart=s;
     }
     setRest(s:string){
         this.rest=s;
+    }
+    getWarning():string{
+        let l:string|undefined;
+        l = this.getLabelorUndefined();
+        if(l !=undefined){
+            return `Label '<span class="labelBlue">${l}</span>' ist länger als ${erlaubteLängeL_C} Zeichen!`;
+        }
+        l= this.getConstorUndefined();
+        if(l !=undefined){
+            return `Konstante '${l}' ist länger als ${erlaubteLängeL_C} Zeichen!`;
+        }
+        return "";
+    }
+    getWarningtoDescriptionLine():string{
+        if(this.getWarning() !=""){
+            return `<span class="warning">Warnung: ${this.getWarning()} </span>`
+        }
+        return "";
+    }
+    getLabelorUndefined():string|undefined{
+        if(this.label != "" && this.label.length > erlaubteLängeL_C ){
+            return this.label;
+        }
+        if(this.offsetLabel && this.getLabelOfOffset().length > erlaubteLängeL_C){
+            return this.getLabelOfOffset();
+        }
+        if(SymbolL.isLabel(this.firstPart) && this.firstPart.length > erlaubteLängeL_C ){
+            return this.firstPart;
+        }
+        if(SymbolL.isLabel(this.secondPart) && this.secondPart.length > erlaubteLängeL_C){
+            return this.secondPart;
+        }
+        if(SymbolL.isLabel(this.thirdPart) && this.thirdPart.length > erlaubteLängeL_C){
+            return this.thirdPart;
+        }
+        return undefined;
+    }
+    getConstorUndefined():string|undefined{
+        if(SymbolL.isConst(this.firstPart) && this.firstPart.length > erlaubteLängeL_C){
+            return this.firstPart;
+        }
+        if(SymbolL.isConst(this.secondPart) && this.secondPart.length > erlaubteLängeL_C){
+            return this.secondPart;
+        }
+        if(SymbolL.isConst(this.thirdPart) && this.thirdPart.length > erlaubteLängeL_C){
+            return this.thirdPart;
+        }
+        return undefined;
     }
     
     setValid(b:boolean){this.valid=b;}
@@ -211,32 +238,7 @@ export class InputLine{
         }
     }
     getCommandLineToCurrentLine(){
-        /* let dsrl="";
-        if(this.label!=""){
-            dsrl+=`<span id="crLabel">${this.label}</span>: `;
-        }
-        if(this.firstPart!=""){
-            dsrl+=`<span id="crFirst">${this.firstPart}</span> `;
-        }
-        if(this.secondPart!="" && this.secondPart.toUpperCase()=="EQU"){
-            dsrl+=`<span id="crSecond">${this.secondPart}</span> `;
-        }
-        else if(this.secondPart!="" && this.secondPart.toUpperCase()!="EQU" && this.thirdPart==""){
-            dsrl+=`<span id="crSecond">${this.secondPart}</span> `;
-        }
-        else if(this.secondPart!=""){
-            dsrl+=`<span id="crSecond">${this.secondPart}</span>,`;
-        }
-        if(this.thirdPart!=""){
-            dsrl+=`<span id="crThird">${this.thirdPart}</span>`;
-        }
-        if(this.error!=""){
-            dsrl+=`<span id="crError">${this.error}</span>`;
-        }
-        if(this.rest!=""){
-            dsrl+=`<span id="crRest">${this.rest}</span>`;
-        } */
-
+    
         let dsrl=this.initialLine.split(";")[0];
         let ss = [];
         if(this.label!=""){
@@ -287,13 +289,11 @@ export class InputLine{
                 else{
                     first=first.toUpperCase();
                     temp = Manipulator.splitStringHalf(second," ");
-                    if(!SymbolL.isLabel(second) && !SymbolL.isConst(second) && !Manipulator.isDat_16(second) &&!(temp[0].toUpperCase()=="OFFSET")){
+                    if(!SymbolL.isLabel(second) && !SymbolL.isConst(second) && !Manipulator.isDat_16(second) &&!(temp[0].toUpperCase()=="OFFSET" )){
                         second=second.toUpperCase();
                     }
                     if(this.hasOffsetLabel()){
-                        if(temp[0].toUpperCase()=="OFFSET"){
-                            second="OFFSET "+temp[1];
-                        }
+                        second="OFFSET "+this.getLabelOfOffset();
                     }
                     else if(second !=""){
                         if(Manipulator.isDat_8(second)){
@@ -308,9 +308,7 @@ export class InputLine{
                         third=third.toUpperCase();
                     }
                     else if(this.hasOffsetLabel()){
-                        if(temp[0].toUpperCase()=="OFFSET"){
-                            third="OFFSET "+temp[1];
-                        }
+                        third="OFFSET "+this.getLabelOfOffset();
                     }
                     else if(third !=""){
                         if(Manipulator.isDat_8(third)){

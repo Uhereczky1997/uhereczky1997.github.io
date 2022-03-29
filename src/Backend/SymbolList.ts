@@ -32,6 +32,9 @@ export class SymbolList{
         if(addr.length<3){
             return false;
         }
+        if(addr.toLowerCase()=="offset"){
+            return false;
+        }
         if(/^\d/.test(addr)){
             return false;
         }

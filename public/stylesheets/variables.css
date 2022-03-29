@@ -12,8 +12,38 @@
     --maxfontsize16:16px;
     --maxfontsize14:14px;
 
-    --green: rgb(187, 241, 37);
+    --bottomHeight: calc(70/894*100%);
+    --hBorderRadius: 0.2em;
+
+    --green-light: rgb(187, 241, 37);
+    --green-dark: rgb(143, 196, 0);
+
+    --gray-light: grey;
+    --gray-dark: rgb(196, 196, 196);
+    
+    
     --red: rgb(221, 6, 6);
-    --blue: rgb(1, 169, 224);
-    --yellow: rgba(255, 255, 0, 0.925);
+    
+    
+    --blue-light: #36cbfd;
+    --blue-dark: #009bcf;
+    
+    
+    --yellow-light:rgba(255, 255, 0, 0.925);
+    --yellow-dark:rgba(214, 214, 0, 0.925);
+    
+    --orange-light: rgb(255, 147, 45);
+    --orange-dark: rgb(255, 123, 0);
+    
+    
+
+    --text-light: #111;
+    --bkg1-light: #fbfbfb;
+    --bkg2-light: #111;
+
+  
+    --text-dark: white;
+    /* --bkg1-dark: #222; */
+    --bkg1-dark: #111;
+    --bkg2-dark: white;
 }

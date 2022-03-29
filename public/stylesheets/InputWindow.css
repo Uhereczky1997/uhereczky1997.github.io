@@ -16,6 +16,7 @@ p{
     grid-template-rows: 1fr 80% 1fr;
     background: rgba(0, 0, 0, 0.8);
 }
+
 #InputWindow{
     display:grid;
     grid-template-areas: 
@@ -54,58 +55,42 @@ p{
     grid-column: span 4;
     grid-row:span 4;
     resize: none;
-    /* font-size: 20px; */
     font-weight: bold;
     font-family: 'Courier New', Courier, monospace;
 }
-/* textarea:focus { 
-    outline: none !important;
-    border-color: #719ECE;
-    box-shadow: 0 0 10px #719ECE;
-} */
 #InputWindow>button{
     grid-column: span 1;
     grid-row:5;
-    
+    cursor: pointer;
+    border-right:  1px solid;
 }
-/* #InputWindow>#Translate{
-    grid-column: span 1;
-    grid-row: 5; 
-} */
-#InputWindow>{
+#InputWindow *>{
     width: 100%;
     height: 100%;
-}
-#InputWindow>div{
-    border: 1px solid black;
-    background-color: white;
-}
-#InputWindow>div>p{
-    padding-left: 3px;
 }
 #InputWindow>#ErrorDescription{
     grid-column: span 1;
     grid-row:span 5;
-    overflow-y: scroll;
+    overflow-y: auto;
+}
+#ErrorDescription>div>p{
+    padding: 5 5 5 5;
 }
 .backgroundNoError{
-    background-color: rgb(115, 238, 115);
-    color: black;
-    border: 1px solid black;
-}
-.backgroundNoError>p{
-    margin: 0 0;
-    padding: 5 0 5 5;
+    background-color: var(--green)!important;
+    border: 1px solid;
 }
 .backgroundError{
-    background-color: #fd6565;
-    color: black;
-    border: 1px solid black;
+    background-color: var(--red)!important;
+    border: 1px solid;
 }
-.backgroundError>p{
-    margin: 0 0;
-    padding: 5 0 5 5;
+.backgroundWarning{
+    background-color: var(--warning)!important;
+    border: 1px solid;
 }
-.backgroundError>p>span.errorRed{
-    color: white !important;
+.backgroundWarning *>span,.backgroundWarning >*{
+    background-color: var(--warning)!important;
+}
+.backgroundError *>span,.backgroundError >*{
+    background-color: var(--red)!important;
 }

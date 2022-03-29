@@ -1,6 +1,6 @@
-const erlaubteLängeL_C:number= 8;
-const erlaubteLängeMNEMO:number=4;
-const speicherabbildL:number = 16;
+export const erlaubteLängeL_C:number= 8;
+export const erlaubteLängeMNEMO:number=4;
+export const speicherabbildL:number = 16;
 
 
 export class Manipulator {

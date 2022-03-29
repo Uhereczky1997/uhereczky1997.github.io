@@ -207,6 +207,7 @@ export class CommandMap{
     
     formatErwartet(s1:string):string{
         // return 'erwarte: '+s1;
+        s1 = s1.replace("dat_8","8-bit Wert").replace("dat_16","16-bit Wert").replace("label","Label");
         return `<span class="eingeruckt">erwarte&nbsp;: ${s1}</span>`;
     }
     formatErkannt(s1:string):string{
@@ -280,14 +281,6 @@ export class CommandMap{
             return false;
         }        
     }
-    /* 
-    i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
-    i.saveDescriptionLine(this.formatErkannt(indirekteRegAdressierung));
-    i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
-    i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
-    i.saveDescriptionLine(this.formatErkannt(stackBefehl));
-
-    */
 
     parseToMnemoCode(i:InputLine,strings:string[]):boolean{
         let consoletostring="";
@@ -323,7 +316,7 @@ export class CommandMap{
                     });
                     consoletostring=this.getScources(matches).join(", ");
                     save4(i);
-                    i.saveDescriptionLine(this.formatErwartet(consoletostring.replace("dat_8","Wert/Konstante (8-bit)").replace("dat_16","Wert/Konstante (16-bit)")));    //Ausgabe von erwartetten Befehlen
+                    i.saveDescriptionLine(this.formatErwartet(consoletostring));    //Ausgabe von erwartetten Befehlen
                     if(strings.length<2){
                         i.saveDescriptionLine(this.formatErrorMassage("zu wenig Operanden Spezifiziert!")); //ERROR
                         return false;
@@ -371,7 +364,7 @@ export class CommandMap{
                                 case DataType.dat_8:
                                     if(consoletostring.includes("dat_8")){
                                         //i.saveDescriptionLine(`Gefunden -> 'dat_8'`);
-                                        i.saveDescriptionLine(this.formatGefunden("Wert/Konstante (8-bit) "+Manipulator.formatHextoDat8(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat8(strings[1])));
+                                        i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat8(strings[1])));
     
                                         matches=matches.filter(e=>{
                                             if(e.getSource()=="dat_8"){
@@ -385,7 +378,7 @@ export class CommandMap{
                                         break;
                                     }else if(consoletostring.includes("dat_16")){
                                         //i.saveDescriptionLine(`Gefunden -> 'dat_16'`);
-                                        i.saveDescriptionLine(this.formatGefunden("Wert/Konstante (16-bit) "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
+                                        i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
                                         matches=matches.filter(e=>{
                                             if(e.getSource()=="dat_16"){
                                                 return e;
@@ -399,7 +392,7 @@ export class CommandMap{
                                         break;
                                     }
                                     else if(consoletostring.includes("dat_8")){
-                                        i.saveDescriptionLine(this.formatErrorMassage(`erwartet war Wert/Konstante (8-bit), ${strings[1]} ist kein gültiger Operand`));
+                                        i.saveDescriptionLine(this.formatErrorMassage(`erwartet war 8-bit Wert, ${strings[1]} ist kein gültiger Operand`));
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
@@ -413,7 +406,7 @@ export class CommandMap{
                                 case DataType.dat_16:
                                     if(consoletostring.includes("dat_16") && ['HL','SP','IX'].includes(strings[0])){
                                         //i.saveDescriptionLine(`Gefunden -> 'dat_16'`);
-                                        i.saveDescriptionLine(this.formatGefunden("Wert/Konstante (16-bit) "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
+                                        i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
                                         matches=matches.filter(e=>{
                                             if(e.getSource()=="dat_16"){
                                                 return e;
@@ -472,7 +465,7 @@ export class CommandMap{
                                         break;
                                     }
                                     else if(consoletostring.includes("dat_8")){
-                                        i.saveDescriptionLine(this.formatErrorMassage(`erwartet war Wert/Konstante (8-bit), ${strings[1]} ist kein gültiger Operand`));
+                                        i.saveDescriptionLine(this.formatErrorMassage(`erwartet war 8-bit Wert, ${strings[1]} ist kein gültiger Operand`));
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
@@ -726,7 +719,7 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatGefunden("Register A","IN A ..."));
                     i.setSecondPart(strings[0]);
                     save4(i);
-                    i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8-bit)"));
+                    i.saveDescriptionLine(this.formatErwartet("dat_8"));
                     if(strings.length<2){
                         i.saveDescriptionLine(this.formatErrorMassage("fehlender Operand!"));
                         return false;
@@ -743,7 +736,7 @@ export class CommandMap{
                         return true;
                     }
                     else if(Manipulator.isDat_8(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[1]),"IN A, "+Manipulator.formatHextoDat8(strings[1])));
+                        i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),"IN A, "+Manipulator.formatHextoDat8(strings[1])));
                         i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
                         
                         // Änderung
@@ -775,7 +768,7 @@ export class CommandMap{
 
                 save3(i);
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='OUT'});
-                i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8-bit)"));
+                i.saveDescriptionLine(this.formatErwartet("dat_8"));
                 
                 if(strings.length<2){
                     i.saveDescriptionLine(this.formatErrorMassage("fehlender Operand!"));
@@ -812,7 +805,7 @@ export class CommandMap{
                 }
                 else if(Manipulator.isDat_8(strings[0])){
                     
-                    i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[0]),i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+" ..."));
+                    i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[0]),i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+" ..."));
                     
                     // Änderung
                     // i.setSecondPart(Manipulator.formatHextoDat8(strings[0]));
@@ -956,7 +949,7 @@ export class CommandMap{
                     }
                 }
                 else if(Manipulator.isDat_8(strings[1])){
-                    i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[1]),strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
+                    i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="dat_8"){
                             return e;
@@ -1049,7 +1042,7 @@ export class CommandMap{
                     }
                 }
                 else if(Manipulator.isDat_8(strings[1])){
-                    i.saveDescriptionLine(this.formatGefunden("Wert (8-bit) "+Manipulator.formatHextoDat8(strings[1]),strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
+                    i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="dat_8"){
                             return e;
@@ -1362,10 +1355,10 @@ export class CommandMap{
             }
             switch(strings[0]){
                 case 'RS':
-                    i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8-bit)"));
+                    i.saveDescriptionLine(this.formatErwartet("dat_8"));
                     save3(i);
                     if(Manipulator.isDat_8(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (16-bit)`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
+                        i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
                         // Änderung
                         // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
                         i.setSecondPart((strings[1]));
@@ -1380,18 +1373,18 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein Wert/Konstante (8-bit)!`));
+                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein 8-bit Wert!`));
                         i.setError(strings[1]);
                         return false;
                     }
                     break;
 
                 case 'DW':
-                    // i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (16-bit) oder OFFSET Label"));
+                    // i.saveDescriptionLine(this.formatErwartet("16-bit Wert oder OFFSET Label"));
                     save3(i);
-                    i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8/16-bit)"));
+                    i.saveDescriptionLine(this.formatErwartet("16-bit Wert"));
                     if(Manipulator.isDat_16(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (16-bit)`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
+                        i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
                         i.setLength(2);
                         // Änderung
                         // i.setSecondPart(Manipulator.formatHextoDat16(strings[1]));
@@ -1408,11 +1401,11 @@ export class CommandMap{
                                 return false;
                             }
                             if(this.getDataType(temp[1]) == DataType.LABEL){
-                                i.saveDescriptionLine(this.formatGefunden(`OFFSET Label (OFFSET <span class="labelBlue">${temp[1]}</span>)`,"DW OFFSET "+temp[1]));
+                                i.saveDescriptionLine(this.formatGefunden(`OFFSET`,"DW OFFSET "+temp[1]));
                             }
                             else if(this.getDataType(temp[1]) == DataType.ELLIGIBLE){
                                 this.symbollist.setLabelWithoutPosition(temp[1]);
-                                i.saveDescriptionLine(this.formatGefunden(`OFFSET Label (OFFSET <span class="labelBlue">${temp[1]}</span>)`,"DW OFFSET "+temp[1]));
+                                i.saveDescriptionLine(this.formatGefunden(`OFFSET`,"DW OFFSET "+temp[1]));
                             }
                             else{
                                 i.saveDescriptionLine(this.formatErrorMassage(`gefunden wurde OFFSET aber kein gültiger label!`));
@@ -1440,7 +1433,7 @@ export class CommandMap{
                     save3(i);
                     i.saveDescriptionLine(this.formatErwartet("Konstante (8-bit)"));
                     if(Manipulator.isDat_8(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (8-bit)`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])))
+                        i.saveDescriptionLine(this.formatGefunden(`8-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])))
                         i.setLength(1);
                         // Änderung
                         // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
@@ -1458,9 +1451,9 @@ export class CommandMap{
 
                 case 'ORG':
                     save3(i);
-                    i.saveDescriptionLine(this.formatErwartet("Wert/Konstante (8/16-bit)"));
+                    i.saveDescriptionLine(this.formatErwartet("16-bit Wert"));
                     if(Manipulator.isDat_16(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden(`Wert/Konstante (16-bit)`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
+                        i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
                         i.setLength(Manipulator.hexToDec(strings[1]));
                         // Änderung
                         // i.setSecondPart(Manipulator.formatHextoDat16(strings[1]));
@@ -1469,7 +1462,7 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} is kein Wert/Konstante (16-bit)!`));
+                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} is kein 16-bit Wert!`));
                         i.setError(strings[1]);
                         return false;
                     }
@@ -1511,13 +1504,13 @@ export class CommandMap{
             if(new_commands[0].toUpperCase()=="EQU"){
                 i.saveDescriptionLine(this.formatGefunden("EQU",i.getFirstPart()+" EQU"+" ..."));
                 i.saveDescriptionLine(`<span class="gray">parse Operandenfeld</span>`);
-                i.saveDescriptionLine(this.formatErwartet(`Wert/Konstante (16-bit)`));
+                i.saveDescriptionLine(this.formatErwartet(`dat_16`));
                 i.setSecondPart(new_commands[0]);
 
                 if(new_commands.length>1){
                     let type=this.getDataType(new_commands[1]);
                     if(type ==DataType.dat_8){
-                        i.saveDescriptionLine(this.formatGefunden(` Wert (8-bit) ${Manipulator.formatHextoDat8(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat8(new_commands[1])));
+                        i.saveDescriptionLine(this.formatGefunden(`8-bit Wert ${Manipulator.formatHextoDat8(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat8(new_commands[1])));
                         // Änderung
                         // i.setThirdPart(Manipulator.formatHextoDat8(new_commands[1]));
                         i.setThirdPart((new_commands[1]));
@@ -1526,7 +1519,7 @@ export class CommandMap{
                         return true;
                     }
                     else if(type ==DataType.dat_16){
-                        i.saveDescriptionLine(this.formatGefunden(` Wert (16-bit) ${Manipulator.formatHextoDat16(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat16(new_commands[1])));
+                        i.saveDescriptionLine(this.formatGefunden(`16-bit Wert ${Manipulator.formatHextoDat16(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat16(new_commands[1])));
                         // Änderung
                         // i.setThirdPart(Manipulator.formatHextoDat16(new_commands[1]));
                         i.setThirdPart((new_commands[1]));
@@ -1535,12 +1528,12 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(`${new_commands[1]} ist kein gültiger Wert/Konstante (8 oder 16-bit)`));
+                        i.saveDescriptionLine(this.formatErrorMassage(`${new_commands[1]} ist kein gültiger 16-bit Wert`));
                         i.setError(new_commands[1]);
                         return false;
                     }
                 }else{
-                    // i.saveDescriptionLine(this.formatErrorMassage(`kein Wert/Konstante (8 oder 16-bit) gefunden!`));
+                    // i.saveDescriptionLine(this.formatErrorMassage(`kein 16-bit Wert gefunden!`));
                     i.saveDescriptionLine(this.formatErrorMassage(`fehlender Operand!`));
                     return false;
                 }
@@ -1583,6 +1576,7 @@ export class CommandMap{
             return false;
         }
     }
+
     getAddressierungsart(i:InputLine){
         let first=i.getFirstPart().toUpperCase(),second=i.getSecondPart(),third =i.getThirdPart();
         if(i.getType()!=InputLineType.TRANSLATED && this.mCodes.includes(first)){

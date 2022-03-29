@@ -22,7 +22,7 @@
 }
 
 .displayText + .hoverable>p:hover{
-    background-color: var(--yellow);
+    background-color: var(--yellow)!important;
     cursor: pointer;
 }
 #InputText{

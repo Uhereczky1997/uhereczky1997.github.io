@@ -36,11 +36,11 @@
             <div id="currentLine" class="displayFlex">
                 <h2 id="currentLineLine" style=" align-self: end; margin:0px 0px; padding: 5px 10px; font: bold;">&nbsp;</h2>
             </div>
-            <div style="width: 100%; height: 1px; background-color: black;"></div>
+            <div class="dividerDiv"></div>
             <div id="Description" class="displayFlex">
                 <h3 style=" align-self: end;" class=" noMargin p5px">Vorgang:</h3>
             </div>
-            <div style="width: 100%; height: 1px; background-color: black;"></div>
+            <div class="dividerDiv"></div>
             <div id="descriptionSymboltableBox">
                 <div id="descriptionLines" class="overflowY">
 
@@ -49,17 +49,18 @@
             <div id="translatedinfo" class="bottomDivider">
                 <h5  style="align-self: end; text-align: center;" class="noMargin">Adresszähler</h5>
                 <h5  style="align-self: end; text-align: start; margin: 0 0; padding-left: 8px;">Maschinenbefehl</h5>
-                <div id="translatedinfoDividerDiv" style="width: 100%; height: 1px; grid-column: span 2; background-color: black;"></div>
+                <div id="translatedinfoDividerDiv" class="dividerDiv" style="grid-column: span 2;"></div>
                 <h1 id="Addresszahler" style=" text-align: center; align-self: center; width: 100%; border-right: 1px solid;" class="noMargin">0000h</h1>
-                <h2 id="Machinenbefehl" style="align-self: center; text-align: start; margin: 0 0; padding-left: 8px;" ></h2>
+                <h1 id="Machinenbefehl" style="align-self: center; text-align: start; margin: 0 0; padding-left: 8px;" ></h1>
             </div>
         </div>
+
         <div id="SymbolTable" class=" boxBorder">
             <h3 style="align-items: end; margin: 0 0; padding-left: 8px;">KonstantenTabelle (K) / LabelTabelle (L):</h3>
-            <div style="width: 100%; height: 1px; grid-column: span 2; background-color: black;"></div>
-            <div id="symbolTableLines"class="overflowY noScrollbar">
-            </div>
+            <div class="dividerDiv"></div>
+            <div id="symbolTableLines"class="overflowY noScrollbar"></div>
         </div>
+
         <div id="buttonLeiste" class="MiddleLowerBox boxBorder"> <!-- 4/1 -> 5/1 -->
             <button id="play" class="button1 buttonLeftSide">start/resume</button>
             <button id="stop" class="button1">pause</button>
@@ -77,7 +78,7 @@
                 <div id="OutputLines" class="displayText start"></div>
             </div>
             <div class="bottomBox bottomDivider grid2080">
-                <button id="TranslateWindow" style="border-bottom-left-radius: 5px; border: 1px solid;" class="button1">get</button>
+                <button id="TranslateWindow" class="button1">get</button>
                 <h1> </h1>
             </div>
 
@@ -99,7 +100,7 @@
                 <textarea name="OutputTextArea" id="OutputTextArea" ></textarea>
                 <button id="CloseOutputWindow">Schließen</button>
                 <button id="CopyToClipBoard">Im Clipboard speichern</button>
-                <button > </button>
+                <button id> </button>
                 <button > </button>
 
             </div>
@@ -108,12 +109,37 @@
     </div>
     <script src="public\bundle.js"></script>
     <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            loadTheme(getCurrentTheme());
+        })
+        const themeBtn = document.querySelector('#Preview');
+            themeBtn.addEventListener('click', () => {
+            let theme = getCurrentTheme();
+            if(theme === 'dark'){
+                theme = 'light';
+            } else {
+                theme = 'dark';
+            }
+            localStorage.setItem('assembler.theme', `${theme}`);
+            loadTheme(theme);
+        })
+       
         function inputClip() {
             var copyText = document.getElementById("InputTextArea");
             copyText.select();
             copyText.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(copyText.value);
         }
+        function getCurrentTheme(){
+            let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+            localStorage.getItem('assembler.theme') ? theme = localStorage.getItem('assembler.theme') : null;
+            return theme;
+        }
+        function loadTheme(theme){
+            const root = document.querySelector(':root');
+            root.setAttribute('color-scheme', `${theme}`);
+        }       
+
     </script>
 </body>
 </html>

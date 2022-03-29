@@ -270,7 +270,7 @@ export class ProjectWindow{
                         if(s instanceof Label){
                             n=s.getName();
                             p=s.getPosition()!;
-                            symbolTableLines.innerHTML+=`<h4><span class="gray">L:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} = <span id="labelValuePlaceholder"> </span></h4>`;
+                            symbolTableLines.innerHTML+=`<h4><span class="gray">L:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} =&nbsp;&nbsp;<span id="labelValuePlaceholder"> </span></h4>`;
                         }
                         break;
                     }
@@ -374,14 +374,14 @@ export class ProjectWindow{
                     await sleepUntilNextStep();
                 }
                 descriptionLines.innerHTML += `<p>Suche Label '<span class="labelBlue">${k.getName()}</span>' in SymbolTabelle</p>`;
-                currentLineLine.innerHTML=`${e.getStartingAddr()}: ${this.inputLineControl.getDisplayableSpeicherabbild(e,false)}<span class="crInvert">${this.getLabelIfUnknown(e.getId(),false)}</span>`
+                currentLineLine.innerHTML=`${e.getStartingAddr()}: ${this.inputLineControl.getDisplayableSpeicherabbild(e,false)} <span class="crInvert">${this.getLabelIfUnknown(e.getId(),false)}</span>`
 
                 if(aniControl.start){
                     updateScroll(descriptionLines.id);
                     await sleepUntilNextStep();
                 }
                 if(k.getPosition()=="????"){
-                    currentLineLine.innerHTML=`${e.getStartingAddr()}: ${this.inputLineControl.getDisplayableSpeicherabbild(e,false)}<span class="crInvert bkError">${this.getLabelIfUnknown(e.getId(),false)}</span>`
+                    currentLineLine.innerHTML=`${e.getStartingAddr()}: ${this.inputLineControl.getDisplayableSpeicherabbild(e,false)} <span class="crInvert bkError">${this.getLabelIfUnknown(e.getId(),false)}</span>`
                     descriptionLines.innerHTML += `<p><span class="errorRed">Label '<span class="labelBlue">${k.getName()}</span>' konnte nicht aufgelöst werden!</span></p>`;
                     updateScroll(descriptionLines.id);
                     await sleepFor(10);
@@ -393,7 +393,7 @@ export class ProjectWindow{
                     this.inputLineControl.retranslate(e);
                     n=this.inputLineControl.getDisplayableSpeicherabbild(e,true);
                     if(aniControl.start){
-                        await this.anim.exchangeLabelWithSymbolTable("Label '"+k.getName()+"'?","Label '"+k.getName()+"' Wert:"+Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")");
+                        await this.anim.exchangeLabelWithSymbolTable("Label '"+k.getName()+"'?","Label '"+k.getName()+"' = "+Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")");
                     }
 
                     descriptionLines.innerHTML += `<p class="eingeruckt">Label '<span class="labelBlue">${k.getName()}</span>' in Symboltabelle gefunden, Wert: ${Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")"}</p>`;
@@ -533,7 +533,6 @@ export class ProjectWindow{
     }
 
     private pushDescriptionLinesOf=async(i:number)=>{
-        let bruvBOOL = false;
         let e:string;
         let ss:string[];
         let l:InputLine;
@@ -569,21 +568,15 @@ export class ProjectWindow{
                     updateScroll(descriptionLines.id);
                 }
                 if(e.includes("gefunden: Doppelpunkt")){
-                    if(bruvBOOL){
-                        if(aniControl.start){
-                            await sleepUntilNextStep();
-                            await this.anim.moveLabeltoSymboltable(l.getLabel()," Wert:"+this.symbolList.getPositionOfSpecificLabel(l.getLabel()));
-                        }
+                    
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        await this.anim.moveLabeltoSymboltableALTMoveable(l.getLabel());
+                        await this.rePushLastSymbolEmpty();
+                        await sleepUntilNextStep();
+                        await this.anim.moveLabeltoSymboltableALTMoveableHelper(this.symbolList.getPositionOfSpecificLabel(l.getLabel())!);
                     }
-                    else{
-                        if(aniControl.start){
-                            await sleepUntilNextStep();
-                            await this.anim.moveLabeltoSymboltableALTMoveable(l.getLabel());
-                            await this.rePushLastSymbolEmpty();
-                            await sleepUntilNextStep();
-                            await this.anim.moveLabeltoSymboltableALTMoveableHelper(this.symbolList.getPositionOfSpecificLabel(l.getLabel())!);
-                        }
-                    }
+                    
                     this.rePushSymbols(); 
                 }
                 if(j-1>0){

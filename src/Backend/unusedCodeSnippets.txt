@@ -1949,3 +1949,162 @@ case 3:
         }
     }
 }
+
+private pushDescriptionLinesOf=async(i:number)=>{
+    let bruvBOOL = false;
+    let e:string;
+    let ss:string[];
+    let l:InputLine;
+    let newElem:HTMLDivElement;
+    newElem = document.createElement("div");
+    newElem.id=`${(i+1)<10?"0"+(i+1):(i+1)}DescriptionDiv`;
+    newElem.classList.add("noMP");
+    descriptionLines.appendChild(newElem);
+    if(this.inputLines.length>i){
+        l=this.inputLines[i];
+        ss=l.getDescriptionLine();
+        newElem.innerHTML += `<p style=" white-space: nowrap; overflow: hidden;"> ----<span class="bold"><${(i+1)<10?"0"+(i+1):(i+1)}></span>------------------------------------------------ </p>`;
+        for(let j=0;j<ss.length;j++){
+            e=ss[j]
+            if(aniControl.start){
+                await sleepUntilNextStep();
+            }
+            if(e.includes("parse")){
+                await this.nextInverted(l.getAllV());
+            }
+            if(e.includes('error')){
+                console.log("error has been found");
+                await this.nextInverted(l.getAllV());
+                aniControl.setStop();
+                
+                newElem.innerHTML += `<p>${e}</p>`;
+                addClassTo("crError","bkError");
+                updateScroll(descriptionLines.id);
+                throw Error('Stop pressed');
+            }else{
+                
+                newElem.innerHTML += `<p>${e}</p>`;
+                updateScroll(descriptionLines.id);
+            }
+            if(e.includes("gefunden: Doppelpunkt")){
+                if(bruvBOOL){
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        await this.anim.moveLabeltoSymboltable(l.getLabel()," Wert:"+this.symbolList.getPositionOfSpecificLabel(l.getLabel()));
+                    }
+                }
+                else{
+                    if(aniControl.start){
+                        await sleepUntilNextStep();
+                        await this.anim.moveLabeltoSymboltableALTMoveable(l.getLabel());
+                        await this.rePushLastSymbolEmpty();
+                        await sleepUntilNextStep();
+                        await this.anim.moveLabeltoSymboltableALTMoveableHelper(this.symbolList.getPositionOfSpecificLabel(l.getLabel())!);
+                    }
+                }
+                this.rePushSymbols(); 
+            }
+            if(j-1>0){
+                if(ss[j-1].includes("gesamter")){
+                    if(l.getFirstPart().toUpperCase()=="ORG"){
+                        // this.pushTranslationOf(i);
+                        this.repushSpeicherabbildOf(i,true);
+                    }
+                    else if(l.getEndAddr()!=""){
+                        machinenbefehl.innerHTML= `${this.inputLineControl.getDisplayableSpeicherabbild(l,false)}`;
+                        
+                        if(aniControl.start){
+                            await sleepUntilNextStep();
+                            await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(i,false),i);
+                        }
+                        // this.pushTranslationOf(i);
+                        this.repushSpeicherabbildOf(i,true);
+                    }
+                }
+            }
+        }
+        if(this.symbolList.isConst(l.getFirstPart())){
+            if(aniControl.start){
+                await sleepUntilNextStep();
+                await this.anim.moveConstToSymbolTable(this.symbolList.getSpecificConstantByName(l.getFirstPart())!.toStringtoMovable());
+            }
+            this.rePushSymbols();
+            // this.pushTranslationOf(i);
+            this.repushSpeicherabbildOf(i,true);
+        }
+        else if(l.getType()==InputLineType.PSEUDOTRANSLATED){
+            // this.pushTranslationOf(i);
+            this.repushSpeicherabbildOf(i,true);
+        }
+        else{
+            if(aniControl.start){
+                await sleepUntilNextStep();
+                await this.anim.displayAddresserhoehung(l.getLength());
+            }
+            addresszahler.innerHTML= `${l.getEndAddr()}`;
+        }
+
+        if(aniControl.start){
+            await sleepUntilNextStep();
+        }
+
+        removeClassOfAll("crInvert");
+
+        l.formatInputToDisplay();
+        this.refreshInputListItem(i);
+        updateScroll(descriptionLines.id);
+        getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}inputP`).onclick=((e:MouseEvent)=>{
+            if(!aniControl.play){
+                updateScrollOfDescriptionLines(`${(i+1)<10?"0"+(i+1):(i+1)}DescriptionDiv`,descriptionLines.id);
+            }
+
+        })
+    }
+}
+
+async moveLabeltoSymboltable(line:string,hex:string){
+        // console.log([this.descriptionLineElem.offsetTop,this.descriptionLineElem.offsetHeight,this.vorgangElem.offsetHeight])
+        this.formatLineString("h4",line);
+        this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft,this.descriptionLineElem.offsetWidth,this.vorgangElem.offsetHeight);
+        this.movableHelper.style.top=this.addresszaehlerElem.offsetTop+"px";
+        this.movableHelper.style.left=this.addresszaehlerElem.offsetLeft+"px";
+        this.movableHelper.innerHTML=`<h4 class="moveableText">${hex}</h4}>`;
+        console.log(-this.symbolTableBox.offsetTop+this.symbolTableElem.offsetTop+this.symbolTableElem.scrollHeight+"   "+this.symbolTableBox.clientHeight)
+        if(-this.symbolTableBox.offsetTop+this.symbolTableElem.offsetTop+this.symbolTableElem.scrollHeight>this.symbolTableBox.clientHeight){
+            this.targetElemTop = this.symbolTableBox.offsetTop+this.symbolTableBox.clientHeight-this.movableElem.offsetHeight;
+        }
+        else{
+            console.log(this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight+"  "+(this.symbolTableElem.children.item(0)!.scrollHeight*1.5));
+            this.targetElemTop=this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight-(this.symbolTableElem.children.item(0)!.scrollHeight*1.5);
+        }
+        this.turnMovableVisible();
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        while(this.addresszaehlerElem.offsetTop-2*this.movableElem.offsetHeight>this.movableElem.offsetTop){
+            await this.moveSleepCheck(this.getPixeljump(),0);
+        }
+        this.turnMovableHelperVisible();
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        while(this.movableElem.offsetLeft+this.movableElem.offsetWidth>this.movableHelper.offsetLeft){
+            await this.updateMovingHelperElement(0,this.getPixeljump());
+            await sleepUntilNextFrame(this.frameSleepTime);
+            await checkIfPaused();
+        }
+        this.movableHelper.style.left=this.movableElem.offsetWidth+this.movableElem.offsetLeft+"px";
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        while(this.movableElem.offsetTop<this.movableHelper.offsetTop){
+            await this.updateMovingHelperElement(-this.getPixeljump(),0);
+            await sleepUntilNextFrame(this.frameSleepTime);
+            await checkIfPaused();
+        }
+        this.movableHelper.style.top=this.movableElem.offsetTop+"px";
+        this.formatLineString("h4",line+hex);
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        this.turnMovableHelperHidden();
+        while(this.targetElemTop>this.movableElem.offsetTop){
+            await this.moveSleepCheck(this.getPixeljump(),0);
+        }
+        this.movableElem.style.top=this.targetElemTop+"px";
+
+        await sleepFor(this.turnSleepTime/this.getPixeljump());
+        this.turnMovableHidden();
+    }

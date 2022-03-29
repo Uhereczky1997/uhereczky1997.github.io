@@ -39,7 +39,6 @@ export class Animator{
         this.outPutLinesElem = getHtmlElement("OutputLines");
         this.descriptionTableBox= getHtmlElement("descriptionSymboltableBox");
         this.outPutText = getHtmlElement("OutputText");
-        // this.addresszaehlerElem = getHtmlElement("translatedinfoDividerDiv");
         this.addresszaehlerElem = getHtmlElement("Addresszahler");
     }
 
@@ -96,6 +95,7 @@ export class Animator{
         await sleepFor(this.turnSleepTime/this.getPixeljump());
         this.turnMovableHidden();
     }
+
     async moveConstToSymbolTable(line:string){
         
         this.formatLineString("h4",line);
@@ -117,56 +117,11 @@ export class Animator{
         this.turnMovableHidden();
     }
 
-    async moveLabeltoSymboltable(line:string,hex:string){
-        // console.log([this.descriptionLineElem.offsetTop,this.descriptionLineElem.offsetHeight,this.vorgangElem.offsetHeight])
-        this.formatLineString("h4",line);
-        this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft,this.descriptionLineElem.offsetWidth,this.vorgangElem.offsetHeight);
-        this.movableHelper.style.top=this.addresszaehlerElem.offsetTop+"px";
-        this.movableHelper.style.left=this.addresszaehlerElem.offsetLeft+"px";
-        this.movableHelper.innerHTML=`<h4 style="margin:0px 0px; padding: 5px 10px; font: bold;">${hex}</h4}>`;
-        console.log(-this.symbolTableBox.offsetTop+this.symbolTableElem.offsetTop+this.symbolTableElem.scrollHeight+"   "+this.symbolTableBox.clientHeight)
-        if(-this.symbolTableBox.offsetTop+this.symbolTableElem.offsetTop+this.symbolTableElem.scrollHeight>this.symbolTableBox.clientHeight){
-            this.targetElemTop = this.symbolTableBox.offsetTop+this.symbolTableBox.clientHeight-this.movableElem.offsetHeight;
-        }
-        else{
-            console.log(this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight+"  "+(this.symbolTableElem.children.item(0)!.scrollHeight*1.5));
-            this.targetElemTop=this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight-(this.symbolTableElem.children.item(0)!.scrollHeight*1.5);
-        }
-        this.turnMovableVisible();
-        await sleepFor(this.turnSleepTime/this.getPixeljump());
-        while(this.addresszaehlerElem.offsetTop-2*this.movableElem.offsetHeight>this.movableElem.offsetTop){
-            await this.moveSleepCheck(this.getPixeljump(),0);
-        }
-        this.turnMovableHelperVisible();
-        await sleepFor(this.turnSleepTime/this.getPixeljump());
-        while(this.movableElem.offsetLeft+this.movableElem.offsetWidth>this.movableHelper.offsetLeft){
-            await this.updateMovingHelperElement(0,this.getPixeljump());
-            await sleepUntilNextFrame(this.frameSleepTime);
-            await checkIfPaused();
-        }
-        this.movableHelper.style.left=this.movableElem.offsetWidth+this.movableElem.offsetLeft+"px";
-        await sleepFor(this.turnSleepTime/this.getPixeljump());
-        while(this.movableElem.offsetTop<this.movableHelper.offsetTop){
-            await this.updateMovingHelperElement(-this.getPixeljump(),0);
-            await sleepUntilNextFrame(this.frameSleepTime);
-            await checkIfPaused();
-        }
-        this.movableHelper.style.top=this.movableElem.offsetTop+"px";
-        this.formatLineString("h4",line+hex);
-        await sleepFor(this.turnSleepTime/this.getPixeljump());
-        this.turnMovableHelperHidden();
-        while(this.targetElemTop>this.movableElem.offsetTop){
-            await this.moveSleepCheck(this.getPixeljump(),0);
-        }
-        this.movableElem.style.top=this.targetElemTop+"px";
-
-        await sleepFor(this.turnSleepTime/this.getPixeljump());
-        this.turnMovableHidden();
-    }
+    
     async moveLabeltoSymboltableALTMoveableHelper(hex:string){
         this.movableHelper.style.top=this.addresszaehlerElem.offsetTop+"px";
         this.movableHelper.style.left=this.addresszaehlerElem.offsetLeft+"px";
-        this.movableHelper.innerHTML=`<h4 style="margin:0px 0px; padding: 5px 10px; font: bold;">${hex}</h4}>`;
+        this.movableHelper.innerHTML=`<h4 class="moveableText">${hex}</h4}>`;
         
         this.turnMovableHelperVisible();
         let placeholder:HTMLSpanElement = document.getElementById("labelValuePlaceholder") as HTMLSpanElement;
@@ -187,6 +142,7 @@ export class Animator{
         await sleepFor(this.turnSleepTime/this.getPixeljump());
         this.turnMovableHelperHidden();
     }
+
     async moveLabeltoSymboltableALTMoveable(line:string){
         // console.log([this.descriptionLineElem.offsetTop,this.descriptionLineElem.offsetHeight,this.vorgangElem.offsetHeight])
         this.formatLineString("h4",line);
@@ -207,10 +163,9 @@ export class Animator{
         await sleepFor(this.turnSleepTime/this.getPixeljump());
         this.turnMovableHidden();
     }
-    
 
     async exchangeLabelWithSymbolTable(toLine:string,returnLine:string){
-        this.movableElem.innerHTML=`<h3 style="margin:0px 0px; padding: 5px 10px; font: bold; text-align: center;">${toLine}</h3>`;
+        this.movableElem.innerHTML=`<h3 class="moveableText">${toLine}</h3>`;
         this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft,this.descriptionLineElem.offsetWidth,this.vorgangElem.offsetHeight);
         this.targetElemTop=this.symbolTableElem.offsetTop;
         this.turnMovableVisible();
@@ -221,7 +176,7 @@ export class Animator{
         this.movableElem.style.top=this.targetElemTop+"px";
 
         await sleepFor(this.turnSleepTime/this.getPixeljump());
-        this.movableElem.innerHTML=`<h3 style="margin:0px 0px; padding: 5px 10px; font: bold; text-align: center;">${returnLine}</h3>`;
+        this.movableElem.innerHTML=`<h3 class="moveableText">${returnLine}</h3>`;
         this.targetElemTop=this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight;
         while(this.targetElemTop<this.movableElem.offsetTop){
             await this.moveSleepCheck(-this.getPixeljump(),0);
@@ -290,7 +245,7 @@ export class Animator{
         this.movableHelper.style.top= this.addresszaehlerElem.offsetTop-5+"px";
         this.movableHelper.style.left= this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetWidth-2+"px";
         // this.movableHelper.style.height = this.addresszaehlerElem.offsetHeight+10+"px";
-        this.movableHelper.innerHTML=`<h2 style="margin:0px 0px; padding: 10px 10px; font: bold;">+${i}</h2>`
+        this.movableHelper.innerHTML=`<h2 class="adresserhohung">+${i}</h2>`
         this.turnMovableVisible();
         this.turnMovableHelperVisible();
         await sleepFor(4*this.turnSleepTime/this.getPixeljump());
@@ -340,6 +295,7 @@ export class Animator{
         await sleepUntilNextFrame(this.frameSleepTime);
         await checkIfPaused();
     }
+
     private async moveHelperSleepCheck(t:number,l:number){
         await this.updateMovingHelperElement(t,l);
         await sleepUntilNextFrame(this.frameSleepTime);
@@ -347,7 +303,7 @@ export class Animator{
     }
 
     private formatLineString(tag:string,line:string){
-        this.movableElem.innerHTML=`<${tag} style="margin:0px 0px; padding: 5px 10px; font: bold;">${line}</${tag}>`;
+        this.movableElem.innerHTML=`<${tag} class="moveableText">${line}</${tag}>`;
     }
 
     async adjustWidthOfMovable(n:number,w:number){
@@ -405,6 +361,7 @@ export class Animator{
         getHtmlElement("body").appendChild(newElem);
         return newElem;
     }
+
     async turnMovableHidden():Promise <any>{
         this.movableElem.style.visibility="hidden";
     }
@@ -412,6 +369,7 @@ export class Animator{
     async turnMovableVisible():Promise <any>{
         this.movableElem.style.visibility="visible";
     }
+
     async turnMovableHelperHidden():Promise <any>{
         this.movableHelper.style.visibility="hidden";
     }
@@ -424,6 +382,7 @@ export class Animator{
         this.movableElem.style.top = (this.movableElem.offsetTop+mTop)+"px";
         this.movableElem.style.left = (this.movableElem.offsetLeft+mLeft)+"px";
     }
+
     async updateMovingHelperElement(mTop:number,mLeft:number){
         this.movableHelper.style.top = (this.movableHelper.offsetTop+mTop)+"px";
         this.movableHelper.style.left = (this.movableHelper.offsetLeft+mLeft)+"px";

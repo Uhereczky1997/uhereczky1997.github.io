@@ -33,6 +33,7 @@ export class InputLineControl{
     getInvalidIDs=():number[]=>{
         return this.invalidIDs;
     }
+
     getInvalidInputLines=():InputLine[]=>{
         let invalidInputllines:InputLine[]=[];
         this.inputlines.forEach(e=>{
@@ -42,6 +43,7 @@ export class InputLineControl{
         })
         return invalidInputllines;
     }
+
     reset=():void=>{
         this.IDcounter=0;
         this.startingAddrOfTranslated=0;
@@ -50,18 +52,22 @@ export class InputLineControl{
         this.invalidIDs=[];
         this.symbolliste.empty();
     }
+
     setInputStrings(s:string[]){
         this.inputstrings=s;
     }
+
     getInputStrings():string[]{
         return this.inputstrings;
     }
+
     addInputLines=(inputStrings:string[]):void=>{
         this.reset();
         inputStrings.forEach(e=>{
             this.addInputLine(e);
         });
     }
+
     addInputLine=(inputString:string):void=>{
         let i:InputLine= new InputLine(inputString,this.IDcounter);
         if(i.getType()==InputLineType.EMPTY){
@@ -115,6 +121,7 @@ export class InputLineControl{
     getLittleEndianOf(h:string):string{
         return Manipulator.splitDat16InDat8(h).join("");
     }
+
     checkTranslationForUnknownLabel(i:InputLine){
         if(i.getType()==InputLineType.TRANSLATED){
             if(i.getTranslation().includes("????")){
@@ -123,15 +130,19 @@ export class InputLineControl{
         }
         return false;
     }
+
     fHD16(h:string){
         return Manipulator.formatHextoDat16(h);
     }
+
     fHD16WH(h:string){
         return Manipulator.formatHextoDat16WithoutH(h);
     }
+
     fHD8(h:string){
         return Manipulator.formatHextoDat8(h);
     }
+
     fHD8WH(h:string){
         return Manipulator.formatHextoDat8WithoutH(h);
     }
@@ -139,6 +150,7 @@ export class InputLineControl{
     retranslate(i:InputLine){
         this.calculateTranslation(i,true);
     }
+
     getDisplayableSpeicherabbild(i:InputLine,flag:boolean):string{
         let s:string =this.getSpeicherAbbild(i,flag);
         if(i.getFirstPart().toUpperCase() == "RS"){
@@ -153,6 +165,7 @@ export class InputLineControl{
         }
         return toReturn;
     }
+
     getSpeicherAbbild(i:InputLine,flag:boolean):string{
         let s = i.commandLinetoString(true);
         let h = i.getHCode();
@@ -246,6 +259,7 @@ export class InputLineControl{
             return "";
         }
     }
+
     createSummary(i:InputLine){
         let s = i.commandLinetoString(true);
         let h = i.getHCode()
@@ -271,6 +285,7 @@ export class InputLineControl{
             }
         }
     }
+
     calculateStartingAddr=(i:InputLine):void=>{
         let e= (i!=null?i:this.inputlines[this.IDcounter]);
         if(e.getType()==InputLineType.TRANSLATED){
@@ -291,6 +306,7 @@ export class InputLineControl{
         }
        
     }
+
     calculateRest=(...addr:string[]):string=>{
         let n=0;
         let rest:string[];
@@ -317,6 +333,7 @@ export class InputLineControl{
         }
         return  String(n);
     }
+
     calculateTranslation=(i:InputLine,flag:boolean):void=>{
         let e= (i!=null?i:this.inputlines[this.IDcounter]);
         if(e.getType()!=InputLineType.TRANSLATED){
@@ -488,6 +505,7 @@ export class InputLineControl{
             }
         }
     }
+    
     getInputLines=()=>{
         return this.inputlines;
     }

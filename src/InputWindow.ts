@@ -1,5 +1,5 @@
 import { InputLineControl } from "./Backend/InputLineControl";
-import { Manipulator } from "./Backend/Manipulator";
+import { erlaubteLängeL_C, Manipulator } from "./Backend/Manipulator";
 import { ProjectWindow } from "./ProjectWindow";
 import { InputLine } from "./Backend/InputLine";
 import { getHtmlElement, createClickListener, updateScroll } from "./Tools";
@@ -34,20 +34,32 @@ export class InputWindow{
             } 
         })
         if(anzahl!=0){
-            toReturn += `<div class="backgroundError"><p class="bold">Anzahl der Syntaxfehler: ${anzahl}</p></div>`;
+            toReturn += `<div class="backgroundError"><p class="bold">Anzahl der \n Syntaxfehler: ${anzahl}</p></div>`;
+        }
+        return toReturn;
+    }
+    public displayWarning():string{
+        let inputs:InputLine[] = this.inputcontrol.getInputLines();
+        let s:string;
+        let ss:string[]=[];
+        let toReturn:string="";
+        let anzahl= 0;
+        inputs.forEach(e=>{
+            s=e.getWarning();
+            if(s !=""){
+                anzahl++;
+                ss.push(s);
+            }
+        })
+        if(anzahl!=0){
+            toReturn += `<div class="backgroundWarning"><p class="bold">Anzahl der Warnungen: ${anzahl}</p></div>
+            <div class="backgroundWarning"><p>${ss.join("</p><p>")}</p></div>`;
         }
         return toReturn;
     }
     public translate = ():void=>{
         try{
             let s:string[]=this.InputTextAreaElement.value.split("\n");
-            // this.InputTextAreaElement.
-            /* s=s.filter(e=>{
-                e=Manipulator.removeExcessWhiteSpace(e);
-                if(e.length>0){
-                    return e;
-                }
-            }) */
             if(!(s.length<1)){
                 this.pWindow.refreshInputStrings(s);
                 this.inputcontrol.addInputLines(s);
@@ -55,7 +67,6 @@ export class InputWindow{
             else{
                 throw new Error('No InputLines!');
             }
-            //this.previewTranslation();
         }catch(e){
             console.log(e);
         }
@@ -65,29 +76,16 @@ export class InputWindow{
         let s:string;
         this.translate();
         s = this.displayError();
-        // console.log(s.length);
-        errorDescriptionDiv.innerHTML=s;
-        /* if(s.length>88){
+        if(s==""){
+            s = this.displayWarning();
         }
-        else{
-            errorDescriptionDiv.innerHTML= `<div class="backgroundNoError"><p>Keine syntaktische Fehler!</p></div>`
-        } */
-        /* 
-        errorDescriptionDiv.innerHTML="";
-        let inputs:InputLine[] = this.inputcontrol.getInputLines();
-        for(let i=0;i<inputs.length;i++){
-            previewType.checked?await this.pushPreview(inputs[i],10):this.displaySummary(inputs[i]);
-            // await this.pushPreview(inputs[i],10);
-            // this.displaySummary(inputs[i]);
-        } 
-        */
+        errorDescriptionDiv.innerHTML=s;
     }
     private pushPreview = async (e:InputLine,n:number) =>{
         await sleepFor(n);
         errorDescriptionDiv.innerHTML += `<p> ${e.getDescriptionLine().join("</p><p>")} </p>`;
         errorDescriptionDiv.innerHTML += `<p> ----------------------------------------- </p>`;
         updateScroll(errorDescriptionDiv.id);
-        // console.log(e.getTranslation());
     }
     private addLinetoTextArea=(s:string[])=>{
         this.InputTextAreaElement.value="";
@@ -99,11 +97,8 @@ export class InputWindow{
     public translateAndGo = async()=>{
         try{
             await this.translate();
-            //if(!this.inputcontrol.hasInvalid()){
             await this.pushInputLines();
             await this.openEditWindow();
-            //}
-            //else window.alert(`Input has InvalidLines-> ${this.inputcontrol.getInvalidIDs()}`);
         }catch(e){
             console.log(e);
         }
@@ -112,7 +107,6 @@ export class InputWindow{
     public pushInputLines=async()=>{
         if(this.pWindow){
             await this.pWindow.reset()
-            // this.pWindow.partialReset();
             await this.pWindow.refreshInputLines();
             await this.pWindow.displayInputLines();
         }
@@ -127,12 +121,10 @@ export class InputWindow{
             else{
                 inputWindowContainer.style.visibility="hidden";
             }
-            // console.log(this);
         }catch(e){
             console.log(e);
         }
     }
-    // private setAutoPreview()
     
     public createEventListeners=()=>{
         try {
@@ -151,12 +143,6 @@ export class InputWindow{
                 a.addEventListener("click",this.openEditWindow);
             }
             else throw new Error("Element #EditWindowOpenButton is null!");
-        
-            /* const b= document.getElementById('Translate');
-            if(b!=null){
-                b.addEventListener("click",this.translate);
-            }
-            else throw new Error("Element #Translate is null!"); */
             
             const c=document.getElementById('Submit');
             if(c!=null){
@@ -167,7 +153,7 @@ export class InputWindow{
         catch(e){
             console.log(e);
         }
-        createClickListener('Preview',this.previewTranslation);
+        // createClickListener('Preview',this.previewTranslation);
         createClickListener('GenerateDummy',this.generateDummy);
         createClickListener('CloseInputWindow',this.openEditWindow);
     }
@@ -223,7 +209,4 @@ export class InputWindow{
             "const1 EQU 3434h",
         ]);
     }
-
-    
 } 
-// export iWindow:InputWindow= new InputWindow()
