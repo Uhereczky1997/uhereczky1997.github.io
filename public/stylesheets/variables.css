@@ -15,25 +15,25 @@
     --bottomHeight: calc(70/894*100%);
     --hBorderRadius: 0.2em;
 
-    --green-light: rgb(187, 241, 37);
-    --green-dark: rgb(143, 196, 0);
+    --green-light: #bbf125;
+    --green-dark: #8fc400;
 
     --gray-light: grey;
-    --gray-dark: rgb(196, 196, 196);
+    --gray-dark: #c4c4c4;
     
     
-    --red: rgb(221, 6, 6);
+    --red: #dd0606;
     
     
     --blue-light: #36cbfd;
     --blue-dark: #009bcf;
     
     
-    --yellow-light:rgba(255, 255, 0, 0.925);
-    --yellow-dark:rgba(214, 214, 0, 0.925);
+    --yellow-light:#ffff00ec;
+    --yellow-dark:#d6d600ec;
     
-    --orange-light: rgb(255, 147, 45);
-    --orange-dark: rgb(255, 123, 0);
+    --orange-light: #ff932d;
+    --orange-dark: #ff7b00;
     
     
 
@@ -46,4 +46,40 @@
     /* --bkg1-dark: #222; */
     --bkg1-dark: #111;
     --bkg2-dark: white;
+
+    --verticalBackgroundDark: url(../images/WhiteBorderVertical.svg);
+    --horizontalBackgroundDark: url(../images/WhiteBorderHorizontal.svg);
+    --arrowUpDark: url(../images/WhiteBorderArrowUp.svg);
+    --arrowDownDark: url(../images/WhiteBorderArrowDown.svg);
+    --arrowLeftDark: url(../images/WhiteBorderArrowLeft.svg);
+    --arrowRightDark: url(../images/WhiteBorderArrowRight.svg);
+    --jq1Dark:url(../images/WhiteBorderLeftToDown.svg);
+    --jq2Dark:url(../images/WhiteBorderUpToRight.svg);
+    --jq3Dark:url(../images/WhiteBorderLeftToUp.svg);
+
+
+
+    --verticalBackgroundLight: url(../images/BlackBorderVertical.svg);
+    --horizontalBackgroundLight: url(../images/BlackBorderHorizontal.svg);
+    --arrowUpLight: url(../images/BlackBorderArrowUp.svg);
+    --arrowDownLight: url(../images/BlackBorderArrowDown.svg);
+    --arrowLeftLight: url(../images/BlackBorderArrowLeft.svg);
+    --arrowRightLight: url(../images/BlackBorderArrowRight.svg);
+    --jq1Light:url(../images/BlackBorderLeftToDown.svg);
+    --jq2Light:url(../images/BlackBorderUpToRight.svg);
+    --jq3Light:url(../images/BlackBorderLeftToUp.svg);
+    
+    
+
+    --arrowHeadlrW: 50px;
+    --arrowHeadlrH: 45px;
+
+    --arrowBodyW: 25px;
+    /* --arrowBodyH: 50px; */
+
+    --arrowHeadW: var(--arrowHeadlrW);
+    --arrowHeadH: var(--arrowHeadlrH);
+    --arrowHeight: var(--arrowBodyW);
+    --arrowWidth: var(--arrowBodyW);
+
 }

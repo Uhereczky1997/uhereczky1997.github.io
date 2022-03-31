@@ -12,7 +12,7 @@
 
         <div id="toTranslate" class="SideBox boxBorder"> <!--3/12 -> 1/12 -->
             <div class="Title topDivider">
-                <h3 style="text-align: center; align-self: center; padding: 0.2em 0.2em" class="noMargin">Quelltext</h3>
+                <h3 style="text-align: center; align-self: center; padding: 0.2em 0.2em;" class="noMargin">Quelltext</h3>
             </div>
 
             <div id="InputText" class="overflowY">
@@ -83,6 +83,7 @@
             </div>
 
         </div>
+
         <div id ="InputWindowContainter" class="backgroundContainer hidden">
             <div id="InputWindow" class="boxBorder inoutputbox">
                 <!-- <div id="InputTextAreaEnumerationDiv"></div> -->
@@ -95,6 +96,7 @@
                 <!-- <button id="TestThing">test</button> -->
             </div>
         </div>
+
         <div id ="OutputWindowContainer" class="backgroundContainer hidden">
             <div id="OutputWindow" class="boxBorder inoutputbox">
                 <textarea name="OutputTextArea" id="OutputTextArea" ></textarea>
@@ -113,15 +115,16 @@
             loadTheme(getCurrentTheme());
         })
         const themeBtn = document.querySelector('#Preview');
-            themeBtn.addEventListener('click', () => {
-            let theme = getCurrentTheme();
-            if(theme === 'dark'){
-                theme = 'light';
-            } else {
-                theme = 'dark';
-            }
-            localStorage.setItem('assembler.theme', `${theme}`);
-            loadTheme(theme);
+            
+        themeBtn.addEventListener('click', () => {
+        let theme = getCurrentTheme();
+        if(theme === 'dark'){
+            theme = 'light';
+        } else {
+            theme = 'dark';
+        }
+        localStorage.setItem('assembler.theme', `${theme}`);
+        loadTheme(theme);
         })
        
         function inputClip() {
@@ -131,6 +134,7 @@
             navigator.clipboard.writeText(copyText.value);
         }
         function getCurrentTheme(){
+
             let theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
             localStorage.getItem('assembler.theme') ? theme = localStorage.getItem('assembler.theme') : null;
             return theme;
@@ -138,7 +142,7 @@
         function loadTheme(theme){
             const root = document.querySelector(':root');
             root.setAttribute('color-scheme', `${theme}`);
-        }       
+        }
 
     </script>
 </body>

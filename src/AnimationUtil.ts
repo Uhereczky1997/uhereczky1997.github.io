@@ -30,6 +30,10 @@ export const sleepUntilNextStep=async():Promise <any>=>{
         }
     }
 }
+export enum AnimationsTyp{
+    Typ1="Typ1",
+    Typ2="Typ2"
+}
 export class AnimationControl{
     public start:boolean;
     public play:boolean;
@@ -40,7 +44,7 @@ export class AnimationControl{
 
     public speed:number;
     public baseFrameTime:number;
-    public animationType:number;
+    public animationType:AnimationsTyp;
     public frames:number;
 
     constructor(){
@@ -52,7 +56,7 @@ export class AnimationControl{
         this.end=false;
         this.baseFrameTime=1000;
         this.speed=1;
-        this.animationType=0;
+        this.animationType=AnimationsTyp.Typ2;
         this.frames=60;
     }
     resetFlags=()=>{
@@ -63,6 +67,7 @@ export class AnimationControl{
         this.reset=false;
         this.end=false;
         this.baseFrameTime=1000;
+        this.animationType=AnimationsTyp.Typ2;
         this.speed=1;
         this.updateSpeedDisplay();
     }
@@ -119,19 +124,11 @@ export class AnimationControl{
     }
 
     setSpeed=()=>{
-        // this.speed*=4;
-        // if(this.speed>500){
-        //     this.speed=16;
-        // }
-        // this.updateSpeedDisplay();
-        // console.log(this.speed);
         this.speed+=1;
         if(this.speed==5){
             this.speed=1;
         }
         this.updateSpeedDisplay();
-        // console.log(this.speed);
-
     }
     updateSpeedDisplay(){
         speedBTN.innerText=(this.speed==1?"":this.speed+"x-")+"speed";
