@@ -1,3 +1,4 @@
+import { inputText, outputText } from "./ProjectWindow";
 
 export const getHtmlElement = (id:string)=> document.getElementById(id)!;
 export const createClickListener = (id:string,f: (this: HTMLElement, ev: MouseEvent) => any) =>{
@@ -17,16 +18,20 @@ export const updateScroll=(id:string)=>{
     element.scrollTop = element.scrollHeight;
 }
 export const updateScrollOfIn_Out=(id:string,targetID:string)=>{
-    var elem = getHtmlElement(id);
+    var elem = id==inputText.id?inputText:outputText;
     var targetElem = getHtmlElement(targetID);
     if(targetElem.offsetTop+targetElem.offsetHeight>elem.scrollTop+elem.clientHeight){
         /* console.log((targetElem.offsetTop-elem.offsetTop-elem.clientHeight)+" <-> "+elem.scrollTop);
         console.log("-------------------------"); */
-        elem.scrollTop=(targetElem.offsetTop-elem.offsetTop-elem.clientHeight+targetElem.offsetHeight+targetElem.offsetHeight);
+        // elem.scrollTop=(targetElem.offsetTop-elem.offsetTop-elem.clientHeight+targetElem.offsetHeight+targetElem.offsetHeight);
+        inputText.scrollTop=(targetElem.offsetTop-elem.offsetTop-elem.clientHeight+targetElem.offsetHeight+targetElem.offsetHeight);
+        outputText.scrollTop=(targetElem.offsetTop-elem.offsetTop-elem.clientHeight+targetElem.offsetHeight+targetElem.offsetHeight);
     }
     else if(targetElem.offsetTop<elem.scrollTop){
        /*  console.log(targetElem.offsetTop+" <-> "+elem.scrollTop);
         console.log("-------------------------"); */
-        elem.scrollTop=(targetElem.offsetTop-elem.clientHeight);
+        // elem.scrollTop=(targetElem.offsetTop-elem.clientHeight);
+        inputText.scrollTop=(targetElem.offsetTop-elem.clientHeight);
+        outputText.scrollTop=(targetElem.offsetTop-elem.clientHeight);
     }
 }

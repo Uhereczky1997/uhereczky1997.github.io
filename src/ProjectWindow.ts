@@ -9,7 +9,7 @@ import { InputLineControl } from "./Backend/InputLineControl";
 import { InputLine } from "./Backend/InputLine";
 import { InputWindow } from "./InputWindow";
 import { getHtmlElement, createClickListener, updateScroll, updateScrollOfIn_Out } from "./Tools";
-import { aniControl, sleepFor, sleepUntilNextStep } from "./AnimationUtil";
+import { aniControl, checkIfPaused, sleepFor, sleepUntilNextStep } from "./AnimationUtil";
 import { Animator } from "./Animator";
 
 
@@ -87,12 +87,12 @@ export class ProjectWindow{
     public partialReset =async () =>{
         this.inputLines=[];
         // currentLine.innerHTML="";
-        currentLineLine.innerHTML="&nbsp;";
+        await this.clearMachinenbefehlandCurrentLine();
         symbolTableLines.innerHTML=`<h4> &nbsp; </h4>`;
         descriptionLines.innerHTML="";
         addresszahler.innerHTML="0000h";
         this.nextParseID=0;
-        machinenbefehl.innerHTML="";
+        // machinenbefehl.innerHTML="";
         OutputAddresses.innerHTML="";
         OutputLines.innerHTML="";
         OutputTextAreaElement.innerHTML="";
@@ -207,7 +207,8 @@ export class ProjectWindow{
             let idString = `${(i+1)<10?"0"+(i+1):(i+1)}outputP`;
             let outputLineHTML:HTMLElement = getHtmlElement(idString);
             if(e.getType() == InputLineType.TRANSLATED){
-                if(b){
+                console.log(b);
+                if(!b){
                     getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}oAddress`).innerHTML=`<span class="gray">${Manipulator.formatHextoDat16(e.getStartingAddr())+":"}</span>`;
                 }
                 if(e.getTranslation().includes("????")){
@@ -381,8 +382,11 @@ export class ProjectWindow{
                     await sleepUntilNextStep();
                 }
                 if(k.getPosition()=="????"){
+                    if(aniControl.start){
+                        await this.anim.exchangeLabelWithSymbolTable("Label '"+k.getName()+"'?","",true);
+                    }
                     currentLineLine.innerHTML=`${e.getStartingAddr()}: ${this.inputLineControl.getDisplayableSpeicherabbild(e,false)} <span class="crInvert bkError">${this.getLabelIfUnknown(e.getId(),false)}</span>`
-                    descriptionLines.innerHTML += `<p><span class="errorRed">Label '<span class="labelBlue">${k.getName()}</span>' konnte nicht aufgelöst werden!</span></p>`;
+                    descriptionLines.innerHTML += `<p><span class="errorRed eingeruckt">Label '<span class="labelBlue">${k.getName()}</span>' konnte nicht aufgelöst werden!</span></p>`;
                     updateScroll(descriptionLines.id);
                     await sleepFor(10);
                     aniControl.setStop();
@@ -393,7 +397,7 @@ export class ProjectWindow{
                     this.inputLineControl.retranslate(e);
                     n=this.inputLineControl.getDisplayableSpeicherabbild(e,true);
                     if(aniControl.start){
-                        await this.anim.exchangeLabelWithSymbolTable("Label '"+k.getName()+"'?","Label '"+k.getName()+"' = "+Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")");
+                        await this.anim.exchangeLabelWithSymbolTable("Label '"+k.getName()+"'?","Label '"+k.getName()+"' = "+Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")",false);
                     }
 
                     descriptionLines.innerHTML += `<p class="eingeruckt">Label '<span class="labelBlue">${k.getName()}</span>' in Symboltabelle gefunden, Wert: ${Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")"}</p>`;
@@ -413,7 +417,7 @@ export class ProjectWindow{
                     if(aniControl.start){
                         await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(e.getId(),true),e.getId());
                     }
-                    this.repushSpeicherabbildOf(e.getId(),false);
+                    this.repushSpeicherabbildOf(e.getId(),true);
                     descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
                     if(aniControl.start){
                         updateScroll(descriptionLines.id);
@@ -439,13 +443,17 @@ export class ProjectWindow{
             updateScroll(descriptionLines.id);
             for(let i=0;i<this.inputLines.length;i++){
                 await this.checkInputLine(this.inputLines[i]);
+                await this.clearMachinenbefehlandCurrentLine();
                 if(aniControl.start){
                     await sleepUntilNextStep();
                 }
             }
         }
     }
-
+    private clearMachinenbefehlandCurrentLine(){
+        machinenbefehl.innerHTML="&nbsp;";
+        currentLineLine.innerHTML="&nbsp;";
+    }
     public repushTranslations=async()=>{
         OutputTextAreaElement.innerHTML="";
         let i;
@@ -498,30 +506,26 @@ export class ProjectWindow{
                 this.translateInputStringOfId(i);
                 if(this.inputLines.length>i){
                     input = this.inputLines[i];
+                    if(aniControl.start) await this.clearMachinenbefehlandCurrentLine();
                     iP= getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}inputP`);
                     await updateScrollOfIn_Out("InputText",`${(i+1)<10?"0"+(i+1):(i+1)}inputP`);
-                    // await this.anim.animationInputLineToCurrentLine(iP.offsetTop,iP.offsetLeft,iP.offsetWidth,iP.offsetHeight,"");
-                    // console.log(i+" corresponds to -> "+input.getType()+" :: "+input.getInitialLine());
+
                     if(input.getType()==InputLineType.EMPTY){
-                        /* OutputAddresses.innerHTML+=`<p><span class="gray">&nbsp;</span></p>`;
-                        OutputLines.innerHTML+=`<p id="${(input.getId()+1)<10?"0"+(input.getId()+1):(input.getId()+1)}outputP">&nbsp;</p>`; */
+                        if(aniControl.start)await checkIfPaused();
+                        continue;
                     }
                     else{
+                        if(aniControl.start && aniControl.speed<=3) await sleepFor(1000-(aniControl.speed-1)*200);
                         if(aniControl.start){
                             await this.anim.animationInputLineToCurrentLine(i,this.inputstrings[i].split(";")[0]);
                         }
                         this.nextParseID=0;
-                        // currentLine.innerHTML=this.pushCurrentLine(input.getAll());
-                        // currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${input.getCommandLineToCurrentLine()}</h2>`
                         currentLineLine.innerHTML=`${input.getCommandLineToCurrentLine()}`;
-                        machinenbefehl.innerHTML="";
                         await this.pushDescriptionLinesOf(i);
                     }
                     await this.repushTranslationOf(i);
+                    
                 }
-            }
-            if(aniControl.start){
-                this.toggleStop();
             }
             descriptionLines.innerHTML += `<p style=" white-space: nowrap; overflow: hidden;"> -------------------------------------------------------- </p>`;
 
@@ -583,7 +587,7 @@ export class ProjectWindow{
                     if(ss[j-1].includes("gesamter")){
                         if(l.getFirstPart().toUpperCase()=="ORG"){
                             // this.pushTranslationOf(i);
-                            this.repushSpeicherabbildOf(i,true);
+                            this.repushSpeicherabbildOf(i,false);
                         }
                         else if(l.getEndAddr()!=""){
                             machinenbefehl.innerHTML= `${this.inputLineControl.getDisplayableSpeicherabbild(l,false)}`;
@@ -593,7 +597,7 @@ export class ProjectWindow{
                                 await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(i,false),i);
                             }
                             // this.pushTranslationOf(i);
-                            this.repushSpeicherabbildOf(i,true);
+                            this.repushSpeicherabbildOf(i,false);
                         }
                     }
                 }
@@ -605,11 +609,11 @@ export class ProjectWindow{
                 }
                 this.rePushSymbols();
                 // this.pushTranslationOf(i);
-                this.repushSpeicherabbildOf(i,true);
+                this.repushSpeicherabbildOf(i,false);
             }
             else if(l.getType()==InputLineType.PSEUDOTRANSLATED){
                 // this.pushTranslationOf(i);
-                this.repushSpeicherabbildOf(i,true);
+                this.repushSpeicherabbildOf(i,false);
             }
             else{
                 if(aniControl.start){
@@ -653,28 +657,36 @@ export class ProjectWindow{
     public toggleStop=async()=>{
         if(this.inputstrings.length>0){
             try {
+                if(aniControl.end || aniControl.stop){
+                    throw new Error("Stop has been pressed or animation Finished!");
+                    return;
+                }
                 if(!aniControl.start){
                     aniControl.setStart();
-                    await this.play();
+                    await this.startPlaying();
                 }
                 else{
-                    aniControl.setPlaying();
+                    if(aniControl.play){
+                        aniControl.setPaused();
+                    }
+                    else{
+                        aniControl.setPlaying();
+                    }
                 }
             } catch (e) {
                 console.log(e);
-                await this.reset();
+                // await this.reset();
             }
         }else{
             console.log("no Input");
         }
     }
 
-    public play=async()=>{
+    public startPlaying=async()=>{
         if(this.inputstrings.length>0){
             try {
                 await this.pushLines();
-                currentLineLine.innerHTML=`&nbsp;`;
-                machinenbefehl.innerHTML=`&nbsp;`;
+                await this.clearMachinenbefehlandCurrentLine();
             } catch (e) {
                 console.log(e);
             }
@@ -689,12 +701,12 @@ export class ProjectWindow{
             await this.reset();
             try {
                 await this.pushLines();
-                currentLineLine.innerHTML=`&nbsp;`;
-                machinenbefehl.innerHTML=`&nbsp;`;
+                await this.clearMachinenbefehlandCurrentLine();
             } catch (e) {
                 console.log(e);
+                return;
             }
-            aniControl.setEnd();
+            await aniControl.setEnd();
             
         }
         else{
@@ -754,7 +766,7 @@ export class ProjectWindow{
             createClickListener('CloseOutputWindow',this.openOutputWindow);
             createClickListener('TranslateWindow',this.openOutputWindow);
             createClickListener('play',this.toggleStop);
-            createClickListener('stop',this.pause);
+            // createClickListener('stop',this.pause);
             createClickListener('speed',this.speed);
             createClickListener('skip',this.skipToFinish);
             createClickListener('reset',this.reset);

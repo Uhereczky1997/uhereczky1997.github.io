@@ -7,7 +7,7 @@
 @import "./SymbolTable.css";
 @import "./media.css";
 
-@media(prefers-color-scheme: dark){
+/* @media(prefers-color-scheme: dark){
     :root {
         --green: var(--green-dark);
         --text: var(--text-dark);
@@ -26,6 +26,13 @@
         --jq1: var(--jq1Dark);
         --jq2: var(--jq2Dark);
         --jq3: var(--jq3Dark);
+        --playBKG: var(--playBKGDark);
+        --pauseBKG: var(--pauseBKGDark);
+        --resetBKG: var(--resetBKGDark);
+        --skipBKG:var(--skipBKGDark);
+        --lightBKG:var(--lightBKGDark);
+
+
     }
 }
 
@@ -48,9 +55,15 @@
         --arrowRight: var(--arrowRightLight);
         --jq1: var(--jq1Light);
         --jq2: var(--jq2Light);
-        --jq3: var(--jq3Light);       
+        --jq3: var(--jq3Light);
+        --playBKG: var(--playBKGLight);
+        --pauseBKG: var(--pauseBKGLight);
+        --resetBKG: var(--resetBKGLight);
+        --skipBKG:var(--skipBKGLight);
+        --lightBKG:var(--lightBKGLight);
+
     }
-}
+} */
 
 [color-scheme="dark"]{
     --text: var(--text-dark);
@@ -71,6 +84,14 @@
     --jq1: var(--jq1Dark);
     --jq2: var(--jq2Dark);
     --jq3: var(--jq3Dark);
+    --jq4: var(--jq4Dark);
+    --playBKG: var(--playBKGDark);
+    --pauseBKG: var(--pauseBKGDark);
+    --resetBKG: var(--resetBKGDark);
+    --skipBKG:var(--skipBKGDark);
+    --lightBKG:var(--lightBKGDark);
+    --decreaseBKG: var(--decreaseBKGDark);
+    --increaseBKG: var(--increaseBKGDark);
 
 }
 
@@ -94,8 +115,19 @@
     --jq1: var(--jq1Light);
     --jq2: var(--jq2Light);
     --jq3: var(--jq3Light);
-}
+    --jq4: var(--jq4Light);
 
+    --playBKG: var(--playBKGLight);
+    --pauseBKG: var(--pauseBKGLight);
+    --resetBKG: var(--resetBKGLight);
+    --skipBKG:var(--skipBKGLight);
+    --lightBKG:var(--lightBKGLight);
+    --decreaseBKG: var(--decreaseBKGLight);
+    --increaseBKG: var(--increaseBKGLight);
+}
+.titel{
+    color: var(--blue)!important;
+}
 .arrowU{
     background-image: var(--arrowUp);
 }
@@ -117,6 +149,9 @@
 .jointQ3{
     background-image: var(--jq3);
 }
+.jointQ4{
+    background-image: var(--jq4);
+}
 
 .bgI_C_C{
     background-color: transparent !important;
@@ -124,18 +159,6 @@
     background-position: center center;
     background-size: contain;
 }
-/* .bgI_C_C + [direction="down"]{
-    background-image: var(--arrowDown);
-}
-.bgI_C_C + [direction="up"]{
-    background-image: var(--arrowUp);
-}
-.bgI_C_C + [direction="left"]{
-    background-image: var(--arrowLeft);
-}
-.bgI_C_C + [direction="right"]{
-    background-image: var(--arrowRight);
-} */
 
 .arrowUP_Down{
     width: var(--arrowHeadH);
@@ -151,18 +174,81 @@
     width: var(--arrowWidth);
     background-image: var(--verticalBackground);
     background-repeat: repeat-y;
+    background-size: 100% auto;
 }
 .horizontalBody{
     height: var(--arrowHeight);
     background-image: var(--horizontalBackground);
     background-repeat: repeat-x;
+    background-size: auto 100%;
+
 
 }
 .jointBody{
     width: var(--arrowWidth);
     height: var(--arrowHeight);
     background-repeat: no-repeat;
+    background-size: 100% 100%;
 }
+
+
+.pausedBKG{
+    background-position: center center;
+    /* background-size: contain; */
+    background-repeat: no-repeat;
+    
+    background-image: var(--pauseBKG);
+    background-size: auto 50%;
+}
+.playingBKG{
+    background-position: center center;
+    /* background-size: contain; */
+    background-repeat: no-repeat;
+    
+    background-image: var(--playBKG);
+    background-size: auto 50%;
+}
+.resetBKG{
+    background-position: center center;
+    /* background-size: contain; */
+    background-repeat: no-repeat;
+    
+    background-image: var(--resetBKG);
+    background-size: auto 50%;
+}
+.skipBKG{
+    background-position: center center;
+    /* background-size: contain; */
+    background-repeat: no-repeat;
+    background-size: auto 50%;
+    
+    background-image: var(--skipBKG);
+}
+.lightButton{
+    background-position: center center;
+    /* background-size: contain; */
+    background-repeat: no-repeat;
+    background-size: auto 50%;
+    background-image: var(--lightBKG);
+}
+#speedDecrease{
+    background-position: center center;
+    /* background-size: contain; */
+    background-repeat: no-repeat;
+    background-size: 50% auto;
+    background-image: var(--decreaseBKG);
+}
+#speedIncrease{
+    background-position: center center;
+    /* background-size: contain; */
+    background-repeat: no-repeat;
+    background-size: 50% auto;
+    background-image: var(--increaseBKG);
+}
+
+
+
+
 
 body *>*,body{
     color:var(--text);
@@ -195,6 +281,8 @@ body::after{
         url(../images/WhiteBorderLeftToDown.svg)
         url(../images/WhiteBorderLeftToUp.svg)
         url(../images/WhiteBorderUpToRight.svg)
+        url(../images/BlackBorderQ3.svg)
+        url(../images/WhiteBorderQ3.svg)
         ;
 }
 
@@ -220,37 +308,38 @@ body>* h1{
 
 #toTranslate{
     grid-column: 1/4;
-    grid-row: 1/13;
+    grid-row: 1/12;
 }
-
 .noMargin{
     margin: 0 0;
 }
 
-.grid8020{
-    display:grid;
-    grid-template-columns: 80% 20%;
-}
-.grid602020{
-    display: grid;
-    grid-template-columns: 60% 20% 20%;
-}
-.grid2080{
-    display: grid;
-    grid-template-columns: 20% 80%;
-}
 #buttonLeiste{
-    grid-column: 4/8;
+    grid-column: 2/10;
     grid-row: 12/13;
     display: grid;
-    grid-template-columns: repeat(5,1fr);
+    grid-template-columns: repeat(20,1fr);
     grid-template-rows: repeat(1,1fr);
     justify-items: center;
     background-color: var(--bkg2);
 }
+#buttonLeiste *> button, #buttonLeiste> button, #InputWindow>button, #OutputWindow>button {
+    width: 100%;
+    height: 100%;
+    padding: 5px 5px;
+    margin: 0 0;
+    border: 1px solid var(--bkg2);
+    border-top:none;
+    border-bottom:none;
+    cursor: pointer;
+    /*  background-color: transparent; */
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
 #translated{
     grid-column: 8/11;
-    grid-row: 1/13;
+    grid-row: 1/12;
     
 }
 #translatedinfo{
@@ -279,7 +368,7 @@ body>* h1{
 }
 .SideBox{
     display: grid;
-    grid-template-rows: minmax(min-content,max-content) 1fr var(--bottomHeight);
+    grid-template-rows: minmax(min-content,max-content) 1fr  min-content/* var(--bottomHeight) */;
     grid-template-columns: 1fr;
 }
 .dividerDiv{
@@ -287,29 +376,18 @@ body>* h1{
     height: 1px; 
     background-color: var(--bkg2);
 }
-/* .MiddleBox{
+#speedButtonDiv{
+    grid-column: span 3;
+    overflow: hidden; 
     display: grid;
-grid-template-rows:72px minmax(1fr,1fr) 60px;
-grid-template-columns: 1fr;
-} */
-
-.Title{
-    border-top-left-radius: 5px;
-    border-top-right-radius: 5px;
+    grid-template-columns: 15% 1fr 15%;
+    grid-template-rows: 1fr;
+    width: 100%;
+    height: 100%;
 }
-.Title>h1{
-    margin-bottom: auto;
-}
-.bottomBox{
-    border-bottom-left-radius: 5px;
-    border-bottom-right-radius:5px;
-
-}
-.bottomBox>h1{
-    margin-bottom: auto;
-}
-.setHeight10Pro{
-    height:10%;
+#speedButtonDiv>*{
+    width: 100%;
+    height: 100%;
 }
 /* Hide scrollbar for IE, Edge and Firefox */
 .noScrollbar::-webkit-scrollbar {
@@ -320,23 +398,6 @@ grid-template-columns: 1fr;
     scrollbar-width: none;      /* Firefox      */
 }  
 
-.p10px{
-    padding-left: 10px;
-}
-
-.p5px{
-    padding-left: 5px;
-}
-
-.blr{
-    border-bottom-right-radius: 5px ;
-}
-.displayFlex{
-    display:flex;
-}
-.alignSelfEnd{
-    align-self: end;
-}
 /* BUTTON CONFIG */
 .boxBorder{
     border: 3px solid;
@@ -358,20 +419,9 @@ button:hover{
     border-right:  1px solid;
     cursor: pointer;
     /*  background-color: transparent; */
-  /*  -webkit-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     box-sizing: border-box;
- */
-}
-.buttonLeftSide{
- border-top-left-radius: 5px;
- border-bottom-left-radius: 5px;
-}
-/* .buttonMiddle{
 
-} */
-.buttonRightSide{
-border-top-right-radius: 5px;
-border-bottom-right-radius: 5px;
 }
 .noMP{
     margin: 0 0;
@@ -379,10 +429,6 @@ border-bottom-right-radius: 5px;
     width: 100%;
     height: fit-content;
 }
-.hoverableID{
-    font-weight: bold;
-}
-
 #Machinenbefehl{
     border-left: 1px solid;
 }

@@ -11,7 +11,7 @@ export const onscrollIn_Out = () =>{
     try{
         if(inputText!=null && outputText!=null){
             inputText.onscroll = function(){
-                
+                if(aniControl.play) return;
                 var ignore = ignoreScrollEvents
                 ignoreScrollEvents = false
                 if (ignore) return
@@ -23,6 +23,8 @@ export const onscrollIn_Out = () =>{
             }
             outputText.onscroll = function (){
                 // if(inputText!=null && outputText!=null&&!aniControl.play){
+                if(aniControl.play) return;
+
                 var ignore = ignoreScrollEvents
                 ignoreScrollEvents = false
                 if (ignore) return
@@ -55,13 +57,27 @@ export const setCurrentlyHovered = async (e: any) =>{ //Eventbubbling is f-ing s
         }
     }
 }
+let preferedTheme = "dark"
+
 let p = new ProjectWindow();
+const changeTheme = () =>{
+    let theme:string = preferedTheme==="light" ? 'dark' : 'light';
+    preferedTheme = theme;
+    const root = document.querySelector(':root');
+    root!.setAttribute('color-scheme', `${theme}`);
+
+}
 
 const main = ()=>{
     
     p.createListeners();
     onscrollIn_Out();
     createClickListener("InputLines",setCurrentlyHovered);
+    createClickListener("light",changeTheme);
+    window.addEventListener('DOMContentLoaded', () =>{
+        const root = document.querySelector(':root');
+        root!.setAttribute('color-scheme', `${preferedTheme}`);
+    })
     // createClickListener("OutputLines",setCurrentlyHovered);
 }
 main();

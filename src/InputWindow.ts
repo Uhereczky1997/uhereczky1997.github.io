@@ -62,7 +62,7 @@ export class InputWindow{
             let s:string[]=this.InputTextAreaElement.value.split("\n");
             if(!(s.length<1)){
                 this.pWindow.refreshInputStrings(s);
-                this.inputcontrol.addInputLines(s);
+                // this.inputcontrol.addInputLines(s);
             }
             else{
                 throw new Error('No InputLines!');

@@ -1,3 +1,4 @@
+import { inputText, outputText } from "./ProjectWindow";
 import { getHtmlElement } from "./Tools";
 
 export const sleepFor = (ms:number):Promise <any> => new Promise(resolve => setTimeout(resolve,ms));
@@ -32,7 +33,8 @@ export const sleepUntilNextStep=async():Promise <any>=>{
 }
 export enum AnimationsTyp{
     Typ1="Typ1",
-    Typ2="Typ2"
+    Typ2="Typ2",
+    Typ3="Typ3"
 }
 export class AnimationControl{
     public start:boolean;
@@ -70,6 +72,7 @@ export class AnimationControl{
         this.animationType=AnimationsTyp.Typ2;
         this.speed=1;
         this.updateSpeedDisplay();
+        this.changePlayButtonBKG();
     }
     setStart=()=>{
         this.start=true;
@@ -82,6 +85,7 @@ export class AnimationControl{
             this.reset = false;
             this.end=false;
             this.stop=false;
+            this.changePlayButtonBKG();
         }
     }
     setStop=()=>{
@@ -90,6 +94,7 @@ export class AnimationControl{
         this.reset = false;
         this.end=false;
         this.stop=true;
+        this.changePlayButtonBKG();
     }
 
     setPaused=()=>{
@@ -98,6 +103,7 @@ export class AnimationControl{
             this.pause = true;
             this.reset = false;
             this.end=false;
+            this.changePlayButtonBKG();
         }
     }
 
@@ -108,6 +114,7 @@ export class AnimationControl{
         this.reset = true;
         this.stop = false;
         this.end=false;
+        this.changePlayButtonBKG();
     }
 
     setEnd=()=>{
@@ -117,10 +124,42 @@ export class AnimationControl{
         this.reset = false;
         this.stop = false;
         this.end=true;
+        this.changePlayButtonBKG();
     }
 
     toggle=()=>{
         this.play?this.setPaused():this.setPlaying();
+    }
+    changePlayButtonBKG(){
+        let elem = getHtmlElement("play");
+        if(this.end){
+            inputText.classList.remove("scrollDisabled");
+            outputText.classList.remove("scrollDisabled");
+            elem.classList.remove("pausedBKG");
+            elem.classList.add("playingBKG");
+            return;
+        }
+        if(this.play){
+            inputText.classList.add("scrollDisabled");
+            outputText.classList.add("scrollDisabled");
+            if(this.speed<=3){
+                inputText.classList.add("scrollSmooth");
+                outputText.classList.add("scrollSmooth");
+            }   
+
+            elem.classList.add("pausedBKG");
+            elem.classList.remove("playingBKG");
+            return;
+        }
+        if(this.pause || this.reset || this.stop){
+            inputText.classList.remove("scrollDisabled");
+            outputText.classList.remove("scrollDisabled");
+
+            elem.classList.remove("pausedBKG");
+            elem.classList.add("playingBKG");
+        }
+        
+
     }
 
     setSpeed=()=>{

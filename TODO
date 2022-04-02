@@ -14,23 +14,48 @@ Outputwindow: [] copy to clipboard
 !!! edge case & thorough testing !!!
 
 
-filtern von bibliothek
 
 
 
 css variables : https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
 
-label am ende von speicherabbild anzeigen (wenn unbekannt)
-beim linker auflösung den aufzulösenden label auch hervorheben + (fehler -> rot)
-Padding für auszuwählenden vornhin haben damit keine sprung vom text bei dem nächsten hervorhebung (wegen parsen) passiert
+addresszähler hervorhebung nach erhöhung
+labelauflösung: austausch bis zu dem existierenden label, wenn es nicht existiert, dann abbruch ganz oben.
+schönere scrollbar
 
 
+!!!!!!!!
 
-animations knöpfe schöner
-css 
-bibliothek?
-warnung bei zu langen label
+    scroll smooth beim scrollen von inputfeld (scrollbar für benutzter ausschalten während animation) 
+    pause nach nächste zeile auflösung und animation beginn (nur unterhalb eine gewisse geschwindigkeit)
+    pause von geschwindigkeit abhängig
+    smooth scroll für eingabe und ausgabe(synchron) -> pause bis scollen fertig ist, und plus  ->  ab 3x geschw kein scrollen mehr
 
-animierte rahmen
-animation von hervorhebung bis zum nächsten delimiter ( in Folge sind sie -> xy ":" xc " " xa "," xv) (":"," ",",")
+    SpeedSlider + no Animation (animation)
+    SingleStep modus
+
+    3. AnimationsTYP
+    
+    linkerauflösung titel schritt für schritt (fixe geschw.)
+    elisis overflow für speicherabbild
+    warnung und fehler nur in descriptionLine anzeigen, keine pre analyse
+
+
+    <Edit> -- <Play/Pause><Reset> - <SingleStep> <AnimationsTYP1><AnimationsTYP2><AnimationsTYP3> <SpeedSlider> <Vollbild><Dunkel/Hell><Credits> -- <Hex>
+
+    Einteilung von ausgabe Fenster ändern! Links speicherabbild | Rechts HexCode + knopf zum schließen & Copy to clipboard
+    EingabeFenster Einteilung ändern: Eingabefeld volle Breite! Linksunten buttonleiste -> Links Übernehmen rechts abbrechen
+
+    dynamische Bildeinteilung? mittels relative position & "%"
+    
+    Tooltips für knöpfe
+    
+    
+    Alle Texts zusammenschreiben (und in KonstantenSpeichern ((zum Wiederverwendung)))
+    damit Prof einmal darüberschauen kann.
+    Label 'xy' ist bereits definiert  <- anstatt -> Label 'xy' ist schon bereits besetzt
+
+    Ausführliches testen von randfällen
+
+
 

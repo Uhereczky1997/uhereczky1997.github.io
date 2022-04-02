@@ -15,38 +15,35 @@
     --bottomHeight: calc(70/894*100%);
     --hBorderRadius: 0.2em;
 
+    /* COLOR CONFIG (LIGHT & DARK) */
     --green-light: #bbf125;
     --green-dark: #8fc400;
 
     --gray-light: grey;
     --gray-dark: #c4c4c4;
     
-    
     --red: #dd0606;
     
     
-    --blue-light: #36cbfd;
+    --blue-light: #04c0ff;
     --blue-dark: #009bcf;
-    
     
     --yellow-light:#ffff00ec;
     --yellow-dark:#d6d600ec;
     
     --orange-light: #ff932d;
     --orange-dark: #ff7b00;
-    
-    
 
     --text-light: #111;
     --bkg1-light: #fbfbfb;
     --bkg2-light: #111;
-
   
     --text-dark: white;
     /* --bkg1-dark: #222; */
     --bkg1-dark: #111;
-    --bkg2-dark: white;
+    --bkg2-dark: #ffffff;
 
+    /* ARROW BACKGROUND URL CONFIG (LIGHT & DARK) */
     --verticalBackgroundDark: url(../images/WhiteBorderVertical.svg);
     --horizontalBackgroundDark: url(../images/WhiteBorderHorizontal.svg);
     --arrowUpDark: url(../images/WhiteBorderArrowUp.svg);
@@ -55,9 +52,8 @@
     --arrowRightDark: url(../images/WhiteBorderArrowRight.svg);
     --jq1Dark:url(../images/WhiteBorderLeftToDown.svg);
     --jq2Dark:url(../images/WhiteBorderUpToRight.svg);
-    --jq3Dark:url(../images/WhiteBorderLeftToUp.svg);
-
-
+    --jq3Dark:url(../images/WhiteBorderQ3.svg);
+    --jq4Dark:url(../images/WhiteBorderLeftToUp.svg);
 
     --verticalBackgroundLight: url(../images/BlackBorderVertical.svg);
     --horizontalBackgroundLight: url(../images/BlackBorderHorizontal.svg);
@@ -67,15 +63,35 @@
     --arrowRightLight: url(../images/BlackBorderArrowRight.svg);
     --jq1Light:url(../images/BlackBorderLeftToDown.svg);
     --jq2Light:url(../images/BlackBorderUpToRight.svg);
-    --jq3Light:url(../images/BlackBorderLeftToUp.svg);
+    --jq3Light:url(../images/BlackBorderQ3.svg);
+    --jq4Light:url(../images/BlackBorderLeftToUp.svg);
     
-    
+    /* BUTTON BACKGROUND URL CONFIG */
+    --playBKGLight:url(../images/buttonSVGs/play_button.svg);
+    --playBKGDark:url(../images/buttonSVGs/playWhite_button.svg);
 
-    --arrowHeadlrW: 50px;
+    --pauseBKGLight:url(../images/buttonSVGs/pause_button.svg);
+    --pauseBKGDark:url(../images/buttonSVGs/pauseWhite_button.svg);
+
+    --resetBKGLight:url(../images/buttonSVGs/reset_button.svg);
+    --resetBKGDark:url(../images/buttonSVGs/resetWhite_button.svg);
+    --skipBKGLight:url(../images/buttonSVGs/skip_button.svg);
+    --skipBKGDark:url(../images/buttonSVGs/skipWhite_button.svg);
+
+    --lightBKGDark:url(../images/buttonSVGs/lightOn_button.svg);
+    --lightBKGLight:url(../images/buttonSVGs/lightOff_button.svg);
+
+    --decreaseBKGDark:url(../images/buttonSVGs/decreaseWhite_button.svg);
+    --decreaseBKGLight:url(../images/buttonSVGs/decrease_button.svg);
+
+    --increaseBKGDark:url(../images/buttonSVGs/increaseWhite_button.svg);
+    --increaseBKGLight:url(../images/buttonSVGs/increase_button.svg);
+    /* ARROW SIZE CONFIG */
+    /* W - width for screen | H- height for screen */
+    --arrowHeadlrW: 40px;
     --arrowHeadlrH: 45px;
 
     --arrowBodyW: 25px;
-    /* --arrowBodyH: 50px; */
 
     --arrowHeadW: var(--arrowHeadlrW);
     --arrowHeadH: var(--arrowHeadlrH);
