@@ -24,27 +24,12 @@
 .warning{
   color: var(--warning)!important;
 }
-/* .crInvert{
-  background: linear-gradient(to left,var(--green) 50%,  white 50%);
-  background-size: 200%;
-  transition: background-color .5s ease-in 1s;
-  border: 1px solid black!important;
-} */
 
 .bkError{
   background-color: var(--red)!important;
 
 }
-/* .crInvert::after{
-  content: " ";
-  background-color: var(--green);
-  color: white;
-}
-.crInvert::before{
-  content: " ";
-  background-color: var(--green);
-  co lor: white;
-}*/
+
 .bold{
   font-weight: bold;
 }

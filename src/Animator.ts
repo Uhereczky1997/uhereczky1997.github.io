@@ -220,6 +220,7 @@ export class Animator{
             this.movableElem.style.top=this.targetElemTop+"px";
             await sleepFor(this.turnSleepTime/this.getPixeljump());
             this.turnMovableHidden();
+            return;
         }
         else{
             this.movableHelper.innerHTML=this.formatLineString("h4",line);
@@ -274,6 +275,7 @@ export class Animator{
     
             await sleepFor(this.turnSleepTime/this.getPixeljump());
             this.turnMovableHelperHidden();
+            return;
 
         }
         else{
@@ -337,6 +339,7 @@ export class Animator{
             this.movableElem.style.top=this.targetElemTop+"px";
             await sleepFor(this.turnSleepTime/this.getPixeljump());
             this.turnMovableHidden();
+            return;
 
         }
         else{
@@ -391,6 +394,7 @@ export class Animator{
     
             await sleepFor(this.turnSleepTime/this.getPixeljump());
             this.turnMovableHidden();
+            return;
         }
         else{
             this.movableHelper.innerHTML=this.formatLineString("h3",toLine);
@@ -476,6 +480,7 @@ export class Animator{
             this.movableElem.style.left=this.targetElemLeft+"px";
             await sleepFor(this.turnSleepTime/this.getPixeljump());
             this.turnMovableHidden();
+            return;
         }
         this.movableHelper.innerHTML=this.formatLineString("h3",line);
         this.movableHelper.style.top=this.targetElemTop+"px";
@@ -608,6 +613,7 @@ export class Animator{
             }
             await sleepFor(this.turnSleepTime/this.getPixeljump());
             this.turnMovableHidden();
+            return;
         }
         this.movableHelper.innerHTML=this.formatLineString("h3",line);
         this.movableHelper.style.top=this.targetElemTop+"px";

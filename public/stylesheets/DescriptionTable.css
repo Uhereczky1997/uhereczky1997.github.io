@@ -17,7 +17,6 @@
 .overflowY{
     overflow-y: auto;
     overflow-x:hidden;
-    /* scroll-behavior: smooth; */
 }
 .scrollSmooth{
     scroll-behavior: smooth!important;

@@ -1,8 +1,9 @@
 import { MnemoCommand } from "./MnemoCommand";
-import { Manipulator } from "./Manipulator";
+import { erlaubteLängeL_C, Manipulator } from "./Manipulator";
 import { SymbolList } from "./SymbolList";
 import { InputLine } from "./InputLine";
 import { InputLineType, DataType } from "./Enums";
+import { StringConstructor } from "./StringConstructor";
 
 
 const parse1:string = `<span class="gray">parse Labelfeld/Befehlsfeld:</span>`;
@@ -10,12 +11,6 @@ const parse2:string = `<span class="gray">parse Befehlsfeld:</span>`;
 const parse3:string = `<span class="gray">parse Operandenfeld (1):</span>`;
 const parse4:string = `<span class="gray">parse Operandenfeld (2):</span>`;
 const parse5:string = `<span class="gray">gesamter Befehl:</span>`;
-
-const addressierungDirekt:string = `erkannt Direkte Adressierung`;
-const addressierungIndirekt:string = `erkannt Indirekte Adressierung`;
-const addressierungEinAusgabe:string = ``;
-const addressierungImmediate:string = `erkannt Immediate Adressierung`;
-
 
 export const saveInput=(I:InputLine,n:number)=>{
     switch(n){
@@ -52,6 +47,11 @@ const immediateAdressierung:string = "Immediateadressierung"
 const absoluteAdressierung:string = "Absolutadressierung"
 const stackBefehl:string = "Stackbefehl"
 const ioAdressierung:string = "IO Adressierung"
+
+const unknownError:string = "unbekannter Fehler ist aufgetreten!";
+const invalidCommand:string = "ungültiger Befehl";
+const labelBereitsDefiniert:string = "ist bereits Definiert";
+
 
 
 export class CommandMap{
@@ -201,7 +201,6 @@ export class CommandMap{
     }
 
     formatGefunden(s1:string,s2:string):string{
-        // return 'gefunden: '+(s1!=""?s1+' ':"")+'-> '+s2;
         return `<span class="eingeruckt">gefunden: ${s1!=""?s1+' ':""} -> <span class="bold">${s2}</span></span>`;
     }
     
@@ -226,32 +225,45 @@ export class CommandMap{
         if(strings.length>1){
         i.setComment(strings[1].trim());}
         saveInput(i,1);
-        i.saveDescriptionLine(this.formatErwartet(`Labeldefinition, Mnemocode oder Konstante (+EQU)`));
+        i.saveDescriptionLine(this.formatErwartet(`Labeldefinition, Mnemocode oder Konstante (+EQU)`)); // REPLACE
+        //Auflösung von lebel wenn : gefunden
         if(commandLine.includes(":")){
             strings=Manipulator.splitStringHalf(commandLine,":");
             i.setLabelTo("");
-            if(this.symbollist.isLabel(strings[0])){
+            //Darf nicht bereits definiert label sein die in Symboltabelle ist
+            if(this.symbollist.isConst(strings[0])){
+                i.saveDescriptionLine(StringConstructor.nameTakenForConst(strings[0])); 
+                    i.setError(strings[0]);
+                    i.setRest(": "+strings[1]);
+                    return false;
+            }
+            else if(this.symbollist.isLabel(strings[0])){
                 if(this.symbollist.getPositionOfSpecificLabel(strings[0])!=undefined){
-                    i.saveDescriptionLine(this.formatErrorMassage(`Label ${strings[0]} ist schon bereits besetzt`));
+                    // i.saveDescriptionLine(this.formatErrorMassage(`Label ${strings[0]} ist schon bereits besetzt`)); 
+                    i.saveDescriptionLine(StringConstructor.errLabelDef(strings[0])); 
                     i.setError(strings[0]);
                     i.setRest(": "+strings[1]);
                     return false;
                 }
             }
             if(!this.symbollist.isEligible(strings[0])){
-                i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} kein gülitger Label`))
+                i.saveDescriptionLine(StringConstructor.invalidLabel(strings[0]));  
                 i.setError(strings[0]);
                 i.setRest(": "+strings[1]);
                 return false;
             }
             else{
-                i.saveDescriptionLine(this.formatGefunden("Doppelpunkt ",`Label '${strings[0]}'`));
+                i.saveDescriptionLine(this.formatGefunden("Doppelpunkt ",`Label '${strings[0]}'`)); // ??
                 i.setLabelTo(strings[0]);
+                //Wenn zu lang, Warnung gesetzt
+                if(strings[0].length>erlaubteLängeL_C){
+                    i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[0]));
+                }
                 this.symbollist.setLabelWithoutPosition(strings[0]);
                 saveInput(i,2);
                 i.saveDescriptionLine(this.formatErwartet("(Pseudo-)Mnemocode"));
                 if(strings[1]==""){
-                    i.saveDescriptionLine(`<span class="eingeruckt">gefunden: Ende der Codezeile</span>`);
+                    i.saveDescriptionLine(`<span class="eingeruckt">gefunden: Ende der Codezeile</span>`); // ??
                     i.setType(InputLineType.PSEUDOTRANSLATED);
                     i.setValid(true);
                     return true;
@@ -261,18 +273,20 @@ export class CommandMap{
         }
         strings = Manipulator.splitStringHalf(commandLine," ");
         strings = this.filterForEmtpyStrings(strings);
+        //erster Term MnemoCode
         if(this.mCodes.includes(strings[0].toUpperCase())){
             i.setFirstPart(strings[0]);
-            //ÄNDERUNG
             strings[0] = strings[0].toUpperCase();
-            // i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
            return this.parseToMnemoCode(i,strings);
-        }
+        }//erster Term PseudoMnemoCode - mögliche ConstantenName
         else if(this.pseudoMCodes.includes(strings[0].toUpperCase()) || this.symbollist.isEligible(strings[0])){
             return this.parsetoPseudoMnemoCode(i,strings);
         }
         else {
-            i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} ist kein gültiger (Pseudo-)Mnemocode oder Label/Konstante`));
+            //wenn nicht gültig
+            // ??
+            // i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} ist kein gültiger (Pseudo-)Mnemocode oder Label/Konstante`));
+            i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
                 i.setRest(strings[1]);
@@ -286,7 +300,7 @@ export class CommandMap{
         let consoletostring="";
         let matches:MnemoCommand[]=[];
         let toSave:string="";
-        // strings[0]=strings[0].toUpperCase();
+        //Behandlung aller Fälle wo der 1. Term mit einem MnemoCode anfangt
         switch(strings[0]){
             case 'MOV':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
@@ -295,17 +309,19 @@ export class CommandMap{
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='MOV'}); //Alle treffer auf MOV Codes filtriert
                 consoletostring=this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));        //Ausgabe von erwartetten Befehlen
+                
                 if(strings.length<2){
-                    i.saveDescriptionLine(this.formatErrorMassage("fehlende Operand!")); //ERROR
+                    i.saveDescriptionLine(StringConstructor.toofewCmd()); //ERROR
                     return false;
                 }
                 strings=Manipulator.splitStringHalf(strings[1],",");
                 strings = this.filterForEmtpyStrings(strings);
-                if(this.getDests(matches).includes(strings[0].toUpperCase())&&this.Regs.includes(strings[0].toUpperCase())){ // A || B || C || IX || HL || SP
+                // 2. Term Register
+                if(this.getDests(matches).includes(strings[0].toUpperCase())
+                    &&this.Regs.includes(strings[0].toUpperCase())){ // A || B || C || IX || HL || SP
+
                     toSave=strings[0];
                     i.setSecondPart(toSave);
-                    // i.setSecondPart(strings[0]);
-                    //ÄNDERUNG
                     strings[0] = strings[0].toUpperCase();
                     i.saveDescriptionLine(this.formatGefunden("Register "+strings[0],i.getFirstPart().toUpperCase()+" "+strings[0]+" ..."));
                     
@@ -318,12 +334,12 @@ export class CommandMap{
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet(consoletostring));    //Ausgabe von erwartetten Befehlen
                     if(strings.length<2){
-                        i.saveDescriptionLine(this.formatErrorMassage("zu wenig Operanden Spezifiziert!")); //ERROR
+                        i.saveDescriptionLine(StringConstructor.toofewCmd()); //ERROR
                         return false;
                     }
-
+                    // 3. Term Register
                     if(this.getScources(matches).includes(strings[1].toUpperCase())&&this.Regs.includes(strings[1].toUpperCase())){ // A || B || C || [HL]
-                        //ÄNDERUNG
+
                         toSave=strings[1];
                         strings[1] = strings[1].toUpperCase();
                         i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+strings[1]));
@@ -333,11 +349,8 @@ export class CommandMap{
                                 return e;
                             }
                         });
-                        //console.log(matches);
                         if(matches.length==1){
-                            //ÄNDERUNG
                             i.setThirdPart(toSave);
-                            // i.setThirdPart(strings[1]);
                             if(strings[0] == "[HL]" || strings[1]=="[HL]"){
                                 i.saveDescriptionLine(this.formatErkannt(indirekteRegAdressierung));
                             }
@@ -352,15 +365,16 @@ export class CommandMap{
                             return true;
                         }
                         else{
-                            i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                            //Bug aufgetrenten oder unbeachtetter fall
+                            i.saveDescriptionLine(StringConstructor.bugNoCommand());
                             return false;
                         }
                     }
                     else{
+                        // 3. Term nicht Register -> OFFSET Label || dat || const || label
                         if(this.getDataType(strings[1]) != DataType.NONE){
                             let type:DataType=this.getDataType(strings[1]);
                             switch(type){
-    
                                 case DataType.dat_8:
                                     if(consoletostring.includes("dat_8")){
                                         //i.saveDescriptionLine(`Gefunden -> 'dat_8'`);
@@ -387,40 +401,35 @@ export class CommandMap{
                                         // Änderung
                                         i.setThirdPart((strings[1]));
                                         i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
-
-                                        // i.setThirdPart(Manipulator.formatHextoDat16(strings[1]));
                                         break;
                                     }
                                     else if(consoletostring.includes("dat_8")){
-                                        i.saveDescriptionLine(this.formatErrorMassage(`erwartet war 8-bit Wert, ${strings[1]} ist kein gültiger Operand`));
+                                        i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1]));
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
                                     }
                                     else{
-                                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand`));
+                                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
                                     }
                                 case DataType.dat_16:
                                     if(consoletostring.includes("dat_16") && ['HL','SP','IX'].includes(strings[0])){
-                                        //i.saveDescriptionLine(`Gefunden -> 'dat_16'`);
                                         i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
                                         matches=matches.filter(e=>{
                                             if(e.getSource()=="dat_16"){
                                                 return e;
                                             }
                                         });
-                                        // Änderung
-                                        // i.setThirdPart(Manipulator.formatHextoDat16(strings[1]));
                                         i.setThirdPart((strings[1]));
                                         i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
 
                                         break;
                                     }
                                     else{
-                                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                                        i.saveDescriptionLine(StringConstructor.expectedDat16Plus(strings[1]));
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
@@ -428,23 +437,16 @@ export class CommandMap{
                                     break;
                                 case DataType.CONSTANT:
     
-                                    /* if(!consoletostring.includes("dat_8")||!consoletostring.includes("dat_16")){
-                                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist ein ungülitger Operand!`));
-                                        i.setError(strings[1]);
-                                        i.setValid(false);
-                                        return false;
-                                    } */
                                     let value = this.symbollist.getSpecificConstantByName(strings[1])?.getValue();
-                                    //i.saveDescriptionLine(`Gefunden Constante mit dem Wert ${value}`);
-                                    if(value==undefined){
-                                        i.saveDescriptionLine(this.formatErrorMassage(`Wert für Konstante ${strings[1]} nicht gefunden!`));
+                                    if(value==undefined){ //bug Aufgetreten oder Konstante nicht angelegt
+                                        i.saveDescriptionLine(StringConstructor.bugNoValueForConst(strings[1]));
                                         i.setError(strings[1]);
                                         return false;
                                     }
                                     i.saveDescriptionLine(this.formatGefunden("Konstante "+`<span class="labelBlue">${strings[1]}</span>`+" mit dem Wert "+value,i.getFirstPart().toUpperCase()+" "+strings[0]+", "+strings[1]));
+                                    // WARNING EINSETZEN?
                                     type = this.getDataType(value)
                                     if(consoletostring.includes("dat_8")&&type==DataType.dat_8){ //Konstante hat Datentyp 'dat_8'
-                                        //i.saveDescriptionLine(`Größe von ${strings[1]} ist 'dat_8'`);
                                         matches=matches.filter(e=>{
                                             if(e.getSource()=="dat_8"){
                                                 return e;
@@ -454,7 +456,6 @@ export class CommandMap{
                                         break;
                                     }
                                     else if(consoletostring.includes("dat_16")){ //Konstante hat Datentyp 'dat_16'
-                                        //i.saveDescriptionLine(`Größe von ${strings[1]} ist 'dat_16'`);
                                         matches=matches.filter(e=>{
                                         if(e.getSource()=="dat_16"){
                                             return e;
@@ -465,28 +466,28 @@ export class CommandMap{
                                         break;
                                     }
                                     else if(consoletostring.includes("dat_8")){
-                                        i.saveDescriptionLine(this.formatErrorMassage(`erwartet war 8-bit Wert, ${strings[1]} ist kein gültiger Operand`));
+                                        i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1]));
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
                                     }
                                     else{
-                                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                                         i.setError(strings[1]);
                                         return false;
                                     }
                                     break;
                                 case DataType.LABEL:
                                     if(!consoletostring.includes("label")){
-                                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
                                     }
-                                    //i.saveDescriptionLine(`Gefunden 'label'\n ${commands[1]} ist ein bereits existierender 'label'`);
+
                                     let value1 = this.symbollist.getSpecificLabelByName(strings[1]);
-                                    // i.saveDescriptionLine(this.formatGefunden("Label "+`'${value1?.getName()}'`,i.getFirstPart()+" "+i.getSecondPart()+", "+value1?.getName()));
                                     i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${value1?.getName()}</span>'`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+value1?.getName()));
+                                    // WARNING EINSETZEN?
                                     i.setThirdPart(strings[1]);
                                     matches=matches.filter(e=>{
                                         if(e.getSource()=="label"){
@@ -498,14 +499,17 @@ export class CommandMap{
                                     break;
                                 case DataType.ELLIGIBLE:
                                     if(!consoletostring.includes("label")){
-                                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
                                     }
-                                    //i.saveDescriptionLine(`Gefunden 'label'\n ${strings[1]} als neue 'label' definiert`);
+
                                     this.symbollist.setLabelWithoutPosition(strings[1]);
                                     i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[1]}</span>'`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+strings[1]));
+                                    if(strings[1].length>erlaubteLängeL_C){
+                                        i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
+                                    }
                                     i.setThirdPart(strings[1]);
                                     matches=matches.filter(e=>{
                                         if(e.getSource()=="label"){
@@ -516,7 +520,7 @@ export class CommandMap{
     
                                     break;
                                 default: 
-                                    i.saveDescriptionLine(this.formatErrorMassage("Something went wrong!"));
+                                    i.saveDescriptionLine(StringConstructor.bugSwitchDefault());
                                     return false;
                             }
                             if(matches.length==1){
@@ -525,32 +529,27 @@ export class CommandMap{
                                 i.setLength(matches[0].getSize());
                                 i.setHCode(matches[0].getHexCode());
                                 i.setValid(true);
-                                //console.log(matches[0].toString());
                                 return true;
                             }
                             else{
-                                i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                                i.saveDescriptionLine(StringConstructor.bugNoCommand());
                                 return false;
                             }
-                        }
+                        } //möglicher weise OFFSET Label
                         else if(strings[1].toUpperCase().startsWith("OFFSET")){
                             let temp:string[]=Manipulator.splitStringHalf(strings[1]," ");
                             if(temp.length<2){
-                                i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} kein gültiger Operand`));
-                                // i.saveDescriptionLine(this.formatErrorMassage(`gefunden wurde OFFSET aber kein passender Label!`));
+                                i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                                 i.setError(strings[1]);
                                 return false;
                             }
                             if(this.getDataType(temp[1]) == DataType.LABEL){
                                 if(!consoletostring.includes("dat_16")){
-                                    i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                                     i.setError(strings[1]);
                                     i.setValid(false);
                                     return false;
                                 }
-                                //i.saveDescriptionLine(`Gefunden 'label'\n ${commands[1]} ist ein bereits existierender 'label'`);
-                                // i.saveDescriptionLine(this.formatGefunden("Label "+`'${value1?.getName()}'`,i.getFirstPart()+" "+i.getSecondPart()+", "+value1?.getName()));
-                                // i.saveDescriptionLine(this.formatGefunden(`OFFSET Label (OFFSET <span class="labelBlue">${temp[1]}</span>)`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
                                 i.saveDescriptionLine(this.formatGefunden(`OFFSET`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
                                 matches=matches.filter(e=>{
                                     if(e.getSource()=="dat_16"){
@@ -560,14 +559,16 @@ export class CommandMap{
                             }
                             else if(this.getDataType(temp[1]) == DataType.ELLIGIBLE){
                                 if(!consoletostring.includes("dat_16")){
-                                    i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                                     i.setError(strings[1]);
                                     i.setValid(false);
                                     return false;
                                 }
                                 this.symbollist.setLabelWithoutPosition(temp[1]);
-                                // i.saveDescriptionLine(this.formatGefunden(`OFFSET Label (OFFSET <span class="labelBlue">${temp[1]}</span>)`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
                                 i.saveDescriptionLine(this.formatGefunden(`OFFSET`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
+                                if(temp[1].length>erlaubteLängeL_C){
+                                    i.saveDescriptionLine(StringConstructor.warLabelZuLang(temp[1]));
+                                }
                                 matches=matches.filter(e=>{
                                     if(e.getSource()=="dat_16"){
                                         return e;
@@ -575,7 +576,7 @@ export class CommandMap{
                                 })
                             }
                             else{
-                                i.saveDescriptionLine(this.formatErrorMassage(`gefunden wurde OFFSET aber kein gültiger label!`));
+                                i.saveDescriptionLine(StringConstructor.noValidLabelAfterOffset());
                                 i.setError(strings[1]);
                                 return false;
                             }
@@ -588,17 +589,16 @@ export class CommandMap{
                                 i.setHCode(matches[0].getHexCode());
                                 i.setOffsetLabel(true);
                                 i.setValid(true);
-                                //console.log(matches[0].toString());
                                 return true;
                             }
                             else{
-                                i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} kein gültiger Operand`));
+                                i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                                 i.setError(strings[1]);
                                 return false;
                             }
                         }
                         else{
-                            i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} kein gültiger Operand`));
+                            i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                             i.setError(strings[1]);
                             return false;
                         }
@@ -606,25 +606,27 @@ export class CommandMap{
                 }
                 else if(this.symbollist.isLabel(strings[0]) || this.symbollist.isEligible(strings[0])){ // MUSS label sein
                     i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[0]}</span>'`,i.getFirstPart().toUpperCase()+" "+strings[0]+" ..."))
+                    // WARNING EINSETZEN?
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="label"){
                             return e;
                         }
                     });
                     i.setSecondPart(strings[0]);
-                    if(!this.symbollist.isLabel(strings[0])){
+                    if(!this.symbollist.isLabel(strings[0])){ //Wenn label unbekannt dann neue Ansetzen
                         this.symbollist.setLabelWithoutPosition(strings[0]);
-                        // i.saveDescriptionLine(`Neue Label angesetzt!`);
+                        if(strings[0].length>erlaubteLängeL_C){
+                            i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
+                        }
                     }
                     save4(i);
                     consoletostring=this.getScources(matches).join(", ");
                     i.saveDescriptionLine(this.formatErwartet(consoletostring));    //Ausgabe von erwartetten Befehlen
                     if(strings.length<2){
-                        i.saveDescriptionLine(this.formatErrorMassage("fehlender Operand!"));
+                        i.saveDescriptionLine(StringConstructor.toofewCmd());
                         return false;
                     }
                     if(this.getScources(matches).includes(strings[1].toUpperCase())){
-                        //ÄNDERUNG
                         toSave=strings[1];
                         strings[1] = strings[1].toUpperCase();
                         i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],i.getFirstPart().toUpperCase()+" "+i.getSecondPart()+","+strings[1]))
@@ -634,30 +636,27 @@ export class CommandMap{
                             }
                         });
                         if(matches.length==1){
-                            //ÄNDERUNG
                             i.setThirdPart(toSave);
                             i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
-                            // i.setThirdPart(strings[1]);
                             i.setType(InputLineType.TRANSLATED);
                             i.setLength(matches[0].getSize());
                             i.setHCode(matches[0].getHexCode());
                             i.setValid(true);
-                            //console.log(matches[0].toString());
                             return true;
                         }
                         else{
-                            i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                            i.saveDescriptionLine(StringConstructor.bugNoCommand());
                             return false;
                         }
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein gültiger Operand!`));
+                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                         i.setError(strings[1]);
                         return false;
                     }
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} kein gültiger Operand!`));
+                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
                     i.setError(strings[0]);
                     if(strings[1]!=undefined){
                         i.setRest(", "+strings[1]);
@@ -670,7 +669,7 @@ export class CommandMap{
 
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='PUSH'});
                 if(strings.length>1){
-                    i.saveDescriptionLine(this.formatErrorMassage("zu viele Operanden!"));
+                    i.saveDescriptionLine(StringConstructor.tooManyCmd());
                     i.setError(strings[1]);
                     return false;
                 }
@@ -689,7 +688,7 @@ export class CommandMap{
 
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='POP'});
                 if(strings.length>1){
-                    i.saveDescriptionLine(this.formatErrorMassage("zu viele Operanden!"));
+                    i.saveDescriptionLine(StringConstructor.tooManyCmd());
                     i.setError(strings[1]);
                     return false;
                 }
@@ -710,24 +709,27 @@ export class CommandMap{
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='IN'});
                 i.saveDescriptionLine(this.formatErwartet("A"));
                 if(strings.length<2){
-                    i.saveDescriptionLine(this.formatErrorMassage("fehlender Operand!"));
+                    i.saveDescriptionLine(StringConstructor.toofewCmd());
                     return false;
                 }
                 strings = Manipulator.splitStringHalf(strings[1],",");
                 strings = this.filterForEmtpyStrings(strings);
                 if(strings[0].toUpperCase() =="A"){
+
                     i.saveDescriptionLine(this.formatGefunden("Register A","IN A ..."));
                     i.setSecondPart(strings[0]);
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet("dat_8"));
+
                     if(strings.length<2){
-                        i.saveDescriptionLine(this.formatErrorMassage("fehlender Operand!"));
+                        i.saveDescriptionLine(StringConstructor.tooManyCmd());
                         return false;
                     }
                     if(this.symbollist.isConst(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],"IN A, "+strings[1]));
                         i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
 
+                        // WARNING EINSETZEN?
                         i.setThirdPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -739,8 +741,6 @@ export class CommandMap{
                         i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),"IN A, "+Manipulator.formatHextoDat8(strings[1])));
                         i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
                         
-                        // Änderung
-                        // i.setThirdPart(Manipulator.formatHextoDat8(strings[1]));
                         i.setThirdPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -749,13 +749,13 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} kein gültiger Operand!`));
+                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                         i.setError(strings[1]);
                         return false;
                     }
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} kein gültiger Operand!`));
+                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
                     i.setError(strings[0]);
                     if(strings[1]!=undefined){
                         i.setRest(", "+strings[1]);
@@ -771,18 +771,19 @@ export class CommandMap{
                 i.saveDescriptionLine(this.formatErwartet("dat_8"));
                 
                 if(strings.length<2){
-                    i.saveDescriptionLine(this.formatErrorMassage("fehlender Operand!"));
+                    i.saveDescriptionLine(StringConstructor.toofewCmd());
                     return false;
                 }
                 strings = Manipulator.splitStringHalf(strings[1],",");
                 strings = this.filterForEmtpyStrings(strings);
                 if(this.symbollist.isConst(strings[0])){
                     i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[0],i.getFirstPart().toUpperCase()+" "+strings[0]+" ..."))
+                    // WARNING EINSETZEN?
                     i.setSecondPart(strings[0]);
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet("A"));
                     if(strings.length<2){
-                        i.saveDescriptionLine(this.formatErrorMassage("fehlender Operand!"));
+                        i.saveDescriptionLine(StringConstructor.toofewCmd());
                         return false;
                     }
                     if(strings[1].toUpperCase() =="A"){
@@ -798,7 +799,7 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                         i.setError(strings[1]);
                         return false;
                     }
@@ -807,20 +808,17 @@ export class CommandMap{
                     
                     i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[0]),i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+" ..."));
                     
-                    // Änderung
-                    // i.setSecondPart(Manipulator.formatHextoDat8(strings[0]));
                     i.setSecondPart((strings[0]));
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet("A"));
                     if(strings.length<2){
-                        i.saveDescriptionLine(this.formatErrorMassage("fehlender Operand!"));
+                        i.saveDescriptionLine(StringConstructor.toofewCmd());
                         return false;
                     }
                     if(strings[1].toUpperCase() =="A"){
                         i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+", A"));
                         i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
 
-                        //ÄNDERUNG
                         i.setThirdPart(strings[1])
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -829,13 +827,13 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                         i.setError(strings[1]);
                         return false;
                     }
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} kein gültiger Operand!`));
+                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
                     i.setError(strings[0]);
                     return false;
                 }
@@ -844,15 +842,14 @@ export class CommandMap{
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
 
                 save3(i);
-                //ÄNDERUNG
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
+
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
-                    i.saveDescriptionLine(this.formatErrorMassage("fehlender Operand!"));
+                    i.saveDescriptionLine(StringConstructor.toofewCmd());
                     return false;
                 }
-                //ÄNDERUNG
                 toSave=strings[1];
                 strings[1] = strings[1].toUpperCase();
                 if(this.getDests(matches).includes(strings[1])){
@@ -875,17 +872,17 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
                         return false;
                     }
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                     i.setError(strings[1]);
                     return true;
                 }
                 break;
-            case 'ADD':case'SUB':case'AND':
+            case 'ADD':case'SUB':case'AND':case 'OR':case'XOR':case'CP':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
 
                 save3(i);
@@ -894,7 +891,7 @@ export class CommandMap{
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
-                    i.saveDescriptionLine(this.formatErrorMassage("fehlender Operand!"));
+                    i.saveDescriptionLine(StringConstructor.toofewCmd());
                     return false;
                 }
                 if(this.getDests(matches).includes(strings[1].toUpperCase())){
@@ -920,12 +917,12 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
                         return false;
                     }
                 }
                 else if(this.symbollist.isConst(strings[1])){
-                    
+                    // WARNING EINSETZEN?
                     i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="dat_8"){
@@ -944,7 +941,7 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
                         return false;
                     }
                 }
@@ -956,8 +953,6 @@ export class CommandMap{
                         }
                     });
                     if(matches.length==1){
-                        // Änderung
-                        // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
                         i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
 
                         i.setSecondPart((strings[1]));
@@ -965,33 +960,35 @@ export class CommandMap{
                         i.setLength(matches[0].getSize());
                         i.setHCode(matches[0].getHexCode());
                         i.setValid(true);
-                        //console.log(matches[0].toString());
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
                         return false;
                     }
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                     i.setError(strings[1]);
                     return true;
                 }
                 break;
+
+                //COMMENTED BECAUSE SAME FUNCTIONALITY
+
+            /*
             case 'OR':case'XOR':case'CP':
-                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
 
                 save3(i);
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
-                    i.saveDescriptionLine(this.formatErrorMassage("fehlender Operand!"));
+                    i.saveDescriptionLine(StringConstructor.toofewCmd());
                     return false;
                 }
                 if(this.getDests(matches).includes(strings[1].toUpperCase())){
-                    //ÄNDERUNG
                     toSave=strings[1];
                     strings[1]=strings[1].toUpperCase()
                     i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],strings[0]+" "+strings[1]));
@@ -1001,7 +998,6 @@ export class CommandMap{
                         }
                     });
                     if(matches.length==1){
-                        //ÄNDERUNG
                         i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
 
                         i.setSecondPart(toSave);
@@ -1071,8 +1067,12 @@ export class CommandMap{
                     i.setError(strings[1]);
                     return true;
                 }
-                break;
-            case 'SHL':case'SHR':
+                break; */
+                //Bruv PLS
+
+                //COMMENTED BECAUSE SAME FUNCTIONALITY
+
+            /* case 'SHL':case'SHR':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
 
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
@@ -1095,13 +1095,13 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
                     return false;
                 }
-                break;
-            case 'RCL':case'ROL':case'RCR':case'ROR':
+                break; */
+            case 'SHL':case'SHR':case 'RCL':case'ROL':case'RCR':case'ROR':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
 
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 if(strings.length>1){
-                    i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
+                    i.saveDescriptionLine(StringConstructor.tooManyCmd());
                     i.setError(strings[1]);
                     return false;
                 }
@@ -1112,11 +1112,10 @@ export class CommandMap{
                     i.setLength(matches[0].getSize());
                     i.setHCode(matches[0].getHexCode());
                     i.setValid(true);
-                    //console.log(matches[0].toString());
                     return true;
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                    i.saveDescriptionLine(StringConstructor.bugNoCommand());
                     return false;
                 }
                 break;
@@ -1128,10 +1127,11 @@ export class CommandMap{
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
-                    i.saveDescriptionLine(this.formatErrorMassage("fehlende Operanden!"));
+                    i.saveDescriptionLine(StringConstructor.toofewCmd());
                     return false;
                 }
                 if(this.symbollist.isLabel(strings[1]) || this.symbollist.isEligible(strings[1])){ // MUSS label sein
+                    // WARNING EINSETZEN?
                     i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[0]}</span>'`,strings[0]+" "+strings[1]));
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="label"){
@@ -1140,7 +1140,9 @@ export class CommandMap{
                     });
                     if(!this.symbollist.isLabel(strings[1])){
                         this.symbollist.setLabelWithoutPosition(strings[1]);
-                        // i.saveDescriptionLine(`Neue Label angesetzt!`);
+                        if(strings[1].length>erlaubteLängeL_C){
+                            i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
+                        }
                     }
                     if(matches.length==1){
                         i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
@@ -1150,16 +1152,16 @@ export class CommandMap{
                         i.setLength(matches[0].getSize());
                         i.setHCode(matches[0].getHexCode());
                         i.setValid(true);
-                        //console.log(matches[0].toString());
                         return true;
+
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
                         return false;
                     }
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                     i.setError(strings[1]);
                     return false;
                 }
@@ -1172,10 +1174,11 @@ export class CommandMap{
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
-                    i.saveDescriptionLine(this.formatErrorMassage("fehlende Operanden!"));
+                    i.saveDescriptionLine(StringConstructor.toofewCmd());
                     return false;
                 }
                 if(this.symbollist.isLabel(strings[1]) || this.symbollist.isEligible(strings[1])){ // MUSS label sein
+                    // WARNING EINSETZEN?
                     i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[1]}</span>'`,strings[0]+" "+strings[1]));
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="label"){
@@ -1184,7 +1187,9 @@ export class CommandMap{
                     });
                     if(!this.symbollist.isLabel(strings[1])){
                         this.symbollist.setLabelWithoutPosition(strings[1]);
-                        // i.saveDescriptionLine(`Neue Label angesetzt!`);
+                        if(strings[1].length>erlaubteLängeL_C){
+                            i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
+                        }
                     }
                     if(matches.length==1){
                         i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
@@ -1194,11 +1199,10 @@ export class CommandMap{
                         i.setLength(matches[0].getSize());
                         i.setHCode(matches[0].getHexCode());
                         i.setValid(true);
-                        //console.log(matches[0].toString());
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
                         return false;
                     }
                 }
@@ -1219,13 +1223,13 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
                         i.setError(strings[1]);
                         return false;
                     }
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                     i.setError(strings[1]);
                     return false;
                 }
@@ -1238,7 +1242,7 @@ export class CommandMap{
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
-                    i.saveDescriptionLine(this.formatErrorMassage("fehlende Operanden!"));
+                    i.saveDescriptionLine(StringConstructor.toofewCmd());
                     return false;
                 }
                 if(strings[1]=="[IX]"){
@@ -1255,11 +1259,12 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
                         return false;
                     }
                 }
                 else if(this.symbollist.isLabel(strings[1]) || this.symbollist.isEligible(strings[1])){ // MUSS label sein
+                    // WARNING EINSETZEN?
                     i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[1]}</span>'`,strings[0]+" "+strings[1]));
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="label"){
@@ -1268,7 +1273,9 @@ export class CommandMap{
                     });
                     if(!this.symbollist.isLabel(strings[1])){
                         this.symbollist.setLabelWithoutPosition(strings[1]);
-                        // i.saveDescriptionLine(`Neue Label angesetzt!`);
+                        if(strings[1].length>erlaubteLängeL_C){
+                            i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
+                        }
                     }
                     if(matches.length==1){
                         i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
@@ -1277,26 +1284,25 @@ export class CommandMap{
                         i.setLength(matches[0].getSize());
                         i.setHCode(matches[0].getHexCode());
                         i.setValid(true);
-                        //console.log(matches[0].toString());
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
                         return false;
                     }
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                     i.setError(strings[1]);
                     return false;
                 }
                 break;
-            case 'HALT':case 'NOP':
+            case 'HALT':case 'NOP':case 'RET':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
 
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 if(strings.length>1){
-                    i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
+                    i.saveDescriptionLine(StringConstructor.tooManyCmd());
                     i.setError(strings[1]);
                     return false;
                 }
@@ -1305,11 +1311,10 @@ export class CommandMap{
                     i.setLength(matches[0].getSize());
                     i.setHCode(matches[0].getHexCode());
                     i.setValid(true);
-                    //console.log(matches[0].toString());
                     return true;
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                    i.saveDescriptionLine(StringConstructor.bugNoCommand());
                     return false;
                 }
                 break;
@@ -1318,7 +1323,7 @@ export class CommandMap{
 
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=="RET"});
                 if(strings.length>1){
-                    i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
+                    i.saveDescriptionLine(StringConstructor.tooManyCmd());
                     i.setError(strings[1]);
                     return false;
                 }
@@ -1332,25 +1337,26 @@ export class CommandMap{
                     return true;
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                    i.saveDescriptionLine(StringConstructor.bugNoCommand());
                     return false;
                 }
                 break;
                 
-            default:
-                i.saveDescriptionLine(this.formatErrorMassage(" unknown error occured"));
+            default: //BUG
+                i.saveDescriptionLine(StringConstructor.bugSwitchDefault());
                 return false;
         }
     }
 
     parsetoPseudoMnemoCode(i:InputLine,strings:string[]):boolean{
         let temp: string[];
-        if(this.pseudoMCodes.includes(strings[0].toUpperCase())){
+        
+        if(this.pseudoMCodes.includes(strings[0].toUpperCase())){ //gefunden Pseudo-MnemoCode
             i.setFirstPart(strings[0]);
             strings[0]=strings[0].toUpperCase();
             i.saveDescriptionLine(this.formatGefunden(`Pseudo-Mnemocode ${strings[0]}`,strings[0]+" ..."));
             if(strings.length<2){
-                i.saveDescriptionLine(this.formatErrorMassage("fehlende Operanden"));
+                i.saveDescriptionLine(StringConstructor.toofewCmd());
                 return false;
             }
             switch(strings[0]){
@@ -1358,9 +1364,7 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErwartet("dat_8"));
                     save3(i);
                     if(Manipulator.isDat_8(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
-                        // Änderung
-                        // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
+                        i.saveDescriptionLine(this.formatGefunden(`8-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])))
                         i.setSecondPart((strings[1]));
                         i.setLength(Manipulator.formatHextoDat8(strings[1]));
                         i.setType(InputLineType.TRANSLATED);
@@ -1373,21 +1377,18 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} ist kein 8-bit Wert!`));
+                        i.saveDescriptionLine(StringConstructor.expectedDat8());
                         i.setError(strings[1]);
                         return false;
                     }
                     break;
 
                 case 'DW':
-                    // i.saveDescriptionLine(this.formatErwartet("16-bit Wert oder OFFSET Label"));
                     save3(i);
                     i.saveDescriptionLine(this.formatErwartet("16-bit Wert"));
                     if(Manipulator.isDat_16(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
                         i.setLength(2);
-                        // Änderung
-                        // i.setSecondPart(Manipulator.formatHextoDat16(strings[1]));
                         i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
                         i.setValid(true);
@@ -1396,54 +1397,52 @@ export class CommandMap{
                     else if(strings[1].toUpperCase().startsWith("OFFSET")){
                             temp=Manipulator.splitStringHalf(strings[1]," ");
                             if(temp.length<2){
-                                i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} kein gültiger Operand`));
+                                i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                                 i.setError(strings[1]);
                                 return false;
                             }
-                            if(this.getDataType(temp[1]) == DataType.LABEL){
+                            if(this.symbollist.isLabel(temp[1])){ this.symbollist.isEligible(temp[1])
                                 i.saveDescriptionLine(this.formatGefunden(`OFFSET`,"DW OFFSET "+temp[1]));
                             }
-                            else if(this.getDataType(temp[1]) == DataType.ELLIGIBLE){
+                            else if(this.symbollist.isEligible(temp[1])){
                                 this.symbollist.setLabelWithoutPosition(temp[1]);
+                                if(strings[1].length>erlaubteLängeL_C){
+                                    i.saveDescriptionLine(StringConstructor.warLabelZuLang(temp[1]));
+                                }
                                 i.saveDescriptionLine(this.formatGefunden(`OFFSET`,"DW OFFSET "+temp[1]));
                             }
                             else{
-                                i.saveDescriptionLine(this.formatErrorMassage(`gefunden wurde OFFSET aber kein gültiger label!`));
+                                i.saveDescriptionLine(StringConstructor.noValidLabelAfterOffset());
                                 i.setError(strings[1]);
                                 return false;
                             }
                             i.setType(InputLineType.TRANSLATED);
                             i.setLength(2);
-                        // Änderung
-                        // i.setSecondPart(Manipulator.formatHextoDat16(strings[1]));
                             i.setSecondPart((strings[1]));
                             i.setOffsetLabel(true);
                             i.setValid(true);
                             return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} is keine Konstante (16-bit) oder OFFSET Label!`));
+                        i.saveDescriptionLine(StringConstructor.expectedDat16Plus(strings[1]));
                         i.setError(strings[1]);
                         return false;
                     }
                     break;
 
                 case 'DB':
-                    // i.saveDescriptionLine(this.formatErwartet("Wert(en)/Konstante(n) (8-bit)"));
                     save3(i);
                     i.saveDescriptionLine(this.formatErwartet("Konstante (8-bit)"));
                     if(Manipulator.isDat_8(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`8-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])))
                         i.setLength(1);
-                        // Änderung
-                        // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
                         i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
                         i.setValid(true);
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} is keine Konstante (8-bit)!`));
+                        i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1]));
                         i.setError(strings[1]);
                         return false;
                     }
@@ -1455,14 +1454,12 @@ export class CommandMap{
                     if(Manipulator.isDat_16(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
                         i.setLength(Manipulator.hexToDec(strings[1]));
-                        // Änderung
-                        // i.setSecondPart(Manipulator.formatHextoDat16(strings[1]));
                         i.setSecondPart((strings[1]));
                         i.setValid(true);
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(`${strings[1]} is kein 16-bit Wert!`));
+                        i.saveDescriptionLine(StringConstructor.expectedDat16Plus(strings[1]));
                         i.setError(strings[1]);
                         return false;
                     }
@@ -1481,7 +1478,7 @@ export class CommandMap{
                     break;
 
                 default: 
-                    i.saveDescriptionLine(this.formatErrorMassage("unkown error"));
+                    i.saveDescriptionLine(StringConstructor.bugSwitchDefault());
                     i.setError(strings[1]);
                     return false;
                     break;
@@ -1493,7 +1490,7 @@ export class CommandMap{
             save2(i);
             i.saveDescriptionLine(this.formatErwartet(`EQU`));
             if(strings.length<2){
-                i.saveDescriptionLine(this.formatErrorMassage(`fehlender Operand!`));
+                i.saveDescriptionLine(StringConstructor.toofewCmd());
                 i.setError(strings[0]);
                 return false;
             }
@@ -1503,7 +1500,7 @@ export class CommandMap{
             i.setFirstPart(strings[0]);
             if(new_commands[0].toUpperCase()=="EQU"){
                 i.saveDescriptionLine(this.formatGefunden("EQU",i.getFirstPart()+" EQU"+" ..."));
-                i.saveDescriptionLine(`<span class="gray">parse Operandenfeld</span>`);
+                i.saveDescriptionLine(`<span class="gray">parse Operandenfeld:</span>`);
                 i.saveDescriptionLine(this.formatErwartet(`dat_16`));
                 i.setSecondPart(new_commands[0]);
 
@@ -1511,8 +1508,6 @@ export class CommandMap{
                     let type=this.getDataType(new_commands[1]);
                     if(type ==DataType.dat_8){
                         i.saveDescriptionLine(this.formatGefunden(`8-bit Wert ${Manipulator.formatHextoDat8(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat8(new_commands[1])));
-                        // Änderung
-                        // i.setThirdPart(Manipulator.formatHextoDat8(new_commands[1]));
                         i.setThirdPart((new_commands[1]));
                         i.setValid(true);
                         this.symbollist.setConst(strings[0],new_commands[1]);
@@ -1520,33 +1515,38 @@ export class CommandMap{
                     }
                     else if(type ==DataType.dat_16){
                         i.saveDescriptionLine(this.formatGefunden(`16-bit Wert ${Manipulator.formatHextoDat16(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat16(new_commands[1])));
-                        // Änderung
-                        // i.setThirdPart(Manipulator.formatHextoDat16(new_commands[1]));
                         i.setThirdPart((new_commands[1]));
                         i.setValid(true);
                         this.symbollist.setConst(strings[0],new_commands[1]);
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage(`${new_commands[1]} ist kein gültiger 16-bit Wert`));
+                        i.saveDescriptionLine(StringConstructor.expectedDat16Plus(new_commands[1]));
                         i.setError(new_commands[1]);
                         return false;
                     }
                 }else{
-                    // i.saveDescriptionLine(this.formatErrorMassage(`kein 16-bit Wert gefunden!`));
-                    i.saveDescriptionLine(this.formatErrorMassage(`fehlender Operand!`));
+                    i.saveDescriptionLine(StringConstructor.toofewCmd());
                     return false;
                 }
             }
             else{
-                i.saveDescriptionLine(this.formatErrorMassage(`${new_commands[0]} ist kein gültiger Operand!`));
+                i.saveDescriptionLine(StringConstructor.invalidCmd(new_commands[0]));
                 i.setError(new_commands[0]);
                 i.setRest(new_commands[1]);
                 return false;
             }
         }
-        else if(this.symbollist.isConst(strings[0]) || this.symbollist.isLabel(strings[0])){
-            i.saveDescriptionLine(this.formatErrorMassage("es gibt bereits eine Konstante/Label mit dem Namen "+strings[0]));
+        else if(this.symbollist.isConst(strings[0])){
+            i.saveDescriptionLine(StringConstructor.errConstDef(strings[0]));
+            i.setError(strings[0]);
+            if(strings[1]!=undefined){
+                i.setRest(" "+strings[1]);
+            }
+            return false;
+        }
+        else if(this.symbollist.isLabel(strings[0])){
+            i.saveDescriptionLine(StringConstructor.nameTakenForLabel(strings[0]));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
                 i.setRest(" "+strings[1]);
@@ -1554,7 +1554,7 @@ export class CommandMap{
             return false;
         }
         else if(!this.symbollist.isEligible(strings[1])){
-            i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} ist keine gültige Konstante`));
+            i.saveDescriptionLine(StringConstructor.noValidConstOrOperand(strings[1]));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
                 i.setRest(" "+strings[1]);
@@ -1562,7 +1562,7 @@ export class CommandMap{
             return false;
         }
         else if(i.getLabel() !=""){
-            i.saveDescriptionLine(this.formatErrorMassage("keine Konstantendefinition nach einem Labeldefinition erlaubt"));
+            i.saveDescriptionLine(StringConstructor.noConstafterLabelDef());
             i.setError(strings[0]);
             if(strings[1]!=undefined){
                 i.setRest(" "+strings[1]);

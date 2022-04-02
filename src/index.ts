@@ -1,6 +1,6 @@
 import { ProjectWindow } from "./ProjectWindow";
 import { createClickListener } from "./Tools";
-import { aniControl } from "./AnimationUtil";
+import { aniControl, sleepFor } from "./AnimationUtil";
 import { addClassTo, getIDOfSelected, inputText, outputText, removeClassOfAll } from "./ProjectWindow";
 
 
@@ -57,30 +57,32 @@ export const setCurrentlyHovered = async (e: any) =>{ //Eventbubbling is f-ing s
         }
     }
 }
-let preferedTheme = "dark"
 
-let p = new ProjectWindow();
 const changeTheme = () =>{
     let theme:string = preferedTheme==="light" ? 'dark' : 'light';
     preferedTheme = theme;
     const root = document.querySelector(':root');
     root!.setAttribute('color-scheme', `${theme}`);
-
-}
-
-const main = ()=>{
     
+}
+let preferedTheme = "dark";
+let p = new ProjectWindow();
+
+window.addEventListener('DOMContentLoaded', async() =>{
+    const root = document.querySelector(':root');
+    root!.setAttribute('color-scheme', `${preferedTheme}`);
+    await main();
+})
+const  main =async ()=>{
+
     p.createListeners();
     onscrollIn_Out();
     createClickListener("InputLines",setCurrentlyHovered);
     createClickListener("light",changeTheme);
-    window.addEventListener('DOMContentLoaded', () =>{
-        const root = document.querySelector(':root');
-        root!.setAttribute('color-scheme', `${preferedTheme}`);
-    })
+    
     // createClickListener("OutputLines",setCurrentlyHovered);
 }
-main();
+// main();
 
 
 /* const b = createClickListener("InputLines",consoleClicked);

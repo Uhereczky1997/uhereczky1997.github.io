@@ -9,7 +9,7 @@ import { InputLineControl } from "./Backend/InputLineControl";
 import { InputLine } from "./Backend/InputLine";
 import { InputWindow } from "./InputWindow";
 import { getHtmlElement, createClickListener, updateScroll, updateScrollOfIn_Out } from "./Tools";
-import { aniControl, checkIfPaused, sleepFor, sleepUntilNextStep } from "./AnimationUtil";
+import { aniControl, AnimationsTyp, checkIfPaused, sleepFor, sleepUntilNextStep } from "./AnimationUtil";
 import { Animator } from "./Animator";
 
 
@@ -167,13 +167,13 @@ export class ProjectWindow{
                     InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP" class="overflowElipsis">${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.getFirstPart(),e.commandLinetoString(false))}${e.getCommentary()==""?"":";"+e.getCommentary()}</p>`;
                 }
                 OutputAddresses.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}oAddress">&nbsp;</p>`;
-                OutputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}outputP">&nbsp;</p>`;
+                OutputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}outputP" class="overflowElipsis">&nbsp;</p>`;
             }
             else{
                 InputID.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputLineId" class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
                 InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP"  class="overflowElipsis">${this.inputstrings[i]}&nbsp;</p>`;
                 OutputAddresses.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}oAddress">&nbsp;</p>`;
-                OutputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}outputP">&nbsp;</p>`;
+                OutputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}outputP" class="overflowElipsis">&nbsp;</p>`;
             }
         }
     }
@@ -361,6 +361,8 @@ export class ProjectWindow{
                     }
                 })!;
                 // console.log(this.getLinkerAufloesungLine(e.getId()));
+                if(aniControl.singleStepFlag) await aniControl.setPaused();
+                if(aniControl.start) await checkIfPaused();
                 await updateScrollOfIn_Out("OutputText",`${(e.getId()+1)<10?"0"+(e.getId()+1):(e.getId()+1)}outputP`);
                 if(aniControl.start){
 
@@ -429,19 +431,36 @@ export class ProjectWindow{
         updateScroll(descriptionLines.id);
 
     }
-    
+    private displaySecondPhase=async()=>{
+        let sleeptime = 100;
+        descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+        await sleepFor(sleeptime);
+        descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+        await sleepFor(sleeptime);
+
+        descriptionLines.innerHTML += `<p>************************</p>`;
+        await sleepFor(sleeptime*2);
+
+        descriptionLines.innerHTML += `<p>2.Phase LinkerAuflösung</p>`;
+        await sleepFor(sleeptime*2);
+
+        descriptionLines.innerHTML += `<p>************************</p>`;
+        await sleepFor(sleeptime*2);
+
+        descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+        await sleepFor(sleeptime);
+
+        descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+        await sleepFor(sleeptime);
+
+        updateScroll(descriptionLines.id);
+    }
     public linkerAuflosung=async ()=>{
         this.repushTranslations();
         if(this.linkerAuflosungB){
-            descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
-            descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
-            descriptionLines.innerHTML += `<p>************************</p>`;
-            descriptionLines.innerHTML += `<p>2.Phase LinkerAuflösung</p>`;
-            descriptionLines.innerHTML += `<p>************************</p>`;
-            descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
-            descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
-            updateScroll(descriptionLines.id);
+            await this.displaySecondPhase();
             for(let i=0;i<this.inputLines.length;i++){
+                console.log(1);
                 await this.checkInputLine(this.inputLines[i]);
                 await this.clearMachinenbefehlandCurrentLine();
                 if(aniControl.start){
@@ -504,6 +523,7 @@ export class ProjectWindow{
         if(this.inputstrings.length>0){
             for(let i=0;i<this.inputstrings.length;i++){
                 this.translateInputStringOfId(i);
+                
                 if(this.inputLines.length>i){
                     input = this.inputLines[i];
                     if(aniControl.start) await this.clearMachinenbefehlandCurrentLine();
@@ -515,7 +535,7 @@ export class ProjectWindow{
                         continue;
                     }
                     else{
-                        if(aniControl.start && aniControl.speed<=3) await sleepFor(1000-(aniControl.speed-1)*200);
+                        if(aniControl.start && aniControl.speed<=3 && aniControl.animationType!=AnimationsTyp.Typ3) await sleepFor(1000-(aniControl.speed-1)*200);
                         if(aniControl.start){
                             await this.anim.animationInputLineToCurrentLine(i,this.inputstrings[i].split(";")[0]);
                         }
@@ -526,6 +546,8 @@ export class ProjectWindow{
                     await this.repushTranslationOf(i);
                     
                 }
+                if(aniControl.singleStepFlag) await this.pause();
+                if(aniControl.start)await checkIfPaused();
             }
             descriptionLines.innerHTML += `<p style=" white-space: nowrap; overflow: hidden;"> -------------------------------------------------------- </p>`;
 
@@ -720,24 +742,11 @@ export class ProjectWindow{
     }
 
     public speed=()=>{
-        aniControl.setSpeed();
+        aniControl.consoleFlags();
     }
 
     public reset=async()=>{
-        /* if(this.inputstrings.length>0){
-            console.log(this);
-            aniControl.setReset();
-            await sleepFor(100);
-            await this.partialReset();
-            await sleepFor(100);
-            await this.refreshInputListItems();
-            console.log(this);
-        }
-        else{
-            console.log("no Input");
-        } */
-        // console.log(this);
-        aniControl.setReset();
+        await aniControl.setReset();
         await sleepFor(100);
         await this.partialReset();
         await sleepFor(100);
@@ -770,6 +779,7 @@ export class ProjectWindow{
             createClickListener('speed',this.speed);
             createClickListener('skip',this.skipToFinish);
             createClickListener('reset',this.reset);
+            aniControl.createEventListeners();
             // createClickListener(InputID.id,setScrollbarOfDescriptionLine);
         }catch(e){
             console.log(e);

@@ -25,7 +25,8 @@
     --red: #dd0606;
     
     
-    --blue-light: #04c0ff;
+    --blue-light: #00b2ee;
+    /* --blue-light: rgb(85, 151, 252); */
     --blue-dark: #009bcf;
     
     --yellow-light:#ffff00ec;
@@ -72,20 +73,37 @@
 
     --pauseBKGLight:url(../images/buttonSVGs/pause_button.svg);
     --pauseBKGDark:url(../images/buttonSVGs/pauseWhite_button.svg);
-
+    
     --resetBKGLight:url(../images/buttonSVGs/reset_button.svg);
     --resetBKGDark:url(../images/buttonSVGs/resetWhite_button.svg);
+    
+    --singleStepDark:url(../images/buttonSVGs/singleStep_White_button.svg);
+    --singleStepLight:url(../images/buttonSVGs/singleStep_button.svg);
+    --singleStepActiveDark:url(../images/buttonSVGs/singleStep_White_Active_button.svg);
+    --singleStepActiveLight:url(../images/buttonSVGs/singleStep_Active_button.svg);
+    --slowerAniDark:url(../images/buttonSVGs/slowerAnimation_White_button.svg);
+    --slowerAniLight:url(../images/buttonSVGs/slowerAnimation_button.svg);
+
+    --fasterAniDark:url(../images/buttonSVGs/fasterAnimation_White_button_Alt.svg);
+    --fasterAniLight:url(../images/buttonSVGs/fasterAnimation_button_Alt.svg);
+
+    --noAnimationDark:url(../images/buttonSVGs/noAnimationWhite_button.svg);
+    --noAnimationLight:url(../images/buttonSVGs/noAnimation_button.svg);
+
+    
+    /* will be set to single step */
     --skipBKGLight:url(../images/buttonSVGs/skip_button.svg);
     --skipBKGDark:url(../images/buttonSVGs/skipWhite_button.svg);
 
-    --lightBKGDark:url(../images/buttonSVGs/lightOn_button.svg);
-    --lightBKGLight:url(../images/buttonSVGs/lightOff_button.svg);
-
+    
     --decreaseBKGDark:url(../images/buttonSVGs/decreaseWhite_button.svg);
     --decreaseBKGLight:url(../images/buttonSVGs/decrease_button.svg);
-
+    
     --increaseBKGDark:url(../images/buttonSVGs/increaseWhite_button.svg);
     --increaseBKGLight:url(../images/buttonSVGs/increase_button.svg);
+    
+    --lightBKGDark:url(../images/buttonSVGs/lightSwitch_White_button.svg);
+    --lightBKGLight:url(../images/buttonSVGs/lightSwitch_button.svg);
     /* ARROW SIZE CONFIG */
     /* W - width for screen | H- height for screen */
     --arrowHeadlrW: 40px;
