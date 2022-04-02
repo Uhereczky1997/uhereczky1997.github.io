@@ -22,7 +22,7 @@ export class InputWindow{
         this.pWindow=p;
     }
     
-    public displayError():string{
+    /* public displayError():string{
         let inputs:InputLine[] = this.inputcontrol.getInputLines();
         let ss:string[];
         let toReturn:string="";
@@ -56,7 +56,7 @@ export class InputWindow{
             <div class="backgroundWarning"><p>${ss.join("</p><p>")}</p></div>`;
         }
         return toReturn;
-    }
+    } */
     public translate = ():void=>{
         try{
             let s:string[]=this.InputTextAreaElement.value.split("\n");
@@ -72,7 +72,7 @@ export class InputWindow{
         }
     }
     
-    public previewTranslation = async() =>{
+    /* public previewTranslation = async() =>{
         let s:string;
         this.translate();
         s = this.displayError();
@@ -80,13 +80,13 @@ export class InputWindow{
             s = this.displayWarning();
         }
         errorDescriptionDiv.innerHTML=s;
-    }
-    private pushPreview = async (e:InputLine,n:number) =>{
+    } */
+    /* private pushPreview = async (e:InputLine,n:number) =>{
         await sleepFor(n);
         errorDescriptionDiv.innerHTML += `<p> ${e.getDescriptionLine().join("</p><p>")} </p>`;
         errorDescriptionDiv.innerHTML += `<p> ----------------------------------------- </p>`;
         updateScroll(errorDescriptionDiv.id);
-    }
+    } */
     private addLinetoTextArea=(s:string[])=>{
         this.InputTextAreaElement.value="";
         s.forEach(e => {
@@ -127,15 +127,6 @@ export class InputWindow{
     }
     
     public createEventListeners=()=>{
-        try {
-            const inputTextArea:HTMLTextAreaElement=document.getElementById("InputTextArea") as HTMLTextAreaElement
-            if(inputTextArea!=null){
-                inputTextArea.addEventListener("blur",this.previewTranslation);
-            }
-
-        } catch (error) {  
-            console.log(error);
-        }
         try{
             
             const a= document.getElementById('EditWindowOpenButton');

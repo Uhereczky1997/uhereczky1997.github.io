@@ -549,11 +549,14 @@ export class ProjectWindow{
                 if(aniControl.singleStepFlag) await this.pause();
                 if(aniControl.start)await checkIfPaused();
             }
+            
             descriptionLines.innerHTML += `<p style=" white-space: nowrap; overflow: hidden;"> -------------------------------------------------------- </p>`;
 
             this.linkerAuflosungB=this.aufzulosendeLabel();
             await this.linkerAuflosung();
             console.log("finished");
+            await sleepFor(100);
+            await updateScroll(descriptionLines.id);
             aniControl.setEnd();
         }
     }

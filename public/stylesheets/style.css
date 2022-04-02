@@ -366,7 +366,7 @@ body>* h1{
     grid-row: 12/13;
     display: grid;
     grid-template-columns: repeat(20,1fr);
-    grid-template-rows: repeat(1,1fr);
+    grid-template-rows: 1fr;
     justify-items: center;
     background-color: var(--bkg2);
 }
@@ -444,7 +444,9 @@ body>* h1{
     -ms-overflow-style: none;   /* IE and Edge  */
     scrollbar-width: none;      /* Firefox      */
 }  
-
+.hidden{
+    visibility: hidden;
+}
 /* BUTTON CONFIG */
 .boxBorder{
     border: 3px solid;

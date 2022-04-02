@@ -9,6 +9,22 @@
 </head>
 <body>
     <div id="body"> <!-- 10/12 -->
+        
+        <div id ="InputWindowContainter" class="backgroundContainer hidden">
+            <div id="InputWindow" class="boxBorder inoutputbox">
+                <textarea name="InputTextArea" id="InputTextArea" class="customScrollbar" placeholder="Hier können Sie den Quellcode eingeben"></textarea>
+                <div id="InputTextAreaEnumerationDiv"></div>
+
+                <!-- <div id="ErrorDescription" class="noScrollbar"></div> -->
+                <div id="inputButtonDiv">
+                    <button id="Submit">Los</button>
+                    <div></div>
+                    <button id="GenerateDummy"> GenerateDummy </button>
+                    <div></div>
+                    <button id="CloseInputWindow">Abbrechen</button>
+                </div>
+            </div>
+        </div>
 
         <div id="toTranslate" class="SideBox boxBorder"> <!--3/12 -> 1/12 -->
             <div class="Title topDivider">
@@ -37,7 +53,7 @@
             </div>
             <div class="dividerDiv"></div>
             <div id="descriptionSymboltableBox">
-                <div id="descriptionLines" class="overflowY scrollSmooth">
+                <div id="descriptionLines" class="overflowY scrollSmooth customScrollbar">
 
                 </div>
             </div>
@@ -76,10 +92,10 @@
 
             <div id="speedButtonDiv">
                 <button id="speedDecrease"></button>
-                <input id="speedSlider" style="width: 97%!important;" type="range" min="1" max="6" value="3">
+                <input id="speedSlider" style="width: 97%!important;" type="range" min="1" max="6" value="2">
                 <button id="speedIncrease"></button>
             </div>
-            <button id="speed">speed</button>
+            <button id="speed"></button>
 
             <button id="light"class="button1 lightButton"></button>
             <button >vollbild</button>
@@ -102,18 +118,7 @@
 
         </div>
 
-        <div id ="InputWindowContainter" class="backgroundContainer hidden">
-            <div id="InputWindow" class="boxBorder inoutputbox">
-                <!-- <div id="InputTextAreaEnumerationDiv"></div> -->
-                <textarea name="InputTextArea" id="InputTextArea" placeholder="Hier können Sie den Quellcode eingeben"></textarea>
-                <div id="ErrorDescription" class="noScrollbar"></div>
-                <button id="Submit">Los</button>
-                <button id="Preview">Preview</button>
-                <button id="GenerateDummy"> GenerateDummy </button>
-                <button id="CloseInputWindow"> Schließen </button>
-                <!-- <button id="TestThing">test</button> -->
-            </div>
-        </div>
+        
 
         <div id ="OutputWindowContainer" class="backgroundContainer hidden">
             <div id="OutputWindow" class="boxBorder inoutputbox">
