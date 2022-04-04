@@ -5,6 +5,7 @@ import { InputLineType, DataType } from "./Enums";
 import { Manipulator } from "./Manipulator";
 import { Constant } from "./Constant";
 import { Label } from "./Label";
+
 export class InputLineControl{
     private static instance:InputLineControl;
     private inputstrings:string[] =[];
@@ -101,6 +102,7 @@ export class InputLineControl{
         this.map.mapInputLineByCase(i);
         this.createSummary(i);
         this.inputlines.push(i);
+        console.log(i);
         if(i.getValid()){
             this.calculateStartingAddr(i);
             this.calculateTranslation(i,false);
@@ -109,8 +111,12 @@ export class InputLineControl{
             }
         }
         else{
-            if(i.getLabel()!=""){
+            /* if(i.getLabel()!=""){
                 this.symbolliste.removeLabel(i.getLabel());
+            } */
+            this.calculateStartingAddr(i);
+            if(i.hasLabel()){
+                this.symbolliste.updateLabel(i.getLabel(),i.getStartingAddr());
             }
             this.invalidIDs.push(this.IDcounter);
         }
@@ -172,7 +178,7 @@ export class InputLineControl{
         let l:string|undefined = "";
         // console.log(i.getCommandLine()+" ... "+i.getLength()+" ... "+i.getHCode());
         if(i.getFirstPart().toUpperCase()=="RS"){
-            return (h.length>4?"00 00 ... ("+i.getLength()+"x)":h);
+            return (h.length>4?"00 ... ("+i.getLength()+"x)":h);
         }
         else if(i.getFirstPart().toUpperCase()=="ORG"){
             return "";
@@ -288,21 +294,22 @@ export class InputLineControl{
 
     calculateStartingAddr=(i:InputLine):void=>{
         let e= (i!=null?i:this.inputlines[this.IDcounter]);
-        if(e.getType()==InputLineType.TRANSLATED){
-            if(this.startingAddrOfTranslated==0){
-                e.setStartingAddr('0000h');
-            }
-            else{
-                e.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
-            }
+        if(e.getValid()!=true){
+            e.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
+            return;
+        }
+        
+        if(e.getType()==InputLineType.TRANSLATED){  
+            e.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
             
             this.translatedIDs.push(this.IDcounter);
             this.startingAddrOfTranslated= this.startingAddrOfTranslated+e.getLength();
-
+            return;
         }
         if(e.getFirstPart().toUpperCase()=='ORG'){
             e.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
             this.startingAddrOfTranslated=e.getLength();
+            return;
         }
        
     }

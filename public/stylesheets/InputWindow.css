@@ -2,8 +2,13 @@ p{
     font-family: 'Courier New', Courier, monospace;
 }
 .backgroundContainer{
-    grid-row: 1/13;
-    grid-column: 1/11;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    /* grid-row: 1/13;
+    grid-column: 1/11; */
     z-index: 4;
     display:flex;
     flex-grow: 1;
@@ -30,7 +35,7 @@ p{
     /* grid-column: 4/7;
     grid-row:span 4; */
     position:absolute;
-    border: 1px solid;
+    border: 2px solid;
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
     top: 10%;
@@ -43,7 +48,7 @@ p{
 }
 #titleHextextareaOutput{
     position: absolute;
-    top: 2.5%;
+    top: 2%;
     left: 50%;
     width: 45%;
     height: fit-content;
@@ -53,7 +58,7 @@ p{
 }
 #titleMachineCodeOutput{
     position: absolute;
-    top: 2.5%;
+    top: 2%;
     left: 5%;
     width: 45%;
     text-align: center;
@@ -62,7 +67,11 @@ p{
 }
 #OutputWindowMachineCode{
     position:absolute;
-    border: 1px solid;
+    border: 2px solid;
+    padding-top: 2px;
+    box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
     border-top-left-radius: 10px;
     border-bottom-left-radius: 10px;
     top: 10%;
@@ -75,6 +84,9 @@ p{
     display: grid;
     grid-template-columns: 15% 1fr;
     grid-template-rows: 1fr;
+}
+#OutputWindowMachineCode *>p{
+    line-height: 114%!important;
 }
 #Submit, #CloseOutputWindow{
     position:absolute;
@@ -110,6 +122,7 @@ p{
 #InputWindow>textarea{
     position:absolute;
     border: 1px solid;
+
     border-radius: 10px;
     top: 10%;
     left: 5%;
@@ -155,7 +168,8 @@ p{
 #inputButtonDiv>button{
     cursor: pointer;
 }
-.inoutputbox{
+/* .inoutputbox{
     grid-row: 2/3;
     grid-column: 2/3;
 }
+ */

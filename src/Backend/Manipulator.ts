@@ -28,6 +28,19 @@ export class Manipulator {
         else reString[0]=addr;
         return reString;
     }
+    static splitStringHalfUnfiltered(s:string,ch:string):string[]{
+        let reString:string[]=[];
+        let p:number =s.indexOf(ch);
+        if(p!=-1 && p!=undefined){ 
+            reString[0] = s.slice(0,p).trim();
+            reString[1] = s.slice(p+1);
+            if(reString[1].trim()!=" "||reString[1].trim()!=""){
+                reString[1]=reString[1].trim();
+            }
+        }
+        else reString[0]=s;
+        return reString;
+    }
     static removeExcessWhiteSpace(addr:string):string{
         return addr.replace(/\s+/g,' ').trim();
     }

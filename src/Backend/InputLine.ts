@@ -18,6 +18,7 @@ export class InputLine{
     private commentary:string="";
     private label:string="";
     private offsetLabel:boolean=false;
+    private errorBool:boolean=false;
     private translation:string="";
     private description:string[]=[];
 
@@ -25,7 +26,10 @@ export class InputLine{
     private type:InputLineType=InputLineType.NOTTRANSLATED;
 
     constructor(init:string,id:number){
-        this.initialLine=init.replace(/\s+/g,' ').trim();
+        // this.initialLine=init.replace(/\s+/g,' ');
+        this.initialLine=init.replace(/\s{3,}/g,' ');
+        // console.log(init.replace(/\s{3,}/g,' '));
+        // this.initialLine=init.replace(/\s+/g,' ').trim();
         this.id=id;
         this.commandLine=this.setCommandLine();
         this.preemptiveValidation();
@@ -43,7 +47,11 @@ export class InputLine{
         }
     }
     setError(s:string){
+        this.errorBool=true;
         this.error=s;
+    }
+    hasError():boolean{
+        return this.errorBool;
     }
     hasOffsetLabel():boolean{
         return this.offsetLabel;
@@ -170,16 +178,19 @@ export class InputLine{
         this.label =s;
     }
     setCommandLine=():string=>{
+        if(this.initialLine.trim()=="" || this.initialLine.trim()==" "){
+            return "";
+        }
         let s=Manipulator.splitStringHalf(this.initialLine,":");
         if(s.length>1){
             this.label=s[0];
         }
         let ss=Manipulator.splitStringHalf(this.initialLine,";");
-        let addr:string = this.initialLine.replace(s[0]+':','').replace(';'+ss[1],'');
+        let s1:string = this.initialLine.replace(s[0]+':','').replace(';'+ss[1],'');
         if(ss[1]!=undefined){
             this.commentary=ss[1];
         }
-        return addr.trim();
+        return s1.trim();
     }
     getLabelOfOffset():string{
         if(this.offsetLabel){
@@ -275,7 +286,7 @@ export class InputLine{
     }
 
     getAllV():number[]{
-        return [this.label!=""?1:0, this.firstPart!=""?1:0, this.secondPart!=""?1:0, this.thirdPart!=""?1:0, this.error!=""?1:0, this.rest!=""?1:0];
+        return [this.label!=""?1:0, this.firstPart!=""?1:0, this.secondPart!=""?1:0, this.thirdPart!=""?1:0, (this.error!=""||this.errorBool)?1:0, this.rest!=""?1:0];
     }
     commandLinetoString=(b:boolean):string=>{
         let first:string=this.firstPart,second:string=this.secondPart,third:string=this.thirdPart;

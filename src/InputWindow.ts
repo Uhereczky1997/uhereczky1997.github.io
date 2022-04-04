@@ -21,42 +21,6 @@ export class InputWindow{
         this.InputTextAreaElement=getHtmlElement('InputTextArea')as HTMLTextAreaElement;
         this.pWindow=p;
     }
-    
-    /* public displayError():string{
-        let inputs:InputLine[] = this.inputcontrol.getInputLines();
-        let ss:string[];
-        let toReturn:string="";
-        let anzahl= 0;
-        inputs.forEach(e=>{
-            ss=e.getDescriptionLine();
-            if(ss.find(e=>{return e.includes("error")})!=undefined){                
-                anzahl +=1;
-            } 
-        })
-        if(anzahl!=0){
-            toReturn += `<div class="backgroundError"><p class="bold">Anzahl der \n Syntaxfehler: ${anzahl}</p></div>`;
-        }
-        return toReturn;
-    }
-    public displayWarning():string{
-        let inputs:InputLine[] = this.inputcontrol.getInputLines();
-        let s:string;
-        let ss:string[]=[];
-        let toReturn:string="";
-        let anzahl= 0;
-        inputs.forEach(e=>{
-            s=e.getWarning();
-            if(s !=""){
-                anzahl++;
-                ss.push(s);
-            }
-        })
-        if(anzahl!=0){
-            toReturn += `<div class="backgroundWarning"><p class="bold">Anzahl der Warnungen: ${anzahl}</p></div>
-            <div class="backgroundWarning"><p>${ss.join("</p><p>")}</p></div>`;
-        }
-        return toReturn;
-    } */
     public translate = ():void=>{
         try{
             let s:string[]=this.InputTextAreaElement.value.split("\n");
@@ -71,22 +35,6 @@ export class InputWindow{
             console.log(e);
         }
     }
-    
-    /* public previewTranslation = async() =>{
-        let s:string;
-        this.translate();
-        s = this.displayError();
-        if(s==""){
-            s = this.displayWarning();
-        }
-        errorDescriptionDiv.innerHTML=s;
-    } */
-    /* private pushPreview = async (e:InputLine,n:number) =>{
-        await sleepFor(n);
-        errorDescriptionDiv.innerHTML += `<p> ${e.getDescriptionLine().join("</p><p>")} </p>`;
-        errorDescriptionDiv.innerHTML += `<p> ----------------------------------------- </p>`;
-        updateScroll(errorDescriptionDiv.id);
-    } */
     private addLinetoTextArea=(s:string[])=>{
         this.InputTextAreaElement.value="";
         s.forEach(e => {
@@ -95,14 +43,9 @@ export class InputWindow{
     }
 
     public translateAndGo = async()=>{
-        try{
-            await this.translate();
-            await this.pushInputLines();
-            await this.openEditWindow();
-        }catch(e){
-            console.log(e);
-        }
-        
+        await this.translate();
+        await this.pushInputLines();
+        await this.openEditWindow();        
     }
     public pushInputLines=async()=>{
         if(this.pWindow){

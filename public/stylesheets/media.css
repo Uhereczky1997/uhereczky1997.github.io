@@ -1,4 +1,4 @@
-h1
+/* h1
 {
     font-size: calc(var(--maxfontsize32) - 0px);
     font-family: monospace;
@@ -30,8 +30,67 @@ textarea{
     font-size: calc(var(--maxfontsize32) - 8px);
     font-family: 'Courier New', Courier, monospace;
     letter-spacing: 0.05em;
+} 
+h1
+    {
+        font-size: calc(var(--maxfontsize30) - 0px);
+    }
+    h2 
+    {
+        font-size: calc(var(--maxfontsize30) - 2px);
+    }
+    h3 
+    {
+        font-size: calc(var(--maxfontsize30) - 4px);
+    }
+    h4 
+    {
+        font-size: calc(var(--maxfontsize30) - 8px);
+    }
+    h5{
+        font-size: calc(var(--maxfontsize30) - 14px);
+    }
+    p,p>span,textarea
+    {
+        font-size: calc(var(--maxfontsize30) - 8px);
+    }
+    #descriptionLines>* p,#descriptionLines>p>span,#descriptionLines>p{
+        margin: 2px;
+        font-size: calc(var(--maxfontsize30) - 11px);
+    }
+*/
+h1
+{
+    font-size: calc(3vmin*30/30);
+}
+h2 
+{
+    font-size: calc(3vmin*28/30);
+}
+h3 
+{
+    font-size: calc(3vmin*26/30);
+}
+h4 
+{
+    font-size: calc(3vmin*22/30);
+}
+h5{
+    font-size: calc(3vmin*16/30);
+}
+p,p>span,textarea
+{
+    font-size: calc(3vmin*22/30);
+}
+#descriptionLines>* p,#descriptionLines>p>span,#descriptionLines>p{
+    margin: calc(3vmin*2/30);
+    font-size: calc(3vmin*19/30);
 }
 #body{
+    position: absolute;
+    top: 2.5vh;
+    left: 2.5vw;
+    /* left: 1vh; */
     max-width: 95vw;
     max-height: 95vh; 
 
@@ -40,7 +99,7 @@ textarea{
 }
 
 
-@media screen and  (min-width: 620px) and (min-height: 330px)
+/* @media screen and  (min-width: 620px) and (min-height: 330px)
 {
     h1
     {
@@ -204,13 +263,6 @@ textarea{
 }
 @media screen and (min-width: 1920px) and (min-height: 1080px)
 {
-    #body{
-        min-width: 1920px;
-        min-height: 1080px;
-
-        max-width: 95vw;
-        max-height: 95vh; 
-    }
     h1
     {
         font-size: calc(var(--maxfontsize32) - 0px);
@@ -239,3 +291,4 @@ textarea{
         font-size: calc(var(--maxfontsize32) - 12px);
     }
 }
+ */

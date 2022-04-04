@@ -1,65 +1,49 @@
 
-[] proper filler Animations
-[] proper speed adjustment
-[] proper CSS
-[] media queries //Font-size, ...
-
-
-Input & Output-window : [] proper Labeling
-                        [] textoverflow to ...
-                        [] tooltip on ...
-                        [] background inverse on the part of current line
-Outputwindow: [] copy to clipboard
-
-!!! edge case & thorough testing !!!
-
-
-
-
-
-css variables : https://developer.mozilla.org/en-US/docs/Web/CSS/Using_CSS_custom_properties
-
-addresszähler hervorhebung nach erhöhung
-labelauflösung: austausch bis zu dem existierenden label, wenn es nicht existiert, dann abbruch ganz oben.
- SHEEEESH schönere scrollbar
-
-
 !!!!!!!!
 
-  x      scroll smooth beim scrollen von inputfeld (scrollbar für benutzter ausschalten während animation) 
-  x      pause nach nächste zeile auflösung und animation beginn (nur unterhalb eine gewisse geschwindigkeit)
-  x      pause von geschwindigkeit abhängig
-  x      smooth scroll für eingabe und ausgabe(synchron) -> pause bis scollen fertig ist, und plus  ->  ab 3x geschw kein scrollen mehr
+x      scroll smooth beim scrollen von inputfeld (scrollbar für benutzter ausschalten während animation) 
+x      pause nach nächste zeile auflösung und animation beginn (nur unterhalb eine gewisse geschwindigkeit)
+x      pause von geschwindigkeit abhängig
+x      smooth scroll für eingabe und ausgabe(synchron) -> pause bis scollen fertig ist, und plus  ->  ab 3x geschw kein scrollen mehr
 
-  x      SpeedSlider + no Animation (animation)
-  x      SingleStep modus
+x      SpeedSlider + no Animation (animation)
+x      SingleStep modus
+      
 
-  x      3. AnimationsTYP 
-        
-  x      linkerauflösung titel schritt für schritt (fixe geschw.)
-  x      elisis overflow für speicherabbild
-  ~      warnung und fehler nur in descriptionLine anzeigen, keine pre analyse
-        bessere Geschwindigkeiten für Animationen/Schritte (Typ 2 seems to be good)
+x      3. AnimationsTYP 
+  
+x      linkerauflösung titel schritt für schritt (fixe geschw.)
+x      elisis overflow für speicherabbild
+?      warnung und fehler nur in descriptionLine anzeigen, keine pre analyse
 
+      bessere Geschwindigkeiten für Animationen/Schritte (Typ 2 seems to be good)
+      addresszähler hervorhebung nach erhöhung
+      labelauflösung: austausch bis zu dem existierenden label, wenn es nicht existiert, dann abbruch ganz oben.
+  
 
-  ~     <Edit> -- <Play/Pause><Reset> - <SingleStep> <AnimationsTYP1><AnimationsTYP2><AnimationsTYP3> <SpeedSlider> <Vollbild><Dunkel/Hell><Credits> -- <Hex>
+~     <Edit> -- <Play/Pause><Reset> - <SingleStep> <AnimationsTYP1><AnimationsTYP2><AnimationsTYP3> <SpeedSlider> <Vollbild><Dunkel/Hell><Credits> -- <Hex>
+      buttonleiste besser gestalten
+      farbenzusammensetzung überprüfen lassen
 
-        Einteilung von ausgabe Fenster ändern! Links speicherabbild | Rechts HexCode + knopf zum schließen & Copy to clipboard
-        EingabeFenster Einteilung ändern: Eingabefeld volle Breite! Linksunten buttonleiste -> Links Übernehmen rechts abbrechen
+x      Einteilung von ausgabe Fenster ändern! Links speicherabbild | Rechts HexCode + knopf zum schließen & Copy to clipboard
+x      EingabeFenster Einteilung ändern: Eingabefeld volle Breite! Linksunten buttonleiste -> Links Übernehmen rechts abbrechen
 
-        dynamische Bildeinteilung? mittels relative position & "%"
-        
-        Tooltips für knöpfe
-        replace all -> // REPLACE
-        ??          -> // ??
+      dynamische Bildeinteilung? mittels relative position & "%"
+      hauptbestandteile auf flex umstellen
+      
+      bewegteText maximal länge festlegen
 
-        speicherabbild von rs ändern auf 00 ... (nx)
-        
-        Alle Texts zusammenschreiben (und in KonstantenSpeichern ((zum Wiederverwendung)))
-        damit Prof einmal darüberschauen kann.
-        //Wenn zu Wenige Operand -> Erroranzeige ändern NICHT AN AKZEPTIERTEN STOPPEN
+      Tooltips für knöpfe
+      replace all -> // REPLACE
+      ??          -> // ??
 
-        Ausführliches testen von randfällen
+x     speicherabbild von rs ändern auf 00 ... (nx)
+      
+      Alle Texts zusammenschreiben (und in KonstantenSpeichern ((zum Wiederverwendung)))
+      damit Prof einmal darüberschauen kann.
+      //Wenn zu Wenige Operand -> Erroranzeige ändern NICHT AN AKZEPTIERTEN STOPPEN -> i.setError("");
+
+      Ausführliches testen von randfällen
 
 
 

@@ -65,17 +65,10 @@ RS 3
 ORG 2323h
 const1 EQU 3434h
 
-
-///////////////////////////////////////////////////////
-
-Warnung von zu langen label      -Namen
-Warnung bei zu langen constanten -Namen
-
-FEHLERANZEIGE BOX:
-nichts bei keinem Fehler
-anzahl der fehler       - anstatt Zeilennummer ausgeben  | Rotes rufzeichen auf der Seite
-anzahl der warnungen    -                                | Orangenes Fragezeichen auf der Seite
-
-8-bit Wert / 16 ´-bit Wert anstatt Wert/Konstante (16-bit) bzw dat_8/dat_16
+mov a,b
+;mov a,
+;mov b
+;mov
+1mob
 
 

@@ -10,7 +10,7 @@ export class StringConstructor{
 
     }
     static achtung(s:string):string{
-        return `<span class="${warningClass} eingeruckt">Achtung:${s}<span>`;
+        return `<span class="${warningClass} eingeruckt">Achtung : ${s}<span>`;
     }
     static error(s:string):string{
         return `<span class="errorRed">error: ${s}</span>`;

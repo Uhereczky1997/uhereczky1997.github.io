@@ -108,8 +108,11 @@
     /* W - width for screen | H- height for screen */
     --arrowHeadlrW: 40px;
     --arrowHeadlrH: 45px;
-
     --arrowBodyW: 25px;
+    
+    /* --arrowHeadlrW: 2rem;
+    --arrowHeadlrH: 2.25rem;
+    --arrowBodyW: 1.25rem; */
 
     --arrowHeadW: var(--arrowHeadlrW);
     --arrowHeadH: var(--arrowHeadlrH);

@@ -271,7 +271,7 @@ export class CommandMap{
                 commandLine=strings[1];
             }
         }
-        strings = Manipulator.splitStringHalf(commandLine," ");
+        strings = Manipulator.splitStringHalfUnfiltered(commandLine," ");
         strings = this.filterForEmtpyStrings(strings);
         //erster Term MnemoCode
         if(this.mCodes.includes(strings[0].toUpperCase())){
@@ -312,10 +312,11 @@ export class CommandMap{
                 
                 if(strings.length<2){
                     i.saveDescriptionLine(StringConstructor.toofewCmd()); //ERROR
+                    i.setError("");
                     return false;
                 }
-                strings=Manipulator.splitStringHalf(strings[1],",");
-                strings = this.filterForEmtpyStrings(strings);
+                strings=Manipulator.splitStringHalfUnfiltered(strings[1],",");
+                // strings = this.filterForEmtpyStrings(strings);
                 // 2. Term Register
                 if(this.getDests(matches).includes(strings[0].toUpperCase())
                     &&this.Regs.includes(strings[0].toUpperCase())){ // A || B || C || IX || HL || SP
@@ -335,6 +336,7 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErwartet(consoletostring));    //Ausgabe von erwartetten Befehlen
                     if(strings.length<2){
                         i.saveDescriptionLine(StringConstructor.toofewCmd()); //ERROR
+                        i.setError("");
                         return false;
                     }
                     // 3. Term Register
@@ -624,6 +626,7 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErwartet(consoletostring));    //Ausgabe von erwartetten Befehlen
                     if(strings.length<2){
                         i.saveDescriptionLine(StringConstructor.toofewCmd());
+                        i.setError("");
                         return false;
                     }
                     if(this.getScources(matches).includes(strings[1].toUpperCase())){
@@ -659,7 +662,7 @@ export class CommandMap{
                     i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
                     i.setError(strings[0]);
                     if(strings[1]!=undefined){
-                        i.setRest(", "+strings[1]);
+                        i.setRest(","+strings[1]);
                     }
                     return false;
                 }
@@ -710,6 +713,7 @@ export class CommandMap{
                 i.saveDescriptionLine(this.formatErwartet("A"));
                 if(strings.length<2){
                     i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.setError("");
                     return false;
                 }
                 strings = Manipulator.splitStringHalf(strings[1],",");
@@ -772,6 +776,7 @@ export class CommandMap{
                 
                 if(strings.length<2){
                     i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.setError("");
                     return false;
                 }
                 strings = Manipulator.splitStringHalf(strings[1],",");
@@ -784,6 +789,7 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErwartet("A"));
                     if(strings.length<2){
                         i.saveDescriptionLine(StringConstructor.toofewCmd());
+                        i.setError("");
                         return false;
                     }
                     if(strings[1].toUpperCase() =="A"){
@@ -813,6 +819,7 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErwartet("A"));
                     if(strings.length<2){
                         i.saveDescriptionLine(StringConstructor.toofewCmd());
+                        i.setError("");
                         return false;
                     }
                     if(strings[1].toUpperCase() =="A"){
@@ -848,6 +855,7 @@ export class CommandMap{
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
                     i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.setError("");
                     return false;
                 }
                 toSave=strings[1];
@@ -892,6 +900,7 @@ export class CommandMap{
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
                     i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.setError("");
                     return false;
                 }
                 if(this.getDests(matches).includes(strings[1].toUpperCase())){
@@ -1128,6 +1137,7 @@ export class CommandMap{
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
                     i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.setError("");
                     return false;
                 }
                 if(this.symbollist.isLabel(strings[1]) || this.symbollist.isEligible(strings[1])){ // MUSS label sein
@@ -1175,6 +1185,7 @@ export class CommandMap{
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
                     i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.setError("");
                     return false;
                 }
                 if(this.symbollist.isLabel(strings[1]) || this.symbollist.isEligible(strings[1])){ // MUSS label sein
@@ -1243,6 +1254,7 @@ export class CommandMap{
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
                     i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.setError("");
                     return false;
                 }
                 if(strings[1]=="[IX]"){
@@ -1357,6 +1369,7 @@ export class CommandMap{
             i.saveDescriptionLine(this.formatGefunden(`Pseudo-Mnemocode ${strings[0]}`,strings[0]+" ..."));
             if(strings.length<2){
                 i.saveDescriptionLine(StringConstructor.toofewCmd());
+                i.setError("");
                 return false;
             }
             switch(strings[0]){
@@ -1491,6 +1504,7 @@ export class CommandMap{
             i.saveDescriptionLine(this.formatErwartet(`EQU`));
             if(strings.length<2){
                 i.saveDescriptionLine(StringConstructor.toofewCmd());
+                i.setError("");
                 i.setError(strings[0]);
                 return false;
             }
@@ -1527,6 +1541,7 @@ export class CommandMap{
                     }
                 }else{
                     i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.setError("");
                     return false;
                 }
             }
@@ -1597,6 +1612,9 @@ export class CommandMap{
 
     getDataType(addr:string):DataType{
         if(this.Regs.includes(addr)||this.pseudoMCodes.includes(addr)||this.mCodes.includes(addr)){
+            return DataType.NONE;
+        }
+        if(addr.trim()==" " ||addr.trim()==""){
             return DataType.NONE;
         }
         if(Manipulator.isDat_8(addr)){

@@ -9,7 +9,7 @@ import { InputLineControl } from "./Backend/InputLineControl";
 import { InputLine } from "./Backend/InputLine";
 import { InputWindow } from "./InputWindow";
 import { getHtmlElement, createClickListener, updateScroll, updateScrollOfIn_Out } from "./Tools";
-import { aniControl, AnimationsTyp, checkIfPaused, sleepFor, sleepUntilNextStep } from "./AnimationUtil";
+import { aniControl, AnimationsTyp, checkIfPaused, playButton, resetButton, sleepFor, sleepInAnimation, sleepUntilNextStep } from "./AnimationUtil";
 import { Animator } from "./Animator";
 
 
@@ -27,9 +27,11 @@ export const InputID:HTMLElement=getHtmlElement('InputID');
 export const InputLines:HTMLElement=getHtmlElement('InputLines');
 export const OutputAddresses:HTMLElement=getHtmlElement('OutputAddresses');
 export const OutputLines:HTMLElement=getHtmlElement('OutputLines');
-export const currentLineLine =getHtmlElement("currentLineLine");
-export const windowOutputAddresses = getHtmlElement("OutputWindowAddresses");
-export const windowOutputLines = getHtmlElement("OutputWindowLines");
+export const currentLineLine:HTMLElement =getHtmlElement("currentLineLine");
+export const windowOutputAddresses:HTMLElement = getHtmlElement("OutputWindowAddresses");
+export const windowOutputLines:HTMLElement = getHtmlElement("OutputWindowLines");
+export const OutputWindowMachineCode:HTMLElement = getHtmlElement("OutputWindowMachineCode");
+
 
 export const removeClassOfAll=(s:string)=>{
     let elements = Array.from(document.querySelectorAll("."+s+""));
@@ -176,6 +178,7 @@ export class ProjectWindow{
                 OutputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}outputP" class="overflowElipsis">&nbsp;</p>`;
             }
         }
+        console.log("items refreshed");
     }
 
     public refreshInputListItem=(i:number)=>{
@@ -429,28 +432,42 @@ export class ProjectWindow{
 
     }
     private displaySecondPhase=async()=>{
-        let sleeptime = 100;
+        let sleeptime = 400;
+        if(aniControl.start) await sleepFor(1000);
+
         descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
-        await sleepFor(sleeptime);
+        updateScroll(descriptionLines.id);
+
+        if(aniControl.start) await sleepFor(sleeptime);
         descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
-        await sleepFor(sleeptime);
+        updateScroll(descriptionLines.id);
+
+        if(aniControl.start) await sleepFor(sleeptime);
 
         descriptionLines.innerHTML += `<p>************************</p>`;
-        await sleepFor(sleeptime*2);
+        updateScroll(descriptionLines.id);
+
+        if(aniControl.start) await sleepFor(sleeptime*2);
 
         descriptionLines.innerHTML += `<p>2.Phase LinkerAuflösung</p>`;
-        await sleepFor(sleeptime*2);
+        updateScroll(descriptionLines.id);
+
+        if(aniControl.start) await sleepFor(sleeptime*2);
 
         descriptionLines.innerHTML += `<p>************************</p>`;
-        await sleepFor(sleeptime*2);
-
-        descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
-        await sleepFor(sleeptime);
-
-        descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
-        await sleepFor(sleeptime);
-
         updateScroll(descriptionLines.id);
+
+        if(aniControl.start) await sleepFor(sleeptime*2);
+
+        descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+        updateScroll(descriptionLines.id);
+
+        if(aniControl.start) await sleepFor(sleeptime);
+
+        descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+        updateScroll(descriptionLines.id);
+
+        if(aniControl.start) await sleepFor(sleeptime);
     }
     public linkerAuflosung=async ()=>{
         this.repushTranslations();
@@ -493,6 +510,8 @@ export class ProjectWindow{
                 windowOutputAddresses.innerHTML+=`<p class="gray">${i.getStartingAddr()}</p>`;
                 OutputTextAreaElement.innerHTML+=":"+i.getTranslation()+"\n";
             }else{
+                windowOutputAddresses.innerHTML+=`<p class="gray">&nbsp;</p>`;
+                windowOutputLines.innerHTML+=`<p class="overflowElipsis">&nbsp;</p>`;
                 OutputTextAreaElement.innerHTML+=":00000001FF";
             }
         }
@@ -566,6 +585,7 @@ export class ProjectWindow{
 
             this.linkerAuflosungB=this.aufzulosendeLabel();
             await this.linkerAuflosung();
+
             console.log("finished");
             await sleepFor(100);
             await updateScroll(descriptionLines.id);
@@ -690,40 +710,50 @@ export class ProjectWindow{
     }
     
     public toggleStop=async()=>{
+/*         resetButton.disabled=true;
+        setTimeout(function(){
+            resetButton.disabled=false;
+            console.log("Reset_button enabled");
+        },
+        3000); */
         if(this.inputstrings.length>0){
-            try {
+            
                 if(aniControl.end || aniControl.stop){
                     throw new Error("Stop has been pressed or animation Finished!");
                     return;
                 }
+                if(aniControl.reset){
+                    throw new Error("Waiting until reset is finished!");
+                    return;
+                }
                 if(!aniControl.start){
-                    aniControl.setStart();
+                    await aniControl.setStart();
                     await this.startPlaying();
                 }
                 else{
                     if(aniControl.play){
-                        aniControl.setPaused();
+                        await aniControl.setPaused();
                     }
                     else{
-                        aniControl.setPlaying();
+                        await aniControl.setPlaying();
                     }
                 }
-            } catch (e) {
-                console.log(e);
-            }
         }else{
             console.log("no Input");
         }
     }
 
     public startPlaying=async()=>{
+        resetButton.disabled=true;
+        setTimeout(function(){
+            resetButton.disabled=false;
+            console.log("Reset_button enabled");
+        },
+        3000);
+        if(aniControl.stop || aniControl.reset || aniControl.end) throw new Error("Reset was presser recently!");
         if(this.inputstrings.length>0){
-            try {
-                await this.pushLines();
-                await this.clearMachinenbefehlandCurrentLine();
-            } catch (e) {
-                console.log(e);
-            }
+            await this.pushLines();
+            await this.clearMachinenbefehlandCurrentLine();
         }
         else{
             console.log("no Input");
@@ -731,7 +761,7 @@ export class ProjectWindow{
     }
 
     public skipToFinish=async()=>{
-        if(this.inputstrings.length>0){
+        /* if(this.inputstrings.length>0){
             await this.reset();
             try {
                 await this.pushLines();
@@ -745,7 +775,7 @@ export class ProjectWindow{
         }
         else{
             console.log("no Input");
-        }
+        } */
         // console.log(this.iWindow);
     }
 
@@ -758,25 +788,30 @@ export class ProjectWindow{
     }
 
     public reset=async()=>{
-        await aniControl.setReset();
-        await sleepFor(100);
-        await this.partialReset();
-        await sleepFor(100);
-        await this.refreshInputListItems();
-        // console.log(this);
+        if(!aniControl.reset){
+            playButton.disabled=true;
+            setTimeout(function(){
+                playButton.disabled=false;
+                console.log("playbutton enabled")
+            },
+            3000);
+            aniControl.setReset();
+            await this.partialReset();
+            await this.refreshInputListItems();
+        }
+        aniControl.consoleFlags();
     }
 
     public displayInputLines=async()=>{        
         await this.partialReset();
         await this.refreshInputListItems();
-        // console.log(this);
     }
 
-    setInputStrings(s:string[]){
+    setInputStrings=(s:string[])=>{
         this.inputstrings=s;
     }
 
-    refreshInputStrings(s:string[]){
+    refreshInputStrings=(s:string[])=>{
         this.inputstrings=s;
     }
 
@@ -789,7 +824,7 @@ export class ProjectWindow{
             createClickListener('play',this.toggleStop);
             // createClickListener('stop',this.pause);
             createClickListener('speed',this.speed);
-            createClickListener('skip',this.skipToFinish);
+            createClickListener('skip',sleepInAnimation);
             createClickListener('reset',this.reset);
             aniControl.createEventListeners();
             // createClickListener(InputID.id,setScrollbarOfDescriptionLine);

@@ -9,18 +9,20 @@ export const singleStepBTN = getHtmlElement("singleStep") as HTMLButtonElement;
 export const animationTyp1BTN= getHtmlElement("animationsTyp1") as HTMLButtonElement;
 export const animationTyp2BTN= getHtmlElement("animationsTyp2") as HTMLButtonElement;
 export const animationTyp3BTN= getHtmlElement("animationsTyp3") as HTMLButtonElement;
+export const playButton = getHtmlElement("play") as HTMLButtonElement;
+export const resetButton = getHtmlElement("reset") as HTMLButtonElement;
 
 
 export const checkIfPaused= async():Promise <any> => {
     while (true) {
-        if (aniControl.play){
-            return true;
-        }
         if (aniControl.reset){
             throw Error('Reset pressed');
         }
         if(aniControl.stop){
             throw Error('Stop pressed');
+        }
+        if (aniControl.play){
+            return true;
         }
         await sleepFor(100);
     }
@@ -41,6 +43,26 @@ export const sleepUntilNextStep=async():Promise <any>=>{
             c-=10*aniControl.speed;
             await checkIfPaused();
         }
+    }
+}
+export const sleepInAnimation= async():Promise <any> =>{
+    let b= 100*aniControl.speed+aniControl.baseFrameTime;
+    console.log(b);
+    let date = Date.now();
+    while(b>0){
+        await sleepFor(5);
+        // await checkIfPaused();
+        b=b-aniControl.speed*aniControl.frames;
+    }
+    console.log(Date.now()-date);
+
+}
+export const sleepForFrame = async():Promise<any>=>{
+    let b=aniControl.baseFrameTime/aniControl.frames;
+    while(b>0){
+        await sleepFor(5);
+        b=b-5;
+        await checkIfPaused();
     }
 }
 export enum AnimationsTyp{
@@ -75,11 +97,14 @@ export class AnimationControl{
         this.frames=60;
     }
     resetFlags=()=>{
+        while(!aniControl.reset){
+
+        };
         this.start=false;
         this.play=false;
         this.pause=false;
         this.stop=false;
-        this.reset=false;
+        //this.reset=false;
         this.end=false;
         this.baseFrameTime=1000;
         this.changePlayButtonBKG();
@@ -166,7 +191,7 @@ export class AnimationControl{
         if(this.start && !this.stop){
             this.play   = true;
             this.pause  = false;
-            this.reset  = false;
+            // this.reset  = false;
             this.end    = false;
             this.stop   = false;
             this.changePlayButtonBKG();
@@ -175,7 +200,7 @@ export class AnimationControl{
     setStop=()=>{
         this.play   = false;
         this.pause  = false;
-        this.reset  = false;
+        // this.reset  = false;
         this.end    = false;
         this.stop   = true;
         this.changePlayButtonBKG();
@@ -190,22 +215,22 @@ export class AnimationControl{
         console.log("this.singleStep : "+this.singleStepFlag);
     }
     setPaused=()=>{
-        if(this.start &&!this.stop){
+        if(this.start &&!this.stop && !this.reset){
             this.play   = false;
             this.pause  = true;
-            this.reset  = false;
+            // this.reset  = false;
             this.end    = false;
             this.changePlayButtonBKG();
         }
     }
-
-    setReset=()=>{
-        this.start  = false;
-        this.play   = false;
-        this.pause  = false;
+    
+    setReset= async()=>{
+        if(this.reset) return;
         this.reset  = true;
-        this.stop   = false;
-        this.end    = false;
+        setTimeout(function(){
+            aniControl.reset=false;
+            aniControl.consoleFlags();
+        },3000);
         this.changePlayButtonBKG();
     }
 
@@ -213,8 +238,8 @@ export class AnimationControl{
         this.start  = true;
         this.play   = false;
         this.pause  = false;
-        this.reset  = false;
-        this.stop   = false;
+        //this.reset  = false;
+        //this.stop   = false;
         this.end    = true;
         this.changePlayButtonBKG();
     }

@@ -1,8 +1,7 @@
-import { ProjectWindow } from "./ProjectWindow";
-import { createClickListener } from "./Tools";
+import { OutputTextAreaElement, OutputWindowMachineCode, ProjectWindow } from "./ProjectWindow";
+import { createClickListener, getHtmlElement } from "./Tools";
 import { aniControl, sleepFor } from "./AnimationUtil";
 import { addClassTo, getIDOfSelected, inputText, outputText, removeClassOfAll } from "./ProjectWindow";
-
 
 export const onscrollIn_Out = () =>{
     /* let inputText= document.getElementById("InputText");
@@ -44,6 +43,50 @@ export const onscrollIn_Out = () =>{
         console.log(e);
     }
 }
+const consoleWindowsize=()=>{
+    console.log("Innerwidth: "+window.innerWidth);
+    console.log("Innerheight: "+window.innerHeight);
+
+    console.log("Outerwidth: "+window.outerWidth);
+    console.log("Outerheight: "+window.outerHeight);
+
+}
+const outputClip = () =>{
+    var copyText = document.getElementById("OutputTextArea") as HTMLTextAreaElement;
+    if(copyText!=null){
+        navigator.clipboard.writeText(copyText.value);
+    }
+}
+const syncScroll_MachineCode_Hexadecimal = () =>{
+    var ignoreScrollEvents2 = false;
+    console.log(OutputWindowMachineCode.scrollTop);
+    console.log(OutputTextAreaElement.scrollTop);
+    try{
+        if(OutputWindowMachineCode!=null && OutputTextAreaElement!=null){
+            OutputWindowMachineCode.onscroll = function(){
+                var ignore = ignoreScrollEvents2
+                ignoreScrollEvents2 = false
+                if (ignore) return
+                
+                ignoreScrollEvents2 = true 
+                OutputTextAreaElement.scrollTop=OutputWindowMachineCode.scrollTop;
+
+            }
+            OutputTextAreaElement.onscroll = function (){
+                var ignore = ignoreScrollEvents2
+                ignoreScrollEvents2 = false
+                if (ignore) return
+                
+                ignoreScrollEvents2 = true
+                OutputWindowMachineCode.scrollTop=OutputTextAreaElement.scrollTop;
+            }
+        }
+        else throw new Error("Element OutputWindowMachineCode oder OutputTextAreaElement ist null!");
+    
+    }catch(e){
+        console.log(e);
+    }
+}
 export const setCurrentlyHovered = async (e: any) =>{ //Eventbubbling is f-ing sick!
     let id:string;
     if(e instanceof PointerEvent){
@@ -52,7 +95,6 @@ export const setCurrentlyHovered = async (e: any) =>{ //Eventbubbling is f-ing s
             id=getIDOfSelected(e.target.id);
             addClassTo(id+"inputP","highlighted");
             addClassTo(id+"outputP","highlighted");
-            console.log(getIDOfSelected(e.target.id));
             
         }
     }
@@ -71,19 +113,17 @@ let p = new ProjectWindow();
 window.addEventListener('DOMContentLoaded', async() =>{
     const root = document.querySelector(':root');
     root!.setAttribute('color-scheme', `${preferedTheme}`);
-    await main();
 })
 const  main =async ()=>{
-
+    
     p.createListeners();
     onscrollIn_Out();
     createClickListener("InputLines",setCurrentlyHovered);
     createClickListener("light",changeTheme);
+    createClickListener("OutputClip",outputClip)
+    syncScroll_MachineCode_Hexadecimal()
+
     
-    // createClickListener("OutputLines",setCurrentlyHovered);
 }
-// main();
-
-
-/* const b = createClickListener("InputLines",consoleClicked);
-const a = createClickListener("OutputLines",consoleClicked); */
+window.addEventListener("resize",consoleWindowsize);
+main();
