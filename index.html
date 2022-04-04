@@ -10,21 +10,7 @@
 <body>
     <div id="body"> <!-- 10/12 -->
         
-        <div id ="InputWindowContainter" class="backgroundContainer hidden">
-            <div id="InputWindow" class="boxBorder inoutputbox">
-                <textarea name="InputTextArea" id="InputTextArea" class="customScrollbar" placeholder="Hier können Sie den Quellcode eingeben"></textarea>
-                <div id="InputTextAreaEnumerationDiv"></div>
-
-                <!-- <div id="ErrorDescription" class="noScrollbar"></div> -->
-                <div id="inputButtonDiv">
-                    <button id="Submit">Los</button>
-                    <div></div>
-                    <button id="GenerateDummy"> GenerateDummy </button>
-                    <div></div>
-                    <button id="CloseInputWindow">Abbrechen</button>
-                </div>
-            </div>
-        </div>
+        
 
         <div id="toTranslate" class="SideBox boxBorder"> <!--3/12 -> 1/12 -->
             <div class="Title topDivider">
@@ -76,32 +62,24 @@
             <button id="EditWindowOpenButton" class="button1">Edit</button>
             <div></div>
             <div></div>
-
-
             <button id="play" class="button1 playingBKG"></button>
             <button id="reset" class="button1 resetBKG"></button>
             <button id="singleStep" class="singleStepBKG"></button>
             <button id="skip" class="button1 skipBKG"></button>
-
             <button id="animationsTyp1" class="slowerBKG"></button>
             <button id="animationsTyp2" class="fasterBKG"></button>
             <button id="animationsTyp3" class="noAnimationBKG"></button>
-
-
             <div></div>
-
             <div id="speedButtonDiv">
                 <button id="speedDecrease"></button>
                 <input id="speedSlider" style="width: 97%!important;" type="range" min="1" max="6" value="2">
                 <button id="speedIncrease"></button>
             </div>
             <button id="speed"></button>
-
             <button id="light"class="button1 lightButton"></button>
             <button >vollbild</button>
             <button >credits</button>
             <button id="inputClip" class="button1" onclick="inputClip()">inputClip</button>
-
             <button id="TranslateWindow" class="button1">Hex</button>
 
         </div>
@@ -118,16 +96,27 @@
 
         </div>
 
-        
+        <div id ="InputWindowContainter" class="backgroundContainer hidden">
+            <div id="InputWindow" class="boxBorder inoutputbox">
+                <textarea name="InputTextArea" id="InputTextArea" class="customScrollbar" placeholder="Hier können Sie den Quellcode eingeben"></textarea>
+                <div id="InputTextAreaEnumerationDiv"></div>
+                <button id="Submit">Los</button>
+                <button id="GenerateDummy"> GenerateDummy </button>
+                <button id="CloseInputWindow">Abbrechen</button>
+            </div>
+        </div>
 
         <div id ="OutputWindowContainer" class="backgroundContainer hidden">
             <div id="OutputWindow" class="boxBorder inoutputbox">
-                <textarea name="OutputTextArea" id="OutputTextArea" ></textarea>
+                <h1 id="titleHextextareaOutput" class="titel">Hexadecimal</h1>
+                <h1 id="titleMachineCodeOutput"  class="titel">MachineCode</h1>
+                <div id="OutputWindowMachineCode" class="overflowY customScrollbar">
+                    <div id="OutputWindowAddresses" class="displayText end" style="border-right: 1px solid black; text-align: center;"></div>
+                    <div id="OutputWindowLines" class="displayText start"></div>
+                </div>
+                <textarea name="OutputTextArea" id="OutputTextArea" class="customScrollbar" ></textarea>
                 <button id="CloseOutputWindow">Schließen</button>
-                <button id="CopyToClipBoard">Im Clipboard speichern</button>
-                <button id> </button>
-                <button > </button>
-
+                <button id="OutputClip">Clipboard</button>
             </div>
         </div>
 

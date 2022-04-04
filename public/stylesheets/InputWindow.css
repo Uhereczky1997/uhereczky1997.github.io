@@ -13,45 +13,124 @@ p{
     background: rgba(0, 0, 0, 0.8); 
 }
 #OutputWindow{
-    position:relative;
+    position:absolute;
     top: 10%;
-    left: 15%;
-    width: 70%;
+    left: 10%;
+    width: 80%;
     height: 80%;
-    display:grid;
+    display: flex;
+    /* display:grid;
     grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr 10%;
+    grid-template-rows: 1fr 1fr 1fr 1fr 10%; */
 }
+/* #OutputWindow>h1{
+    margin: auto auto auto auto;
+} */   
 #OutputWindow>textarea{
-    grid-column: span 6;
-    grid-row:span 4;
+    /* grid-column: 4/7;
+    grid-row:span 4; */
+    position:absolute;
+    border: 1px solid;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    top: 10%;
+    left: 50%;
+    width: 45%;
+    height: 70%;
     resize: none;
-    /* font-size: 20px; */
     font-weight: bold;
     font-family: 'Courier New', Courier, monospace;
 }
-
+#titleHextextareaOutput{
+    position: absolute;
+    top: 2.5%;
+    left: 50%;
+    width: 45%;
+    height: fit-content;
+    text-align: center;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+}
+#titleMachineCodeOutput{
+    position: absolute;
+    top: 2.5%;
+    left: 5%;
+    width: 45%;
+    text-align: center;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+}
+#OutputWindowMachineCode{
+    position:absolute;
+    border: 1px solid;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    top: 10%;
+    left: 5%;
+    width: 45%;
+    height: 70%;
+    resize: none;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+    display: grid;
+    grid-template-columns: 15% 1fr;
+    grid-template-rows: 1fr;
+}
+#Submit, #CloseOutputWindow{
+    position:absolute;
+    
+    top: 87.5%;
+    left: 5%;
+    width: 15%;
+    height: 10%;
+    resize: none;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+}
+#CloseInputWindow, #OutputClip{
+    position:absolute;
+    top: 87.5%;
+    left: 80%;
+    width: 15%;
+    height: 10%;
+    resize: none;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+}
 #InputWindow{
-    position:relative;
+    position:absolute;
     top: 10%;
     left: 15%;
     width: 70%;
     height: 80%;
-    display:grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr minmax(0,auto);
-    grid-template-rows: 1fr 1fr 1fr 1fr 10%;
+    display:flex;
 }
 
 
 #InputWindow>textarea{
-    grid-column: span 4;
-    grid-row:span 4;
+    position:absolute;
+    border: 1px solid;
+    border-radius: 10px;
+    top: 10%;
+    left: 5%;
+    width: 90%;
+    height: 70%;
     resize: none;
-    border: none;
     font-weight: bold;
     font-family: 'Courier New', Courier, monospace;
-    transition: width 0.5s ease-in-out;
 }
+
+#GenerateDummy{
+    position: absolute;
+    top: 87.5%;
+    left: 40%;
+    width: 20%;
+    height: 10%;
+    resize: none;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+}
+
 #InputTextAreaEnumerationDiv{
     width: 0px;
     height: 100%;
@@ -80,30 +159,3 @@ p{
     grid-row: 2/3;
     grid-column: 2/3;
 }
-/*
-#InputWindow>#ErrorDescription{
-    grid-column: span 1;
-    grid-row:span 5;
-    overflow-y: auto;
-}
-#ErrorDescription>div>p{
-    padding: 5 5 5 5;
-}
-.backgroundNoError{
-    background-color: var(--green)!important;
-    border: 1px solid;
-}
-.backgroundError{
-    background-color: var(--red)!important;
-    border: 1px solid;
-}
-.backgroundWarning{
-    background-color: var(--warning)!important;
-    border: 1px solid;
-}
-.backgroundWarning *>span,.backgroundWarning >*{
-    background-color: var(--warning)!important;
-}
-.backgroundError *>span,.backgroundError >*{
-    background-color: var(--red)!important;
-} */

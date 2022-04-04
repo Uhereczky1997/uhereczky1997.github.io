@@ -371,17 +371,22 @@ body>* h1{
     background-color: var(--bkg2);
 }
 #buttonLeiste *> button, #buttonLeiste> button, #InputWindow>button, #OutputWindow>button {
-    width: 100%;
-    height: 100%;
     padding: 5px 5px;
     margin: 0 0;
     border: 1px solid var(--bkg2);
-    border-top:none;
-    border-bottom:none;
     cursor: pointer;
     /*  background-color: transparent; */
     -webkit-box-sizing: border-box;
     box-sizing: border-box;
+}
+#buttonLeiste *> button, #buttonLeiste> button{
+    width: 100%;
+    height: 100%;
+    border-top:none;
+    border-bottom:none;
+}
+#InputWindow>button, #OutputWindow>button{
+    border-radius: 10px;
 }
 
 #translated{

@@ -14,20 +14,22 @@ import { Animator } from "./Animator";
 
 
 
-export let descriptionLines:HTMLElement = getHtmlElement('descriptionLines');
-export let symbolTableLines:HTMLElement = getHtmlElement('symbolTableLines');
-export let currentLine:HTMLElement = getHtmlElement('currentLine');
-export let outputText:HTMLElement = getHtmlElement('OutputText');
-export let inputText:HTMLElement= getHtmlElement('InputText');
-export let addresszahler:HTMLElement = getHtmlElement('Addresszahler');
-export let machinenbefehl:HTMLElement = getHtmlElement('Machinenbefehl');
-export let outputwindowContainer:HTMLElement = getHtmlElement('OutputWindowContainer');
-export let OutputTextAreaElement:HTMLTextAreaElement =getHtmlElement('OutputTextArea')as HTMLTextAreaElement;
-export let InputID:HTMLElement=getHtmlElement('InputID');
-export let InputLines:HTMLElement=getHtmlElement('InputLines');
-export let OutputAddresses:HTMLElement=getHtmlElement('OutputAddresses');
-export let OutputLines:HTMLElement=getHtmlElement('OutputLines');
-export let currentLineLine =getHtmlElement("currentLineLine");
+export const descriptionLines:HTMLElement = getHtmlElement('descriptionLines');
+export const symbolTableLines:HTMLElement = getHtmlElement('symbolTableLines');
+export const currentLine:HTMLElement = getHtmlElement('currentLine');
+export const outputText:HTMLElement = getHtmlElement('OutputText');
+export const inputText:HTMLElement= getHtmlElement('InputText');
+export const addresszahler:HTMLElement = getHtmlElement('Addresszahler');
+export const machinenbefehl:HTMLElement = getHtmlElement('Machinenbefehl');
+export const outputwindowContainer:HTMLElement = getHtmlElement('OutputWindowContainer');
+export const OutputTextAreaElement:HTMLTextAreaElement =getHtmlElement('OutputTextArea')as HTMLTextAreaElement;
+export const InputID:HTMLElement=getHtmlElement('InputID');
+export const InputLines:HTMLElement=getHtmlElement('InputLines');
+export const OutputAddresses:HTMLElement=getHtmlElement('OutputAddresses');
+export const OutputLines:HTMLElement=getHtmlElement('OutputLines');
+export const currentLineLine =getHtmlElement("currentLineLine");
+export const windowOutputAddresses = getHtmlElement("OutputWindowAddresses");
+export const windowOutputLines = getHtmlElement("OutputWindowLines");
 
 export const removeClassOfAll=(s:string)=>{
     let elements = Array.from(document.querySelectorAll("."+s+""));
@@ -86,16 +88,16 @@ export class ProjectWindow{
     
     public partialReset =async () =>{
         this.inputLines=[];
-        // currentLine.innerHTML="";
         await this.clearMachinenbefehlandCurrentLine();
         symbolTableLines.innerHTML=`<h4> &nbsp; </h4>`;
         descriptionLines.innerHTML="";
         addresszahler.innerHTML="0000h";
         this.nextParseID=0;
-        // machinenbefehl.innerHTML="";
         OutputAddresses.innerHTML="";
         OutputLines.innerHTML="";
         OutputTextAreaElement.innerHTML="";
+        windowOutputAddresses.innerHTML="";
+        windowOutputLines.innerHTML="";
         await this.inputLineControl.reset();
         await this.anim.reset();
         await aniControl.resetFlags();
@@ -141,7 +143,6 @@ export class ProjectWindow{
                 addClassTo("crError","crInvert");
                 break;
             case 5:
-                //addClassTo("crRest","crInvert");
                 break;
             default:
                 break;
@@ -154,7 +155,6 @@ export class ProjectWindow{
         OutputAddresses.innerHTML="";
         OutputLines.innerHTML="";
         let ss:string[]=[];
-        //inputTextDiv.innerHTML="";
         let e:InputLine;
         for(let i=0;i<this.inputstrings.length;i++){
             e=this.inputLines[i];
@@ -207,7 +207,7 @@ export class ProjectWindow{
             let idString = `${(i+1)<10?"0"+(i+1):(i+1)}outputP`;
             let outputLineHTML:HTMLElement = getHtmlElement(idString);
             if(e.getType() == InputLineType.TRANSLATED){
-                console.log(b);
+                // console.log(b);
                 if(!b){
                     getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}oAddress`).innerHTML=`<span class="gray">${Manipulator.formatHextoDat16(e.getStartingAddr())+":"}</span>`;
                 }
@@ -368,8 +368,6 @@ export class ProjectWindow{
 
                     await this.anim.pushAufzulosendestoCurrentLine(e.getId(),this.getLinkerAufloesungLine(e.getId(),false));
                 }
-                // currentLine.innerHTML=`<h2 style="align-self: end;" class=" noMargin p5px">${this.getLinkerAufloesungLine(e.getId(),false)}</h2>`
-                // currentLineLine.innerHTML=`${this.getLinkerAufloesungLine(e.getId(),false)}`
                 currentLineLine.innerHTML=`${e.getStartingAddr()}: ${this.inputLineControl.getDisplayableSpeicherabbild(e,false)} <span>${this.getLabelIfUnknown(e.getId(),false)}</span>`
                 addresszahler.innerHTML= `${e.getStartingAddr()}`;
                 machinenbefehl.innerHTML= `${this.inputLineControl.getDisplayableSpeicherabbild(e,false)}`;
@@ -424,7 +422,6 @@ export class ProjectWindow{
                     if(aniControl.start){
                         updateScroll(descriptionLines.id);
                     }
-                    
                 }
             }
         }
@@ -475,13 +472,26 @@ export class ProjectWindow{
     }
     public repushTranslations=async()=>{
         OutputTextAreaElement.innerHTML="";
+        windowOutputLines.innerHTML="";
+        windowOutputAddresses.innerHTML="";
         let i;
         for(let j=0;j<=this.inputLines.length;j++){
             i=this.inputLines[j];
             if(i!=undefined){
-                if(i.getType() == InputLineType.TRANSLATED){
-                    OutputTextAreaElement.innerHTML+=":"+i.getTranslation()+"\n";
+                if(i.getType() != InputLineType.TRANSLATED){
+                    continue;
                 }
+                if(i.getTranslation().includes("??")){
+                    windowOutputLines.innerHTML+=`<p class="overflowElipsis">
+                    ${Manipulator.formatSpeicherabbildandLabel(this.inputLineControl.getDisplayableSpeicherabbild(i,false),
+                        this.getLabelIfUnknown(i.getId(),false))}</p>`
+                }
+                else{
+                windowOutputLines.innerHTML+=`<p class="overflowElipsis">
+                    ${this.inputLineControl.getDisplayableSpeicherabbild(i,true)}&nbsp;</p>`
+                }
+                windowOutputAddresses.innerHTML+=`<p class="gray">${i.getStartingAddr()}</p>`;
+                OutputTextAreaElement.innerHTML+=":"+i.getTranslation()+"\n";
             }else{
                 OutputTextAreaElement.innerHTML+=":00000001FF";
             }
@@ -490,12 +500,15 @@ export class ProjectWindow{
 
     public repushTranslationOf=async(i:number)=>{
         let e:InputLine;
+        windowOutputAddresses.innerHTML="";
+        windowOutputLines.innerHTML="";
         if(this.inputLines.length==this.inputstrings.length){
             e=this.inputLines[i];
             if(i==this.inputLines.length-1){
                 if(e.getType()==InputLineType.TRANSLATED){
                     OutputTextAreaElement.innerHTML+=":"+e.getTranslation()+"\n";
                 }
+
                 OutputTextAreaElement.innerHTML+=":00000001FF";
             }
         }
@@ -508,7 +521,6 @@ export class ProjectWindow{
     }
     
     private translateInputStringOfId=(n:number):boolean=>{
-        // console.log(n+" corresponds to -> "+this.inputstrings[n]);
         if(n<this.inputstrings.length){
             this.inputLineControl.addInputLine(this.inputstrings[n]);
             this.refreshInputLines();
@@ -633,11 +645,9 @@ export class ProjectWindow{
                     await this.anim.moveConstToSymbolTable(this.symbolList.getSpecificConstantByName(l.getFirstPart())!.toStringtoMovable());
                 }
                 this.rePushSymbols();
-                // this.pushTranslationOf(i);
                 this.repushSpeicherabbildOf(i,false);
             }
             else if(l.getType()==InputLineType.PSEUDOTRANSLATED){
-                // this.pushTranslationOf(i);
                 this.repushSpeicherabbildOf(i,false);
             }
             else{
@@ -700,7 +710,6 @@ export class ProjectWindow{
                 }
             } catch (e) {
                 console.log(e);
-                // await this.reset();
             }
         }else{
             console.log("no Input");
