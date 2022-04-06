@@ -1,7 +1,4 @@
-#SymbolTable{
-    grid-column: 4/8;
-    grid-row: 8/12;
-}
+
 #symbolTableLines{
     padding: var(--hBorderRadius) var(--hBorderRadius);
     max-height: 90%;

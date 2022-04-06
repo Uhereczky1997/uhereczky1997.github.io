@@ -42,6 +42,7 @@ p{
     left: 50%;
     width: 45%;
     height: 70%;
+    line-height: 114%!important;
     resize: none;
     font-weight: bold;
     font-family: 'Courier New', Courier, monospace;
@@ -112,8 +113,8 @@ p{
 #InputWindow{
     position:absolute;
     top: 10%;
-    left: 15%;
-    width: 70%;
+    left: 10%;
+    width: 80%;
     height: 80%;
     display:flex;
 }

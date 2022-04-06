@@ -14,7 +14,7 @@
   padding-left: 1em;
 }
 .highlighted{
-  background-color: var(--yellow)!important;
+  background-color: var(--green)!important;
 }
 .crInvert{
   background-color: var(--green);

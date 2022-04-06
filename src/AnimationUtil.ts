@@ -1,4 +1,4 @@
-import { descriptionLines, inputText, outputText } from "./ProjectWindow";
+import { descriptionLines, inputText, outputText, symbolTableLines } from "./ProjectWindow";
 import { createClickListener, getHtmlElement } from "./Tools";
 
 export const sleepFor = (ms:number):Promise <any> => new Promise(resolve => setTimeout(resolve,ms));
@@ -29,7 +29,7 @@ export const checkIfPaused= async():Promise <any> => {
 }
 export const sleepUntilNextStep=async():Promise <any>=>{
     let c=aniControl.baseFrameTime;
-    if(aniControl.animationType==AnimationsTyp.Typ3){
+    if(aniControl.isAni3()){
         await sleepFor(5);
         await checkIfPaused();
         return;
@@ -40,28 +40,36 @@ export const sleepUntilNextStep=async():Promise <any>=>{
         }
         else{
             await sleepFor(10);
-            c-=10*aniControl.speed;
+            c-=10;
             await checkIfPaused();
         }
     }
 }
-export const sleepInAnimation= async():Promise <any> =>{
-    let b= 100*aniControl.speed+aniControl.baseFrameTime;
-    console.log(b);
+export const sleepStaticAnimation= async():Promise <any> =>{
+    let b=2*aniControl.baseFrameTime*5;
+    let n=10*aniControl.speed;
     let date = Date.now();
     while(b>0){
-        await sleepFor(5);
+        await sleepFor(n/aniControl.speed);
         // await checkIfPaused();
-        b=b-aniControl.speed*aniControl.frames;
+        b=b-10;
     }
     console.log(Date.now()-date);
-
+}
+export const sleepStopStartTime= async():Promise <any> =>{
+    let b=aniControl.baseFrameTime/2;
+    while(b>0){
+        await sleepFor(10);
+        await checkIfPaused();
+        b=b-10;
+    }
 }
 export const sleepForFrame = async():Promise<any>=>{
-    let b=aniControl.baseFrameTime/aniControl.frames;
+    // let b=aniControl.baseFrameTime/aniControl.frames;
+    let b=aniControl.baseFrameTime/120;
     while(b>0){
-        await sleepFor(5);
-        b=b-5;
+        await sleepFor(2);
+        b=b-2;
         await checkIfPaused();
     }
 }
@@ -92,8 +100,9 @@ export class AnimationControl{
         this.reset=false;
         this.singleStepFlag=false;
         this.end=false;
+        this.speed=1;
         this.baseFrameTime=1000;
-        this.speed=speedSlider.valueAsNumber;
+        this.setSpeed(speedSlider.valueAsNumber);
         this.frames=60;
     }
     resetFlags=()=>{
@@ -104,15 +113,8 @@ export class AnimationControl{
         this.play=false;
         this.pause=false;
         this.stop=false;
-        //this.reset=false;
         this.end=false;
-        this.baseFrameTime=1000;
         this.changePlayButtonBKG();
-    }
-    private resetStaticInputValues(){
-        this.speed=this.setSpeedTo(3);
-        singleStepBTN.classList.remove("selected");
-
     }
     setStart=()=>{
         this.start=true;
@@ -129,23 +131,22 @@ export class AnimationControl{
     setSpeedTo=(n:number)=>{
         if(n<1){
             speedSlider.value=`${1}`;
-            return 7;
+            return 1;
         }
-        else if(n>6){
-            speedSlider.value=`${(6)}`;
-            return 6;
+        else if(n>4){
+            speedSlider.value=`${(4)}`;
+            return 4;
         }
         else{
             speedSlider.value=`${(n)}`;
             return n;
         }
-        
     }
     increaseSpeed=()=>{
-        this.speed=this.setSpeedTo(speedSlider.valueAsNumber+1);
+        this.setSpeed(this.setSpeedTo(speedSlider.valueAsNumber+1));
     }
     decreaseSpeed=()=>{
-        this.speed=this.setSpeedTo(speedSlider.valueAsNumber-1);
+        this.setSpeed(this.setSpeedTo(speedSlider.valueAsNumber-1));
     }
     setAnimationTyp1=()=>{
         this.animationType=AnimationsTyp.Typ1;
@@ -187,11 +188,11 @@ export class AnimationControl{
             console.log(e);
         }
     }
+
     setPlaying=()=>{
         if(this.start && !this.stop){
             this.play   = true;
             this.pause  = false;
-            // this.reset  = false;
             this.end    = false;
             this.stop   = false;
             this.changePlayButtonBKG();
@@ -200,7 +201,6 @@ export class AnimationControl{
     setStop=()=>{
         this.play   = false;
         this.pause  = false;
-        // this.reset  = false;
         this.end    = false;
         this.stop   = true;
         this.changePlayButtonBKG();
@@ -218,7 +218,6 @@ export class AnimationControl{
         if(this.start &&!this.stop && !this.reset){
             this.play   = false;
             this.pause  = true;
-            // this.reset  = false;
             this.end    = false;
             this.changePlayButtonBKG();
         }
@@ -229,8 +228,8 @@ export class AnimationControl{
         this.reset  = true;
         setTimeout(function(){
             aniControl.reset=false;
-            aniControl.consoleFlags();
-        },3000);
+            // aniControl.consoleFlags();
+        },1000);
         this.changePlayButtonBKG();
     }
 
@@ -238,13 +237,11 @@ export class AnimationControl{
         this.start  = true;
         this.play   = false;
         this.pause  = false;
-        //this.reset  = false;
-        //this.stop   = false;
         this.end    = true;
         this.changePlayButtonBKG();
     }
     setSmoothIfNecessery(){
-        if(this.play && this.animationType!=AnimationsTyp.Typ3 && this.speed<=3){
+        if(this.play && this.animationType!=AnimationsTyp.Typ3 && this.speed<3){
             inputText.classList.add("scrollSmooth");
             outputText.classList.add("scrollSmooth");
         }
@@ -252,10 +249,6 @@ export class AnimationControl{
     removeSmoothScroll(){
         inputText.classList.remove("scrollSmooth");
         outputText.classList.remove("scrollSmooth");
-    }
-
-    toggle=()=>{
-        this.play?this.setPaused():this.setPlaying();
     }
     isAni1=()=>{
         return this.animationType==AnimationsTyp.Typ1;
@@ -273,6 +266,7 @@ export class AnimationControl{
             inputText.classList.remove("scrollDisabled");
             outputText.classList.remove("scrollDisabled");
             descriptionLines.classList.remove("scrollDisabled");
+            symbolTableLines.classList.remove("scrollDisabled");
 
             elem.classList.remove("pausedBKG");
             elem.classList.add("playingBKG");
@@ -284,8 +278,9 @@ export class AnimationControl{
             if(this.isAni3()) descriptionLines.classList.remove("scrollSmooth");
 
             descriptionLines.classList.add("scrollDisabled");
+            symbolTableLines.classList.add("scrollDisabled");
 
-            if(this.speed<=3 && this.animationType!=AnimationsTyp.Typ3){
+            if(this.speed<3 && this.animationType!=AnimationsTyp.Typ3){
                 inputText.classList.add("scrollSmooth");
                 outputText.classList.add("scrollSmooth");
             }   
@@ -299,15 +294,17 @@ export class AnimationControl{
             inputText.classList.remove("scrollDisabled");
             outputText.classList.remove("scrollDisabled");
             descriptionLines.classList.remove("scrollDisabled");
+            symbolTableLines.classList.remove("scrollDisabled");
+
 
 
             elem.classList.remove("pausedBKG");
             elem.classList.add("playingBKG");
         }
     }
-
-    setFrames=(n:number)=>{
-        this.frames=n;
+    setSpeed=(n:number)=>{
+        this.speed=n;
+        this.baseFrameTime=1300-this.speed*300;
     }
     public createEventListeners=()=>{
         this.setAnimationTyp1();
@@ -319,10 +316,10 @@ export class AnimationControl{
         createClickListener("singleStep", this.setSinglestep);
         try {
             speedSlider.addEventListener("change",()=>{
-                this.speed = speedSlider.valueAsNumber;
+                this.setSpeed(speedSlider.valueAsNumber);
             })
             speedSlider.addEventListener("input", ()=>{
-                this.speed = speedSlider.valueAsNumber;
+                this.setSpeed(speedSlider.valueAsNumber);
             })
             
         } catch (error) {

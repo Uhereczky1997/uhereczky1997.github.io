@@ -178,7 +178,8 @@ export class InputLineControl{
         let l:string|undefined = "";
         // console.log(i.getCommandLine()+" ... "+i.getLength()+" ... "+i.getHCode());
         if(i.getFirstPart().toUpperCase()=="RS"){
-            return (h.length>4?"00 ... ("+i.getLength()+"x)":h);
+            return "00 ... ("+i.getLength()+"x)";
+            // return (h.length>4?"00 ... ("+i.getLength()+"x)":h);
         }
         else if(i.getFirstPart().toUpperCase()=="ORG"){
             return "";
@@ -347,15 +348,15 @@ export class InputLineControl{
             return;
         }
         let rest:string="";
-        let addr:string="";
+        let addr:string=this.fHD16(e.getStartingAddr());
         let h:string|undefined="";
         let hex:string=e.getHCode();
-        if(e.getStartingAddr()=='0000h'){
+/*         if(e.getStartingAddr()=='0000h'){
             addr='0000h'
         }
         else{
             addr=this.fHD16(e.getStartingAddr());
-        }
+        } */
         if(e.getFirstPart().toUpperCase()=='RS'){
             rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr));
             e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${hex}${this.fHD8WH(rest)}`);

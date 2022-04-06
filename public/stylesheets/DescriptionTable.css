@@ -1,9 +1,4 @@
 
-#translation{
-    grid-column: 4/8;
-    grid-row: 1/8;
-}
-
 #descriptionSymboltableBox{
     display: flex;
     flex:1;
@@ -23,13 +18,19 @@
 }
 .scrollDisabled{
     overflow-y: hidden!important;
-    scroll-behavior: smooth;
+    /* scroll-behavior: smooth; */
 }
 #descriptionLines{
     height: auto;
 }
 #descriptionLines>p{
     margin: 2px;
+}
+#currentLine *>*{
+    height: fit-content;
+}
+#currentLineLine{
+    height: fit-content;
 }
 #currentLine>*>span{
     padding: 0.1em 0.2em;

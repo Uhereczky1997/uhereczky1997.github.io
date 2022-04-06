@@ -206,7 +206,7 @@
     background-position: center center;
     /* background-size: contain; */
     background-repeat: no-repeat;
-    background-size: auto 75%;
+    background-size: auto 60%;
     background-image: var(--lightBKG);
 }
 .singleStepBKG{
@@ -237,7 +237,7 @@
     color:rgb(85, 151, 252);
 } */
 .customScrollbar::-webkit-scrollbar{
-    padding: 0px 2px;
+    padding: 2px 2px;
     width: 7px;
 }
 .customScrollbar::-webkit-scrollbar-track{
@@ -263,7 +263,7 @@
 
 
 
-body *>*,body{
+body *,body{
     color:var(--text);
     background-color: var(--bkg1);
     border-color: var(--bkg2);
@@ -364,7 +364,7 @@ body>* h1{
     grid-template-columns: repeat(20,1fr);
     grid-template-rows: 1fr;
     justify-items: center;
-    background-color: var(--bkg2);
+    /* background-color: var(--bkg2); */
 }
 #translated{
     grid-column: 8/11;
@@ -383,21 +383,93 @@ body>* h1{
     grid-column: 4/8;
     grid-row: 8/12;
 }
-#buttonLeiste *> button, #buttonLeiste> button, #InputWindow>button, #OutputWindow>button {
-    padding: 5px 5px;
-    margin: 0 0;
-    border: 1px solid var(--bkg2);
-    cursor: pointer;
-    /*  background-color: transparent; */
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
 #buttonLeiste *> button, #buttonLeiste> button{
     width: 100%;
     height: 100%;
-    border-top:none;
-    border-bottom:none;
+    padding: 0!important;
+    margin: 0 0;
+    border: none;
+    cursor: pointer;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
 }
+#buttonLeiste h4{
+ background-color: transparent!important;
+}
+.tooltip{
+    position: relative;
+}
+.tooltip .tooltiptext{
+    visibility: hidden;
+    /* width: 400%; */
+    width: fit-content;
+    background-color: var(--green)!important;
+    color: var(--text)!important;
+    padding: 5px 0;
+    border-radius: 10px;
+    bottom: 105%;
+    left: 50%;
+    /* margin-left: -7vmax; */
+    margin-left: -200%;
+    line-break: strict;
+    position: absolute;
+    z-index: 1;
+}
+.tooltip:hover >.tooltiptext {
+    visibility: visible;
+}
+.tooltiptext>h3,.tooltiptext>p{
+    text-align: start;
+    margin: 0 2;
+    padding: 0.2em;
+    background: transparent!important;
+}
+#InputWindow>button, #OutputWindow>button {
+    padding: 0!important;
+    margin: 0 0;
+    cursor: pointer;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+#buttonLeiste>div,#buttonLeiste *>div{
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    background-color: var(--bkg2);
+}
+/* #speedSliderContainer{
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+} */
+.leftBorderpRadius{
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top:3px solid!important;
+    border-bottom:3px solid!important;
+    border-left: 3px solid!important;
+    border-right: 1px solid;
+}
+.leftBorderRadius{
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 8px;
+}
+.rightBorderRadius{
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+}
+.rightBorderpRadius{
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-top:3px solid!important;
+    border-bottom:3px solid!important;
+    border-right: 3px solid!important;
+    border-left: 1px solid;
+}
+.middleBorder{
+    border-right: 1px solid!important;
+    border-left: 1px solid!important;
+}
+
 #InputWindow>button, #OutputWindow>button{
     border-radius: 10px;
 }
@@ -424,7 +496,7 @@ body>* h1{
 }
 .MiddleBoxAlt{
     display: grid;
-    grid-template-rows:minmax(min-content,max-content) min-content 1px min-content 1px 1fr  12%;
+    grid-template-rows:minmax(min-content,max-content) minmax(min-content,max-content) 1px minmax(min-content,max-content) 1px 1fr  12%;
     grid-template-columns: 1fr;
 }
 .SideBox{
@@ -439,7 +511,7 @@ body>* h1{
 }
 #speedButtonDiv{
     grid-column: span 3;
-    overflow: hidden; 
+    /* overflow: hidden;  */
     display: grid;
     grid-template-columns: 15% 1fr 15%;
     grid-template-rows: 1fr;
@@ -472,6 +544,9 @@ button:hover{
     -o-transition: all .1s linear;
     transition: all .1s linear;
 }
+#speedSliderContainer{
+    background-color: var(--bkg1)!important;
+}
 .button1{
     width: 100%;
     height: 100%;
@@ -495,6 +570,21 @@ button:hover{
 #Machinenbefehl{
     border-left: 1px solid;
 }
-#translated,#buttonLeiste,#translatedinfo,#translation,#toTranslate,#SymbolTable,#InputWindow,#OutputWindow{
+#translated ,#translatedinfo,#translation,#toTranslate,#SymbolTable,#InputWindow,#OutputWindow{
     overflow: hidden;
 }
+#playResetSingleStep, #animationTypHolder, #utilityContainer{
+    grid-column: span 3;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    width: 100%;
+    height: 100%;
+    /* overflow: hidden; */
+}
+/* #playResetSingleStep :first-child, #animationTypHolder :first-child, #utilityContainer :first-child{
+    border-right: 1px solid;
+}
+#playResetSingleStep :last-child, #animationTypHolder :last-child, #utilityContainer +button:last-child {
+    border-left: 1px solid;
+} */

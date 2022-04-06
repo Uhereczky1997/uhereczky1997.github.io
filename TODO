@@ -16,13 +16,13 @@ x      linkerauflösung titel schritt für schritt (fixe geschw.)
 x      elisis overflow für speicherabbild
 ?      warnung und fehler nur in descriptionLine anzeigen, keine pre analyse
 
-      bessere Geschwindigkeiten für Animationen/Schritte (Typ 2 seems to be good)
-      addresszähler hervorhebung nach erhöhung
-      labelauflösung: austausch bis zu dem existierenden label, wenn es nicht existiert, dann abbruch ganz oben.
-  
+~      bessere Geschwindigkeiten für Animationen/Schritte 
+x      addresszähler hervorhebung nach erhöhung
+x      labelauflösung: austausch bis zu dem existierenden label, wenn es nicht existiert, dann abbruch ganz oben.
+x      programm brechendes fehler beheben -> start flag gets reset, so no exception will be thrown since the checkForSleep is dependent on the start flag
 
 ~     <Edit> -- <Play/Pause><Reset> - <SingleStep> <AnimationsTYP1><AnimationsTYP2><AnimationsTYP3> <SpeedSlider> <Vollbild><Dunkel/Hell><Credits> -- <Hex>
-      buttonleiste besser gestalten
+~     buttonleiste besser gestalten
       farbenzusammensetzung überprüfen lassen
 
 x      Einteilung von ausgabe Fenster ändern! Links speicherabbild | Rechts HexCode + knopf zum schließen & Copy to clipboard

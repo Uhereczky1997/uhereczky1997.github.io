@@ -1,10 +1,8 @@
-import { aniControl, AnimationsTyp, checkIfPaused, sleepFor } from "./AnimationUtil";
-import { getHtmlElement } from "./Tools";
+import { aniControl, AnimationsTyp, checkIfPaused, sleepFor, sleepForFrame, sleepStopStartTime } from "./AnimationUtil";
+import { symbolTableLines, targetlabelValuePlaceholder, targetSymbolTableLine } from "./ProjectWindow";
+import { getHtmlElement, updateScrollOfIn_Out, updateScrollOfSymbolTable } from "./Tools";
 
-export const sleepUntilNextFrame=async(n:number):Promise <any>=>{
-    await sleepFor(n);
-    // await sleepFor(n/aniControl.speed);
-}
+
 const arrowHeadID:string="arrowHead";
 const arrowVerticalID:string="arrowVertical";
 const arrowJointID:string="arrowJoint";
@@ -73,22 +71,314 @@ export class Animator{
         this.turnSleepTime = 1000;
     }
 
-    async animationInputLineToCurrentLine(id:number,line:string){
-        // this.setMovableParameters(startingTop,startingLeft,startingWidth,this.currentLineElem.offsetHeight/5*4);
-        // this.setMovableParameters(startingTop,startingLeft,startingWidth,startingHeight);
-        if(aniControl.animationType==AnimationsTyp.Typ3){
+    async moveConstToSymbolTable(line:string){
+        if(aniControl.isAni3()) return;
+        let targetElem = getHtmlElement(targetSymbolTableLine);
+        this.movableElem.innerHTML=this.formatLineString("h4",line);
+        this.targetElemLeft=this.descriptionLineElem.offsetLeft;
+        this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),
+                                    this.targetElemLeft);
+        let n = updateScrollOfSymbolTable(targetSymbolTableLine);
+        this.targetElemTop=targetElem.offsetTop-n+targetElem.offsetHeight/2-this.movableElem.offsetHeight/2;
+       /*  console.log(this.targetElemTop);
+        if(-this.symbolTableBox.offsetTop+this.symbolTableElem.offsetTop+this.symbolTableElem.scrollHeight>this.symbolTableBox.clientHeight){
+            this.targetElemTop = this.symbolTableBox.offsetTop+this.symbolTableBox.clientHeight-this.movableElem.offsetHeight;
+        }
+        else{
+            // console.log(this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight+"  "+(this.symbolTableElem.children.item(0)!.scrollHeight*1.5));
+            this.targetElemTop=this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight-(this.symbolTableElem.children.item(0)!.scrollHeight*1.5);
+        }
+        console.log(this.targetElemTop); */
+        if(aniControl.isAni1()){
+
+            this.turnMovableVisible();
+            await sleepStopStartTime();
+            while(this.targetElemTop>this.movableElem.offsetTop){
+                await this.moveSleepCheck(this.getPixeljump(),0);
+            }
+            this.movableElem.style.top=this.targetElemTop+"px";
+            await sleepStopStartTime();
+            this.turnMovableHidden();
             return;
         }
+        else{
+            this.movableHelper.innerHTML=this.formatLineString("h4",line);
+            this.movableHelper.style.top=this.targetElemTop+"px";
+            this.movableHelper.style.left=this.targetElemLeft+"px";
+            let arrowHead = this.getArrowElem(arrowHeadID);
+            let arrowVertical = this.getArrowElem(arrowVerticalID);
+            this.setClassOfHead(DOWN);
+            this.toggleToUp(true);
 
-        await this.setStartTopToInputLine(id);
+            arrowHead.style.top=this.movableHelper.offsetTop-arrowHead.offsetHeight+"px";
+            // this.calcPosT(arrowHeadID,this.movableHelper.offsetTop-arrowHead.offsetHeight);
+            arrowHead.style.left=this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2+"px";
+            // this.calcPosL(arrowHeadID,this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2)
+            arrowVertical.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider+"px";
+            // this.calcPosT(arrowVerticalID,this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider);
+            arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
+            // this.calcPosL(arrowVerticalID,arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2)
+            arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight+"px";
+            // this.calcHeight(arrowVerticalID,arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight)
+            this.recalulateParameters(arrowHeadID,bodyElem.id);
+            this.recalulateParameters(arrowVerticalID,bodyElem.id);
+            this.turnMovableVisible();
+            this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
+            await this.turnMovableHelperVisible();
+            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+            await this.turnArrowElemsHidden();
+            await this.turnMovableHelperHidden();
+            await this.turnMovableHidden();
+        }
+    }
+    
+    async moveLabeltoSymboltableALTMoveableHelper(hex:string){
+        if(aniControl.isAni3()) return;
+
+        this.movableHelper.style.top=this.addresszaehlerElem.offsetTop+"px";
+        this.movableHelper.style.left=this.addresszaehlerElem.offsetLeft+"px";
+        // this.movableHelper.innerHTML=`<h4 class="moveableText">${hex}</h4}>`;
+        this.movableHelper.innerHTML=this.formatLineString("h3",hex);
+        let placeholder:HTMLSpanElement = document.getElementById(targetlabelValuePlaceholder) as HTMLSpanElement;
+        if(placeholder==null){
+            throw new Error("BRUV");
+        }
+        let n = updateScrollOfSymbolTable(targetlabelValuePlaceholder);
+        // this.targetElemTop=targetElem.offsetTop-n+targetElem.offsetHeight/2-this.movableElem.offsetHeight/2;
+        this.targetElemTop=placeholder.offsetTop-n+placeholder.offsetHeight*1/2-this.movableHelper.offsetHeight*1/2;
+        this.targetElemLeft=placeholder.offsetLeft;
+        
+        if(aniControl.isAni1()){
+            this.turnMovableHelperVisible();
+            await sleepStopStartTime();
+            while(placeholder.offsetLeft>this.movableHelper.offsetLeft){
+                await this.moveHelperSleepCheck(0,this.getPixeljump());
+            }
+            this.movableHelper.style.left=placeholder.offsetLeft+"px";
+            await sleepStopStartTime();
+            while(this.targetElemTop>this.movableHelper.offsetTop){
+                await this.moveHelperSleepCheck(this.getPixeljump(),0);
+            }
+            this.movableHelper.style.top=this.targetElemTop+"px";
+    
+            await sleepStopStartTime();
+            this.turnMovableHelperHidden();
+            return;
+
+        }
+        else{
+            this.movableElem.innerHTML=this.formatLineString("h3",hex);
+            this.movableElem.style.top=this.targetElemTop+"px";
+            this.movableElem.style.left=this.targetElemLeft+"px";
+            let arrowHead = this.getArrowElem(arrowHeadID);
+            let arrowHorizontal = this.getArrowElem(arrowHorizontalID);
+            let arrowJoint = this.getArrowElem(arrowJointID);
+            let arrowVertical = this.getArrowElem(arrowVerticalID);
+
+            this.setClassOfHead(DOWN);
+            this.setClassOfJoint(1,JQ1);
+            this.toggleToUp(true);
+            
+            // arrowHead.style.top=(this.movableElem.offsetTop-arrowHead.offsetHeight)*100/bodyElem.offsetHeight+"%";
+            arrowHead.style.top=(this.movableElem.offsetTop-arrowHead.offsetHeight)+"px";
+            arrowHead.style.left=(this.movableElem.offsetLeft+this.movableElem.offsetWidth/2-arrowHead.offsetWidth/2)+"px";
+            // arrowHead.style.left=(this.movableElem.offsetLeft+this.movableElem.offsetWidth/2-arrowHead.offsetWidth/2+"px";
+
+            arrowVertical.style.left=(arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2)+"px";
+            // arrowVertical.style.left=(arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
+
+            arrowHorizontal.style.top=(this.movableHelper.offsetTop+this.movableHelper.offsetHeight/2-arrowHorizontal.offsetHeight/2)+"px";
+            // arrowHorizontal.style.top=(this.movableHelper.offsetTop+this.movableHelper.offsetHeight/2-arrowHorizontal.offsetHeight/2)*100/bodyElem.offsetHeight+"%";
+            
+            arrowJoint.style.top=(arrowHorizontal.offsetTop)+"px";
+            // arrowJoint.style.top=(arrowHorizontal.offsetTop)*100/bodyElem.offsetHeight+"%";
+            // arrowJoint.style.left=(arrowVertical.offsetLeft+"px";
+            arrowJoint.style.left=(arrowVertical.offsetLeft)+"px";
+            
+            arrowHorizontal.style.width=(this.movableHelper.offsetWidth/overlapdivider+arrowJoint.offsetWidth/overlapdivider-this.movableHelper.offsetLeft+arrowJoint.offsetLeft-this.movableHelper.offsetWidth)+"px";
+            arrowHorizontal.style.left=(this.movableHelper.offsetLeft+this.movableHelper.offsetWidth-this.movableHelper.offsetWidth/overlapdivider)+"px";
+            
+            arrowVertical.style.height=(arrowJoint.offsetHeight/overlapdivider+arrowHead.offsetHeight/overlapdivider+arrowHead.offsetTop-arrowJoint.offsetTop)+"px";
+            arrowVertical.style.top=(arrowJoint.offsetTop+arrowJoint.offsetHeight-arrowJoint.offsetHeight/overlapdivider)+"px";
+            this.recalulateParameters(arrowHeadID,bodyElem.id);
+            this.recalulateParameters(arrowVerticalID,bodyElem.id);
+            this.recalulateParameters(arrowHorizontalID,bodyElem.id);
+            this.recalulateParameters(arrowJointID,bodyElem.id);
+
+            this.turnMovableVisible();
+            this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
+            await this.turnMovableHelperVisible();
+            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+            await this.turnArrowElemsHidden();
+            await this.turnMovableHelperHidden();
+            await this.turnMovableHidden();
+        }
+    }
+
+    async moveLabeltoSymboltableALTMoveable(line:string){
+        if(aniControl.isAni3()) return;
+        let targetElem = getHtmlElement(targetSymbolTableLine);
+
+        this.movableElem.innerHTML=this.formatLineString("h4",line);
+        this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft);
+        let n = updateScrollOfSymbolTable(targetSymbolTableLine);
+        this.targetElemTop=targetElem.offsetTop-n+targetElem.offsetHeight/2-this.movableElem.offsetHeight/2;
+
+/*         if(-this.symbolTableBox.offsetTop+this.symbolTableElem.offsetTop+this.symbolTableElem.scrollHeight>this.symbolTableBox.clientHeight){
+
+            this.targetElemTop = this.symbolTableBox.offsetTop+this.symbolTableBox.clientHeight-this.movableElem.offsetHeight;
+        }
+        else{
+            console.log(this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight+"  "+(this.symbolTableElem.children.item(0)!.scrollHeight*1.5));
+            this.targetElemTop=this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight-(this.symbolTableElem.children.item(0)!.scrollHeight*1.5);
+        } */
+        if(aniControl.isAni1()){
+            this.turnMovableVisible();
+            await sleepStopStartTime();
+            while(this.targetElemTop>this.movableElem.offsetTop){
+                await this.moveSleepCheck(this.getPixeljump(),0);
+            }
+            this.movableElem.style.top=this.targetElemTop+"px";
+            await sleepStopStartTime();
+            this.turnMovableHidden();
+            return;
+
+        }
+        else{
+            this.movableHelper.innerHTML=this.formatLineString("h4",line);
+            this.movableHelper.style.top=this.targetElemTop+"px";
+            this.movableHelper.style.left=this.targetElemLeft+"px";
+            let arrowHead = this.getArrowElem(arrowHeadID);
+            let arrowVertical = this.getArrowElem(arrowVerticalID);
+            this.setClassOfHead(DOWN);
+            this.toggleToUp(true);
+            // arrowHead.style.top=this.movableHelper.offsetTop-arrowHead.offsetHeight+"px";
+            arrowHead.style.top=(this.movableHelper.offsetTop-arrowHead.offsetHeight)*100/bodyElem.offsetHeight+"%";
+            // arrowHead.style.left=this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2+"px";
+            arrowHead.style.left=(this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2)*100/bodyElem.offsetWidth+"%";
+            // arrowVertical.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider+"px";
+            arrowVertical.style.top=(this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider)*100/bodyElem.offsetHeight+"%";
+            // arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
+            arrowVertical.style.left=(arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2)*100/bodyElem.offsetWidth+"%";
+            // arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight+"px";
+            arrowVertical.style.height=(arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight)*100/bodyElem.offsetHeight+"%";
+            
+            /* this.recalulateParameters(arrowHeadID,bodyElem.id);
+            this.recalulateParameters(arrowVerticalID,bodyElem.id) */;
+            this.turnMovableVisible();
+            this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
+            await this.turnMovableHelperVisible();
+            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+            await this.turnArrowElemsHidden();
+            await this.turnMovableHelperHidden();
+            await this.turnMovableHidden();
+        }
+    }
+
+    async exchangeLabelWithSymbolTable(toLine:string,returnLine:string,id:number){
+        if(aniControl.isAni3()) return;
+        let targetElem = getHtmlElement(`symbol${id}`);
+
+        this.movableElem.innerHTML=this.formatLineString("h3",toLine);
+        this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.movableElem.offsetHeight),this.descriptionLineElem.offsetLeft);
+
+        if(targetElem!=null){
+            let n= updateScrollOfSymbolTable(targetElem.id)
+            this.targetElemTop=targetElem.offsetTop-(n>0?n:0)+targetElem.offsetHeight/2-this.movableElem.offsetHeight/2;
+        }
+        else{
+            this.targetElemTop=this.symbolTableElem.offsetTop;
+        }
+        if(aniControl.isAni1()){
+            this.turnMovableVisible();
+            await sleepStopStartTime();
+            while(this.targetElemTop>this.movableElem.offsetTop){
+                await this.moveSleepCheck(this.getPixeljump(),0);
+            }
+            this.movableElem.style.top=this.targetElemTop+"px";
+    
+            await sleepStopStartTime();
+            if(id<0){
+                this.turnMovableHidden();
+                return;
+            }
+            // await sleepStopStartTime();
+            this.movableElem.innerHTML=`<h3 class="moveableText">${returnLine}</h3>`;
+            this.targetElemTop=this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight;
+            while(this.targetElemTop<this.movableElem.offsetTop){
+                await this.moveSleepCheck(-this.getPixeljump(),0);
+            }
+            this.movableElem.style.top=this.targetElemTop+"px";
+    
+            await sleepStopStartTime();
+            this.turnMovableHidden();
+            return;
+        }
+        else{
+            this.movableHelper.innerHTML=this.formatLineString("h3",toLine);
+            this.movableHelper.style.top=this.targetElemTop+"px";
+            this.movableHelper.style.left=this.targetElemLeft+"px";
+            let arrowHead = this.getArrowElem(arrowHeadID);
+            let arrowVertical = this.getArrowElem(arrowVerticalID);
+            this.setClassOfHead(DOWN);
+            this.toggleToUp(true);
+            arrowHead.style.top=this.movableHelper.offsetTop-arrowHead.offsetHeight+"px";
+            arrowHead.style.left=this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2+"px";
+            arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
+            arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight+"px";
+            arrowVertical.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider+"px";
+            this.recalulateParameters(arrowHeadID,bodyElem.id);
+            this.recalulateParameters(arrowVerticalID,bodyElem.id);
+            this.turnMovableVisible();
+            this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
+            this.turnMovableHelperVisible();
+
+            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+
+            await this.turnArrowElemsHidden();
+            await this.turnMovableHelperHidden();
+            await this.turnMovableHidden();
+            if(id<0){
+                return;
+            }
+
+            this.movableHelper.innerHTML=this.formatLineString("h3",returnLine);
+            this.movableElem.innerHTML=this.formatLineString("h3",returnLine);
+            await sleepStopStartTime();
+
+            this.setClassOfHead(UP);
+            arrowHead.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight+"px";
+            arrowHead.style.left=this.movableElem.offsetLeft+this.movableElem.offsetWidth/2-arrowHead.offsetWidth/2+"px";
+
+            arrowVertical.style.top=arrowHead.offsetTop+arrowHead.offsetHeight-arrowHead.offsetHeight/overlapdivider+"px";
+            arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
+            arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableHelper.offsetHeight/overlapdivider-arrowHead.offsetTop-arrowHead.offsetHeight+this.movableHelper.offsetTop+"px";
+            this.recalulateParameters(arrowHeadID,bodyElem.id);
+            this.recalulateParameters(arrowVerticalID,bodyElem.id);
+            this.turnMovableVisible();
+            this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
+            this.turnMovableHelperVisible();
+
+            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+
+            await this.turnArrowElemsHidden();
+            await this.turnMovableHelperHidden();
+            await this.turnMovableHidden();
+        }
+    }
+
+    async pushAufzulosendestoCurrentLine(i:number,line:string){
+        if(aniControl.isAni3()) return;
+        let childelem = getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}outputP`);
+
+        let n= updateScrollOfIn_Out(this.outPutText.id,childelem.id);
+        console.log(n);
+        await this.setMovableParameters(childelem.offsetTop-n,this.outPutText.offsetLeft);
         this.movableElem.innerHTML=this.formatLineString("h3",line);
-        // this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-startingHeight;
         this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-this.movableElem.offsetHeight;
         this.targetElemLeft = this.currentLineElem.offsetLeft;
-        this.turnMovableVisible();
-        if(aniControl.animationType==AnimationsTyp.Typ1){
-
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
+        if(aniControl.isAni1()){
+            this.turnMovableVisible();
             if(this.targetElemTop>this.movableElem.offsetTop){
                 while(this.targetElemTop>this.movableElem.offsetTop){
                     await this.moveSleepCheck(this.getPixeljump(),0);
@@ -105,12 +395,134 @@ export class Animator{
                 }
                 this.movableElem.style.top=this.targetElemTop+"px";
             }
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
+            await sleepStopStartTime();
+            while(this.targetElemLeft<this.movableElem.offsetLeft){
+                await this.moveSleepCheck(0,-this.getPixeljump());
+            }
+            this.movableElem.style.left=this.targetElemLeft+"px";
+            await sleepStopStartTime();
+            this.turnMovableHidden();
+            return;
+        }
+        this.movableHelper.innerHTML=this.formatLineString("h3",line);
+        this.movableHelper.style.top=this.targetElemTop+"px";
+        this.movableHelper.style.left=this.targetElemLeft+"px";
+        let arrowHead = this.getArrowElem(arrowHeadID);
+        let arrowHorizontal = this.getArrowElem(arrowHorizontalID);
+        let arrowJoint = this.getArrowElem(arrowJointID);
+        let arrowVertical = this.getArrowElem(arrowVerticalID);
+
+        this.setClassOfHead(LEFT);
+        this.setClassOfJoint(1,JQ1);
+        this.toggleToUp(false);
+        
+
+        arrowHead.style.top=this.movableHelper.offsetTop+this.movableHelper.offsetHeight/2-arrowHead.offsetHeight/2+"px";
+        arrowHead.style.left=this.movableHelper.offsetLeft+this.movableHelper.offsetWidth+"px";
+
+        arrowHorizontal.style.top=arrowHead.offsetTop+arrowHead.offsetHeight/2-arrowHorizontal.offsetHeight/2+"px";
+        if(this.movableHelper.offsetTop+2*this.movableHelper.offsetHeight>this.movableElem.offsetTop 
+            && this.movableHelper.offsetTop+this.movableHelper.offsetHeight/2<this.movableElem.offsetTop){
+                let arrowHorizontal2 = this.getArrowElem(arrowHorizontalID2);
+                let arrowJoint2 = this.getArrowElem(arrowJointID2);
+
+                this.setClassOfJoint(2,JQ3);
+
+                arrowHorizontal.style.width=arrowHead.offsetWidth/overlapdivider+arrowHead.offsetWidth+arrowJoint.offsetWidth/overlapdivider+"px";
+                arrowHorizontal.style.left=arrowHead.offsetLeft-arrowHead.offsetWidth/overlapdivider+arrowHead.offsetWidth+"px";
+
+                arrowHorizontal2.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight/2-arrowHorizontal2.offsetHeight/2+"px";
+
+                arrowJoint.style.top= arrowHorizontal.offsetTop+"px";
+                arrowJoint.style.left=arrowHorizontal.offsetLeft+arrowHorizontal.offsetWidth-arrowJoint.offsetWidth/overlapdivider+"px";
+
+                arrowVertical.style.left=arrowJoint.offsetLeft+"px";
+                
+                arrowJoint2.style.left = arrowJoint.offsetLeft+"px";
+                arrowJoint2.style.top = arrowHorizontal2.offsetTop+"px";
+
+                arrowVertical.style.height = arrowJoint2.offsetTop-arrowJoint.offsetTop-arrowJoint.offsetHeight
+                    +arrowJoint.offsetHeight/overlapdivider+arrowJoint2.offsetHeight/overlapdivider+"px";
+                arrowVertical.style.top = arrowJoint.offsetTop+arrowJoint.offsetHeight-arrowJoint.offsetHeight/overlapdivider+"px";
+
+                arrowHorizontal2.style.left= arrowJoint2.offsetLeft+arrowJoint2.offsetWidth-arrowJoint2.offsetWidth/overlapdivider+"px";
+
+                arrowHorizontal2.style.width = -arrowJoint2.offsetLeft-arrowJoint2.offsetWidth/overlapdivider
+                    +this.movableElem.offsetLeft-arrowJoint2.offsetWidth+this.movableElem.offsetWidth/overlapdivider+"px";
+                this.recalulateParameters(arrowHeadID,bodyElem.id);
+                this.recalulateParameters(arrowVerticalID,bodyElem.id);
+                this.recalulateParameters(arrowHorizontalID,bodyElem.id);
+                this.recalulateParameters(arrowJointID,bodyElem.id);
+                this.recalulateParameters(arrowHorizontalID2,bodyElem.id);
+                this.recalulateParameters(arrowJointID2,bodyElem.id);
+                
+                this.turnMovableVisible();
+                this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID,arrowHorizontalID2,arrowJointID2]);
+                await this.turnMovableHelperVisible();
+                await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+                await this.turnArrowElemsHidden();
+                await this.turnMovableHelperHidden();
+                await this.turnMovableHidden();
+                return;
+        }
+        arrowVertical.style.left=this.movableElem.offsetLeft+this.movableElem.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
+        
+        arrowJoint.style.top=arrowHorizontal.offsetTop+"px";
+        arrowJoint.style.left=arrowVertical.offsetLeft+"px";
+        
+        arrowHorizontal.style.width=arrowHead.offsetWidth/overlapdivider+arrowJoint.offsetWidth/overlapdivider-arrowHead.offsetLeft-arrowHead.offsetWidth+arrowJoint.offsetLeft+"px";
+        arrowHorizontal.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth-arrowHead.offsetWidth/overlapdivider+"px";
+        
+        arrowVertical.style.height=arrowJoint.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+this.movableElem.offsetTop-arrowJoint.offsetTop+"px";
+
+        arrowVertical.style.top=arrowJoint.offsetTop+arrowJoint.offsetHeight-arrowJoint.offsetHeight/overlapdivider+"px";
+
+        this.recalulateParameters(arrowHeadID,bodyElem.id);
+        this.recalulateParameters(arrowVerticalID,bodyElem.id);
+        this.recalulateParameters(arrowHorizontalID,bodyElem.id);
+        this.recalulateParameters(arrowJointID,bodyElem.id);
+        this.turnMovableVisible();
+        this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
+        await this.turnMovableHelperVisible();
+        await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+        await this.turnArrowElemsHidden();
+        await this.turnMovableHelperHidden();
+        await this.turnMovableHidden();
+
+    }
+    async animationInputLineToCurrentLine(id:number,line:string){
+        if(aniControl.isAni3()){
+            return;
+        }
+        this.movableElem.innerHTML=this.formatLineString("h3",line);
+
+        await this.setStartTopToInputLine(id);
+        this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-this.movableElem.offsetHeight;
+        this.targetElemLeft = this.currentLineElem.offsetLeft;
+        this.turnMovableVisible();
+        if(aniControl.isAni1()){
+
+            await sleepStopStartTime();
+            if(this.targetElemTop>this.movableElem.offsetTop){
+                while(this.targetElemTop>this.movableElem.offsetTop){
+                    await this.moveSleepCheck(this.getPixeljump(),0);
+                }
+                this.movableElem.style.top=this.targetElemTop+"px";
+            }
+            else if(this.targetElemTop==this.movableElem.offsetTop){
+            }
+            else{
+                while(this.targetElemTop<this.movableElem.offsetTop){
+                    await this.moveSleepCheck(-this.getPixeljump(),0);
+                }
+                this.movableElem.style.top=this.targetElemTop+"px";
+            }
+            await sleepStopStartTime();
             while(this.targetElemLeft>this.movableElem.offsetLeft){
                 await this.moveSleepCheck(0,this.getPixeljump());
             }
             this.movableElem.style.left=this.targetElemLeft+"px";
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
+            await sleepStopStartTime();
             this.turnMovableHidden();
             return;
         }
@@ -204,463 +616,24 @@ export class Animator{
         await this.turnMovableHidden();
         
     }
-
-    async moveConstToSymbolTable(line:string){
-        if(aniControl.animationType==AnimationsTyp.Typ3) return;
-
-        this.movableElem.innerHTML=this.formatLineString("h4",line);
-        this.targetElemLeft=this.descriptionLineElem.offsetLeft;
-        this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),
-                                    this.targetElemLeft,
-                                    this.descriptionLineElem.offsetWidth,
-                                    this.vorgangElem.offsetHeight);
-        
-        if(-this.symbolTableBox.offsetTop+this.symbolTableElem.offsetTop+this.symbolTableElem.scrollHeight>this.symbolTableBox.clientHeight){
-            this.targetElemTop = this.symbolTableBox.offsetTop+this.symbolTableBox.clientHeight-this.movableElem.offsetHeight;
-        }
-        else{
-            // console.log(this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight+"  "+(this.symbolTableElem.children.item(0)!.scrollHeight*1.5));
-            this.targetElemTop=this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight-(this.symbolTableElem.children.item(0)!.scrollHeight*1.5);
-        }
-        if(aniControl.animationType==AnimationsTyp.Typ1){
-
-            this.turnMovableVisible();
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-            while(this.targetElemTop>this.movableElem.offsetTop){
-                await this.moveSleepCheck(this.getPixeljump(),0);
-            }
-            this.movableElem.style.top=this.targetElemTop+"px";
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-            this.turnMovableHidden();
-            return;
-        }
-        else{
-            this.movableHelper.innerHTML=this.formatLineString("h4",line);
-            this.movableHelper.style.top=this.targetElemTop+this.movableHelper.offsetHeight/2+"px";
-            this.movableHelper.style.left=this.targetElemLeft+"px";
-            let arrowHead = this.getArrowElem(arrowHeadID);
-            let arrowVertical = this.getArrowElem(arrowVerticalID);
-            this.setClassOfHead(DOWN);
-            this.toggleToUp(true);
-
-            arrowHead.style.top=this.movableHelper.offsetTop-arrowHead.offsetHeight+"px";
-            // this.calcPosT(arrowHeadID,this.movableHelper.offsetTop-arrowHead.offsetHeight);
-            arrowHead.style.left=this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2+"px";
-            // this.calcPosL(arrowHeadID,this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2)
-            arrowVertical.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider+"px";
-            // this.calcPosT(arrowVerticalID,this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider);
-            arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
-            // this.calcPosL(arrowVerticalID,arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2)
-            arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight+"px";
-            // this.calcHeight(arrowVerticalID,arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight)
-            this.recalulateParameters(arrowHeadID,bodyElem.id);
-            this.recalulateParameters(arrowVerticalID,bodyElem.id);
-            this.turnMovableVisible();
-            this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
-            await this.turnMovableHelperVisible();
-            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
-            await this.turnArrowElemsHidden();
-            await this.turnMovableHelperHidden();
-            await this.turnMovableHidden();
-        }
-    }
-    
-    async moveLabeltoSymboltableALTMoveableHelper(hex:string){
-        if(aniControl.animationType==AnimationsTyp.Typ3) return;
-
-        this.movableHelper.style.top=this.addresszaehlerElem.offsetTop+"px";
-        this.movableHelper.style.left=this.addresszaehlerElem.offsetLeft+"px";
-        // this.movableHelper.innerHTML=`<h4 class="moveableText">${hex}</h4}>`;
-        this.movableHelper.innerHTML=this.formatLineString("h3",hex);
-        let placeholder:HTMLSpanElement = document.getElementById("labelValuePlaceholder") as HTMLSpanElement;
-        this.targetElemTop=placeholder.offsetTop+placeholder.offsetHeight*1/2-this.movableHelper.offsetHeight*1/2;
-        this.targetElemLeft=placeholder.offsetLeft;
-        if(placeholder==null){
-            throw new Error("BRUV");
-        }
-        
-        if(aniControl.animationType==AnimationsTyp.Typ1){
-            this.turnMovableHelperVisible();
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-            while(placeholder.offsetLeft>this.movableHelper.offsetLeft){
-                await this.moveHelperSleepCheck(0,this.getPixeljump());
-            }
-            this.movableHelper.style.left=placeholder.offsetLeft+"px";
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-            while(placeholder.offsetTop+placeholder.offsetHeight*1/2>this.movableHelper.offsetTop+this.movableHelper.offsetHeight*1/2){
-                await this.moveHelperSleepCheck(this.getPixeljump(),0);
-            }
-            // this.movableHelper.style.top=placeholder.offsetTop+"px";
-    
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-            this.turnMovableHelperHidden();
-            return;
-
-        }
-        else{
-            this.movableElem.innerHTML=this.formatLineString("h3",hex);
-            this.movableElem.style.top=this.targetElemTop+"px";
-            this.movableElem.style.left=this.targetElemLeft+"px";
-            let arrowHead = this.getArrowElem(arrowHeadID);
-            let arrowHorizontal = this.getArrowElem(arrowHorizontalID);
-            let arrowJoint = this.getArrowElem(arrowJointID);
-            let arrowVertical = this.getArrowElem(arrowVerticalID);
-
-            this.setClassOfHead(DOWN);
-            this.setClassOfJoint(1,JQ1);
-            this.toggleToUp(true);
-            
-            // arrowHead.style.top=(this.movableElem.offsetTop-arrowHead.offsetHeight)*100/bodyElem.offsetHeight+"%";
-            arrowHead.style.top=(this.movableElem.offsetTop-arrowHead.offsetHeight)+"px";
-            arrowHead.style.left=(this.movableElem.offsetLeft+this.movableElem.offsetWidth/2-arrowHead.offsetWidth/2)+"px";
-            // arrowHead.style.left=(this.movableElem.offsetLeft+this.movableElem.offsetWidth/2-arrowHead.offsetWidth/2+"px";
-
-            arrowVertical.style.left=(arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2)+"px";
-            // arrowVertical.style.left=(arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
-
-            arrowHorizontal.style.top=(this.movableHelper.offsetTop+this.movableHelper.offsetHeight/2-arrowHorizontal.offsetHeight/2)+"px";
-            // arrowHorizontal.style.top=(this.movableHelper.offsetTop+this.movableHelper.offsetHeight/2-arrowHorizontal.offsetHeight/2)*100/bodyElem.offsetHeight+"%";
-            
-            arrowJoint.style.top=(arrowHorizontal.offsetTop)+"px";
-            // arrowJoint.style.top=(arrowHorizontal.offsetTop)*100/bodyElem.offsetHeight+"%";
-            // arrowJoint.style.left=(arrowVertical.offsetLeft+"px";
-            arrowJoint.style.left=(arrowVertical.offsetLeft)+"px";
-            
-            arrowHorizontal.style.width=(this.movableHelper.offsetWidth/overlapdivider+arrowJoint.offsetWidth/overlapdivider-this.movableHelper.offsetLeft+arrowJoint.offsetLeft-this.movableHelper.offsetWidth)+"px";
-            arrowHorizontal.style.left=(this.movableHelper.offsetLeft+this.movableHelper.offsetWidth-this.movableHelper.offsetWidth/overlapdivider)+"px";
-            
-            arrowVertical.style.height=(arrowJoint.offsetHeight/overlapdivider+arrowHead.offsetHeight/overlapdivider+arrowHead.offsetTop-arrowJoint.offsetTop)+"px";
-            arrowVertical.style.top=(arrowJoint.offsetTop+arrowJoint.offsetHeight-arrowJoint.offsetHeight/overlapdivider)+"px";
-            this.recalulateParameters(arrowHeadID,bodyElem.id);
-            this.recalulateParameters(arrowVerticalID,bodyElem.id);
-            this.recalulateParameters(arrowHorizontalID,bodyElem.id);
-            this.recalulateParameters(arrowJointID,bodyElem.id);
-
-            this.turnMovableVisible();
-            this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
-            await this.turnMovableHelperVisible();
-            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
-            await this.turnArrowElemsHidden();
-            await this.turnMovableHelperHidden();
-            await this.turnMovableHidden();
-        }
-    }
-
-    async moveLabeltoSymboltableALTMoveable(line:string){
-        if(aniControl.animationType==AnimationsTyp.Typ3) return;
-        // console.log([this.descriptionLineElem.offsetTop,this.descriptionLineElem.offsetHeight,this.vorgangElem.offsetHeight])
-        this.movableElem.innerHTML=this.formatLineString("h4",line);
-        this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft,this.descriptionLineElem.offsetWidth,this.vorgangElem.offsetHeight);
-        if(-this.symbolTableBox.offsetTop+this.symbolTableElem.offsetTop+this.symbolTableElem.scrollHeight>this.symbolTableBox.clientHeight){
-            this.targetElemTop = this.symbolTableBox.offsetTop+this.symbolTableBox.clientHeight-this.movableElem.offsetHeight;
-        }
-        else{
-            console.log(this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight+"  "+(this.symbolTableElem.children.item(0)!.scrollHeight*1.5));
-            this.targetElemTop=this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight-(this.symbolTableElem.children.item(0)!.scrollHeight*1.5);
-        }
-        if(aniControl.animationType==AnimationsTyp.Typ1){
-            this.turnMovableVisible();
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-            while(this.targetElemTop>this.movableElem.offsetTop){
-                await this.moveSleepCheck(this.getPixeljump(),0);
-            }
-            this.movableElem.style.top=this.targetElemTop+"px";
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-            this.turnMovableHidden();
-            return;
-
-        }
-        else{
-            this.movableHelper.innerHTML=this.formatLineString("h4",line);
-            this.movableHelper.style.top=this.targetElemTop+this.movableHelper.offsetHeight/2+"px";
-            this.movableHelper.style.left=this.targetElemLeft+"px";
-            let arrowHead = this.getArrowElem(arrowHeadID);
-            let arrowVertical = this.getArrowElem(arrowVerticalID);
-            this.setClassOfHead(DOWN);
-            this.toggleToUp(true);
-            // arrowHead.style.top=this.movableHelper.offsetTop-arrowHead.offsetHeight+"px";
-            arrowHead.style.top=(this.movableHelper.offsetTop-arrowHead.offsetHeight)*100/bodyElem.offsetHeight+"%";
-            // arrowHead.style.left=this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2+"px";
-            arrowHead.style.left=(this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2)*100/bodyElem.offsetWidth+"%";
-            // arrowVertical.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider+"px";
-            arrowVertical.style.top=(this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider)*100/bodyElem.offsetHeight+"%";
-            // arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
-            arrowVertical.style.left=(arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2)*100/bodyElem.offsetWidth+"%";
-            // arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight+"px";
-            arrowVertical.style.height=(arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight)*100/bodyElem.offsetHeight+"%";
-            
-            /* this.recalulateParameters(arrowHeadID,bodyElem.id);
-            this.recalulateParameters(arrowVerticalID,bodyElem.id) */;
-            this.turnMovableVisible();
-            this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
-            await this.turnMovableHelperVisible();
-            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
-            await this.turnArrowElemsHidden();
-            await this.turnMovableHelperHidden();
-            await this.turnMovableHidden();
-        }
-    }
-
-    async exchangeLabelWithSymbolTable(toLine:string,returnLine:string,b:boolean){
-        if(aniControl.animationType==AnimationsTyp.Typ3) return;
-
-        this.movableElem.innerHTML=this.formatLineString("h3",toLine);
-        this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft,this.descriptionLineElem.offsetWidth,this.vorgangElem.offsetHeight);
-        this.targetElemTop=this.symbolTableElem.offsetTop;
-        if(aniControl.animationType==AnimationsTyp.Typ1){
-            this.turnMovableVisible();
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-            while(this.targetElemTop>this.movableElem.offsetTop){
-                await this.moveSleepCheck(this.getPixeljump(),0);
-            }
-            this.movableElem.style.top=this.targetElemTop+"px";
-    
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-            if(b){
-                this.turnMovableHidden();
-                return;
-            }
-            // await sleepFor(this.turnSleepTime/this.getPixeljump());
-            this.movableElem.innerHTML=`<h3 class="moveableText">${returnLine}</h3>`;
-            this.targetElemTop=this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight;
-            while(this.targetElemTop<this.movableElem.offsetTop){
-                await this.moveSleepCheck(-this.getPixeljump(),0);
-            }
-            this.movableElem.style.top=this.targetElemTop+"px";
-    
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-            this.turnMovableHidden();
-            return;
-        }
-        else{
-            this.movableHelper.innerHTML=this.formatLineString("h3",toLine);
-            this.movableHelper.style.top=this.targetElemTop+this.movableHelper.offsetHeight/2+"px";
-            this.movableHelper.style.left=this.targetElemLeft+"px";
-            let arrowHead = this.getArrowElem(arrowHeadID);
-            let arrowVertical = this.getArrowElem(arrowVerticalID);
-            this.setClassOfHead(DOWN);
-            this.toggleToUp(true);
-            arrowHead.style.top=this.movableHelper.offsetTop-arrowHead.offsetHeight+"px";
-            arrowHead.style.left=this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2+"px";
-            arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
-            arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight+"px";
-            arrowVertical.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider+"px";
-            this.recalulateParameters(arrowHeadID,bodyElem.id);
-            this.recalulateParameters(arrowVerticalID,bodyElem.id);
-            this.turnMovableVisible();
-            this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
-            this.turnMovableHelperVisible();
-
-            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
-
-            await this.turnArrowElemsHidden();
-            await this.turnMovableHelperHidden();
-            await this.turnMovableHidden();
-            if(b){
-                return;
-            }
-
-            this.movableHelper.innerHTML=this.formatLineString("h3",returnLine);
-            this.movableElem.innerHTML=this.formatLineString("h3",returnLine);
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-
-            this.setClassOfHead(UP);
-            arrowHead.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight+"px";
-            arrowHead.style.left=this.movableElem.offsetLeft+this.movableElem.offsetWidth/2-arrowHead.offsetWidth/2+"px";
-
-            arrowVertical.style.top=arrowHead.offsetTop+arrowHead.offsetHeight-arrowHead.offsetHeight/overlapdivider+"px";
-            arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
-            arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableHelper.offsetHeight/overlapdivider-arrowHead.offsetTop-arrowHead.offsetHeight+this.movableHelper.offsetTop+"px";
-            this.recalulateParameters(arrowHeadID,bodyElem.id);
-            this.recalulateParameters(arrowVerticalID,bodyElem.id);
-            this.turnMovableVisible();
-            this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
-            this.turnMovableHelperVisible();
-
-            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
-
-            await this.turnArrowElemsHidden();
-            await this.turnMovableHelperHidden();
-            await this.turnMovableHidden();
-        }
-    }
-
-    async pushAufzulosendestoCurrentLine(i:number,line:string){
-        if(aniControl.animationType==AnimationsTyp.Typ3) return;
-        let childelem = getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}outputP`);
-
-        await this.setMovableParameters(childelem.offsetTop-this.outPutText.scrollTop,this.outPutText.offsetLeft,this.outPutText.offsetWidth,this.currentLineElem.offsetHeight/5*4);
-        this.movableElem.innerHTML=this.formatLineString("h3",line);
-        this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-this.movableElem.offsetHeight;
-        this.targetElemLeft = this.currentLineElem.offsetLeft;
-        if(aniControl.animationType==AnimationsTyp.Typ1){
-            this.turnMovableVisible();
-            if(this.targetElemTop>this.movableElem.offsetTop){
-                while(this.targetElemTop>this.movableElem.offsetTop){
-                    await this.moveSleepCheck(this.getPixeljump(),0);
-                    // await this.adjustHeightOfMovable(this.getPixeljump(),this.currentLineElem.offsetHeight/5*4);
-                }
-                this.movableElem.style.top=this.targetElemTop+"px";
-            }
-            else if(this.targetElemTop==this.movableElem.offsetTop){
-            }
-            else{
-                while(this.targetElemTop<this.movableElem.offsetTop){
-                    await this.moveSleepCheck(-this.getPixeljump(),0);
-                    // await this.adjustHeightOfMovable(this.getPixeljump(),this.currentLineElem.offsetHeight/5*4);
-                }
-                this.movableElem.style.top=this.targetElemTop+"px";
-            }
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-            while(this.targetElemLeft<this.movableElem.offsetLeft){
-                await this.moveSleepCheck(0,-this.getPixeljump());
-            }
-            this.movableElem.style.left=this.targetElemLeft+"px";
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-            this.turnMovableHidden();
-            return;
-        }
-        this.movableHelper.innerHTML=this.formatLineString("h3",line);
-        this.movableHelper.style.top=this.targetElemTop+"px";
-        this.movableHelper.style.left=this.targetElemLeft+"px";
-        let arrowHead = this.getArrowElem(arrowHeadID);
-        let arrowHorizontal = this.getArrowElem(arrowHorizontalID);
-        let arrowJoint = this.getArrowElem(arrowJointID);
-        let arrowVertical = this.getArrowElem(arrowVerticalID);
-
-        this.setClassOfHead(LEFT);
-        this.setClassOfJoint(1,JQ1);
-        this.toggleToUp(false);
-        
-
-        arrowHead.style.top=this.movableHelper.offsetTop+this.movableHelper.offsetHeight/2-arrowHead.offsetHeight/2+"px";
-        arrowHead.style.left=this.movableHelper.offsetLeft+this.movableHelper.offsetWidth+"px";
-
-        arrowHorizontal.style.top=arrowHead.offsetTop+arrowHead.offsetHeight/2-arrowHorizontal.offsetHeight/2+"px";
-        if(this.movableHelper.offsetTop+2*this.movableHelper.offsetHeight>this.movableElem.offsetTop 
-            && this.movableHelper.offsetTop+this.movableHelper.offsetHeight/2<this.movableElem.offsetTop){
-                let arrowHorizontal2 = this.getArrowElem(arrowHorizontalID2);
-                let arrowJoint2 = this.getArrowElem(arrowJointID2);
-
-                this.setClassOfJoint(2,JQ3);
-
-                arrowHorizontal.style.width=arrowHead.offsetWidth/overlapdivider+arrowHead.offsetWidth+arrowJoint.offsetWidth/overlapdivider+"px";
-                arrowHorizontal.style.left=arrowHead.offsetLeft-arrowHead.offsetWidth/overlapdivider+arrowHead.offsetWidth+"px";
-
-                arrowHorizontal2.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight/2-arrowHorizontal2.offsetHeight/2+"px";
-
-                arrowJoint.style.top= arrowHorizontal.offsetTop+"px";
-                arrowJoint.style.left=arrowHorizontal.offsetLeft+arrowHorizontal.offsetWidth-arrowJoint.offsetWidth/overlapdivider+"px";
-
-                arrowVertical.style.left=arrowJoint.offsetLeft+"px";
-                
-                arrowJoint2.style.left = arrowJoint.offsetLeft+"px";
-                arrowJoint2.style.top = arrowHorizontal2.offsetTop+"px";
-
-                arrowVertical.style.height = arrowJoint2.offsetTop-arrowJoint.offsetTop-arrowJoint.offsetHeight
-                    +arrowJoint.offsetHeight/overlapdivider+arrowJoint2.offsetHeight/overlapdivider+"px";
-                arrowVertical.style.top = arrowJoint.offsetTop+arrowJoint.offsetHeight-arrowJoint.offsetHeight/overlapdivider+"px";
-
-                arrowHorizontal2.style.left= arrowJoint2.offsetLeft+arrowJoint2.offsetWidth-arrowJoint2.offsetWidth/overlapdivider+"px";
-
-                arrowHorizontal2.style.width = -arrowJoint2.offsetLeft-arrowJoint2.offsetWidth/overlapdivider
-                    +this.movableElem.offsetLeft-arrowJoint2.offsetWidth+this.movableElem.offsetWidth/overlapdivider+"px";
-                this.recalulateParameters(arrowHeadID,bodyElem.id);
-                this.recalulateParameters(arrowVerticalID,bodyElem.id);
-                this.recalulateParameters(arrowHorizontalID,bodyElem.id);
-                this.recalulateParameters(arrowJointID,bodyElem.id);
-                this.recalulateParameters(arrowHorizontalID2,bodyElem.id);
-                this.recalulateParameters(arrowJointID2,bodyElem.id);
-                
-                this.turnMovableVisible();
-                this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID,arrowHorizontalID2,arrowJointID2]);
-                await this.turnMovableHelperVisible();
-                await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
-                await this.turnArrowElemsHidden();
-                await this.turnMovableHelperHidden();
-                await this.turnMovableHidden();
-                return;
-        }
-        arrowVertical.style.left=this.movableElem.offsetLeft+this.movableElem.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
-        
-        arrowJoint.style.top=arrowHorizontal.offsetTop+"px";
-        arrowJoint.style.left=arrowVertical.offsetLeft+"px";
-        
-        arrowHorizontal.style.width=arrowHead.offsetWidth/overlapdivider+arrowJoint.offsetWidth/overlapdivider-arrowHead.offsetLeft+arrowJoint.offsetLeft+"px";
-        arrowHorizontal.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth-arrowHead.offsetWidth/overlapdivider+"px";
-        
-        arrowVertical.style.height=arrowJoint.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+this.movableElem.offsetTop-arrowJoint.offsetTop+"px";
-
-        arrowVertical.style.top=arrowJoint.offsetTop+arrowJoint.offsetHeight-arrowJoint.offsetHeight/overlapdivider+"px";
-
-        this.recalulateParameters(arrowHeadID,bodyElem.id);
-        this.recalulateParameters(arrowVerticalID,bodyElem.id);
-        this.recalulateParameters(arrowHorizontalID,bodyElem.id);
-        this.recalulateParameters(arrowJointID,bodyElem.id);
-        this.turnMovableVisible();
-        this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
-        await this.turnMovableHelperVisible();
-        await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
-        await this.turnArrowElemsHidden();
-        await this.turnMovableHelperHidden();
-        await this.turnMovableHidden();
-
-    }
-
-    async displayAddresserhoehung(i:number){
-        if(aniControl.animationType==AnimationsTyp.Typ3) return;
-        this.setMovableParameters((this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.currentLineElem.offsetHeight/5*4),this.descriptionTableBox.offsetLeft,this.descriptionTableBox.offsetWidth,this.currentLineElem.offsetHeight/5*4);
-        this.movableElem.innerHTML=this.formatLineString("h2","Erhöhe Adresszähler um: "+i);
-        this.movableHelper.style.top= this.addresszaehlerElem.offsetTop-5+"px";
-        this.movableHelper.style.left= this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetWidth-2+"px";
-        // this.movableHelper.style.height = this.addresszaehlerElem.offsetHeight+10+"px";
-        this.movableHelper.innerHTML=`<h2 class="adresserhohung">+${i}</h2>`
-        this.recalulateParameters(this.movableElem.id,bodyElem.id);
-        this.recalulateParameters(this.movableHelper.id,bodyElem.id);
-        this.turnMovableVisible();
-        this.turnMovableHelperVisible();
-        await sleepFor(4*this.turnSleepTime/this.getPixeljump());
-        await checkIfPaused();
-        this.turnMovableHidden();
-        this.turnMovableHelperHidden();
-    }
-
-    recalulateParameters(id:string,refernceID:string){
-        let elem  = getHtmlElement(id);
-        let referenceElem= getHtmlElement(refernceID);
-        // let testElem = document.createElement("div");
-        // testElem.id="testDiv";
-        // testElem.style.zIndex="";
-         elem.style.top=100*elem.offsetTop/elem.parentElement!.offsetHeight+"%";
-         elem.style.left=100*elem.offsetLeft/elem.parentElement!.offsetWidth+"%";
-        /* elem.style.height=100*elem.offsetHeight/elem.parentElement!.offsetHeight+"%";
-        elem.style.width=100*elem.offsetWidth/elem.parentElement!.offsetWidth+"%"; */
-    }
-    spanDivBetweenMovables(from:HTMLElement,to:HTMLElement){
-        if(to.offsetTop<from.offsetTop){
-
-        }
-    }
-
     async moveDetailToSpeicherabbild(line:string,id:number){
-        if(aniControl.animationType==AnimationsTyp.Typ3) return;
-        // this.setMovableParameters((this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.currentLineElem.offsetHeight/5*4),this.descriptionTableBox.offsetLeft,this.descriptionTableBox.offsetWidth,this.currentLineElem.offsetHeight/5*4);
-        this.setMovableParameters(this.addresszaehlerElem.offsetTop,this.descriptionTableBox.offsetLeft,this.descriptionTableBox.offsetWidth,this.currentLineElem.offsetHeight/5*4);
+        if(aniControl.isAni3()) return;
+        this.setMovableParameters(this.addresszaehlerElem.offsetTop,this.descriptionTableBox.offsetLeft);
         this.movableElem.innerHTML=this.formatLineString("h3",line);
         await this.setTargetTopToSpeicherabbild(id);       
         this.targetElemLeft=this.outPutText.offsetLeft;
-        if(aniControl.animationType==AnimationsTyp.Typ1){
+        if(aniControl.isAni1()){
 
             this.turnMovableVisible();
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
-            // await sleepFor(this.turnSleepTime/this.getPixeljump());
+            await sleepStopStartTime();
+            // await sleepStopStartTime();
             while(this.targetElemLeft>this.movableElem.offsetLeft){
                 await this.moveSleepCheck(0,this.getPixeljump());
                 // await this.adjustWidthOfMovable(this.getPixeljump(),this.outPutText.offsetWidth);
             }
             this.movableElem.style.left=this.targetElemLeft+"px";
             // this.movableElem.style.width=this.outPutText.offsetWidth+"px";
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
+            await sleepStopStartTime();
             if(this.targetElemTop>this.movableElem.offsetTop){
                 while(this.targetElemTop>this.movableElem.offsetTop){
                     await this.moveSleepCheck(this.getPixeljump(),0);
@@ -677,7 +650,7 @@ export class Animator{
                 this.movableElem.style.top=this.targetElemTop+"px";
     
             }
-            await sleepFor(this.turnSleepTime/this.getPixeljump());
+            await sleepStopStartTime();
             this.turnMovableHidden();
             return;
         }
@@ -875,15 +848,60 @@ export class Animator{
         await this.turnMovableHidden();
     }
 
+
+    async displayAddresserhoehung(i:number,hex:string){
+        if(aniControl.isAni3()) return;
+        this.movableElem.innerHTML=this.formatLineString("h2","Erhöhe Adresszähler um: "+i);
+        this.setMovableParameters((this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.movableElem.offsetHeight),this.descriptionTableBox.offsetLeft);
+        this.movableHelper.style.top= this.addresszaehlerElem.offsetTop-5+"px";
+        this.movableHelper.style.left= this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetWidth-2+"px";
+        // this.movableHelper.style.height = this.addresszaehlerElem.offsetHeight+10+"px";
+        this.movableHelper.innerHTML=`<h2 class="adresserhohung">+${i}</h2>`
+        this.recalulateParameters(this.movableElem.id,bodyElem.id);
+        this.recalulateParameters(this.movableHelper.id,bodyElem.id);
+        this.turnMovableVisible();
+        this.turnMovableHelperVisible();
+        await sleepFor(4*this.turnSleepTime/this.getPixeljump());
+        await checkIfPaused();
+        this.turnMovableHidden();
+        this.turnMovableHelperHidden();
+        await sleepStopStartTime();
+        this.movableHelper.innerHTML=this.formatLineString("h2",hex);
+        this.movableHelper.style.left = this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetWidth/2-this.movableHelper.offsetWidth/2+"px";
+        this.movableHelper.style.top = this.addresszaehlerElem.offsetTop+this.addresszaehlerElem.offsetHeight/2-this.movableHelper.offsetHeight/2+"px";
+        this.recalulateParameters(this.movableHelper.id,bodyElem.id);
+        this.turnMovableHelperVisible();
+        await sleepFor(2*this.turnSleepTime/this.getPixeljump());
+        await checkIfPaused();
+        this.turnMovableHelperHidden();
+    }
+
+    recalulateParameters(id:string,refernceID:string){
+        let elem  = getHtmlElement(id);
+        let referenceElem= getHtmlElement(refernceID);
+        // let testElem = document.createElement("div");
+        // testElem.id="testDiv";
+        // testElem.style.zIndex="";
+        //  elem.style.top=100*elem.offsetTop/elem.parentElement!.offsetHeight+"%";
+        //  elem.style.left=100*elem.offsetLeft/elem.parentElement!.offsetWidth+"%";
+        /* elem.style.height=100*elem.offsetHeight/elem.parentElement!.offsetHeight+"%";
+        elem.style.width=100*elem.offsetWidth/elem.parentElement!.offsetWidth+"%"; */
+    }
+    spanDivBetweenMovables(from:HTMLElement,to:HTMLElement){
+        if(to.offsetTop<from.offsetTop){
+
+        }
+    }
+
     private async moveSleepCheck(t:number,l:number){
         await this.updateMovingElement(t,l);
-        await sleepUntilNextFrame(this.frameSleepTime);
+        await sleepForFrame();
         await checkIfPaused();
     }
 
     private async moveHelperSleepCheck(t:number,l:number){
         await this.updateMovingHelperElement(t,l);
-        await sleepUntilNextFrame(this.frameSleepTime);
+        await sleepForFrame();
         await checkIfPaused();
     }
 
@@ -912,7 +930,7 @@ export class Animator{
         }
     }
 
-    setMovableParameters(t:number,l:number,w:number,h:number){
+    setMovableParameters(t:number,l:number){
         this.movableElem.style.top=t+"px";
         this.movableElem.style.left=l+"px";
         // this.movableElem.style.height=h+"px";
@@ -1090,8 +1108,9 @@ export class Animator{
     async setStartTopToInputLine(id:number){
         let childElem=document.getElementById(`${(id+1)<10?"0"+(id+1):(id+1)}inputP`);
         if(childElem!=null){
-
-            this.movableElem.style.top = childElem.offsetTop-this.inputText.scrollTop+"px";
+            let n= updateScrollOfIn_Out(this.outPutText.id,childElem.id);
+            console.log(n);
+            this.movableElem.style.top = childElem.offsetTop-n-1/2*this.movableElem.offsetHeight+1/2*childElem.offsetHeight+"px";
             this.movableElem.style.left= childElem.offsetLeft+"px";
 
         }
@@ -1100,8 +1119,9 @@ export class Animator{
     async setTargetTopToSpeicherabbild(id:number){
         let childElem=document.getElementById(`${(id+1)<10?"0"+(id+1):(id+1)}outputP`);
         if(childElem!=null){
-
-            this.targetElemTop = childElem.offsetTop-this.inputText.scrollTop-1/2*this.movableElem.offsetHeight+1/2*childElem.offsetHeight;
+            let n= updateScrollOfIn_Out(this.outPutText.id,childElem.id);
+            console.log(n);
+            this.targetElemTop = childElem.offsetTop-n-1/2*this.movableElem.offsetHeight+1/2*childElem.offsetHeight;
         }
     }
 
@@ -1144,11 +1164,15 @@ export class Animator{
     async updateMovingElement(mTop:number,mLeft:number){
         this.movableElem.style.top = (this.movableElem.offsetTop+mTop)+"px";
         this.movableElem.style.left = (this.movableElem.offsetLeft+mLeft)+"px";
+        /* this.movableElem.style.top = (100*this.movableElem.offsetTop/bodyElem.offsetHeight+mTop/5)+"%";
+        this.movableElem.style.left = (100*this.movableElem.offsetLeft/bodyElem.offsetWidth+mLeft/5)+"%"; */
     }
 
     async updateMovingHelperElement(mTop:number,mLeft:number){
         this.movableHelper.style.top = (this.movableHelper.offsetTop+mTop)+"px";
         this.movableHelper.style.left = (this.movableHelper.offsetLeft+mLeft)+"px";
+        /* this.movableHelper.style.top = (100*this.movableHelper.offsetTop/bodyElem.offsetHeight+mTop/5)+"%";
+        this.movableHelper.style.left = (100*this.movableHelper.offsetLeft/bodyElem.offsetWidth+mLeft/5)+"%"; */
     }
 }
 // export let animator = new Animator();
