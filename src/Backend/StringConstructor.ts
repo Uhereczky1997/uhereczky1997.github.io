@@ -31,7 +31,7 @@ export class StringConstructor{
         return this.error(`${s} kein gülitger Label`); // ungültiger Label
     }
     static invalidCmd(s:string):string{
-        return this.error(`${s} ungültiger Befehl`); //ungültiger Befehl
+        return this.error(`${s} ungültiger Operand`); //ungültiger Befehl
     }
     static toofewCmd():string{
         return this.error(`fehlender Operand`); //zu wenige Operanden
@@ -58,7 +58,7 @@ export class StringConstructor{
         return this.error(`erwartet war 8-bit Wert, ${s} ist kein gültiger Operand`);
     }
     static expectedDat16():string{
-        return this.error("erwartet war 8-bit Wert");
+        return this.error("erwartet war 16-bit Wert");
     }
     static expectedDat16Plus(s:string):string{
         return this.error(`erwartet war 16-bit Wert, ${s} ist kein gültiger Operand`);

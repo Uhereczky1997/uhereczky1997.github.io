@@ -1,4 +1,5 @@
-import { aniControl, AnimationsTyp, checkIfPaused, sleepFor, sleepForFrame, sleepStopStartTime } from "./AnimationUtil";
+import { aniControl, AnimationsTyp, checkIfPaused, sleepFor, sleepForFrame, sleepStopStartTime, sleepUntilNextStep } from "./AnimationUtil";
+import { Manipulator } from "./Backend/Manipulator";
 import { symbolTableLines, targetlabelValuePlaceholder, targetSymbolTableLine } from "./ProjectWindow";
 import { getHtmlElement, updateScrollOfIn_Out, updateScrollOfSymbolTable } from "./Tools";
 
@@ -20,6 +21,7 @@ const JQ1:string ="jq1";
 const JQ2:string ="jq2";
 const JQ3:string ="jq3";
 const JQ4:string ="jq4";
+export const addressbyte:string="addressbyte";
 const overlapdivider:number=50;
 const aniTp2TimeAdjuster:number=8;
 
@@ -45,6 +47,7 @@ export class Animator{
     targetElemLeft:number=0;
     turnSleepTime:number = 1000;
     addresszaehlerElem:HTMLElement;
+    translatedinfoDividerDiv:HTMLElement;
 
     constructor(){
         this.movingElementFlag = false;
@@ -60,6 +63,7 @@ export class Animator{
         this.descriptionTableBox= getHtmlElement("descriptionSymboltableBox");
         this.outPutText = getHtmlElement("OutputText");
         this.addresszaehlerElem = getHtmlElement("Addresszahler");
+        this.translatedinfoDividerDiv=getHtmlElement("translatedinfoDividerDiv");
     }
 
     reset(){
@@ -303,7 +307,8 @@ export class Animator{
                 return;
             }
             // await sleepStopStartTime();
-            this.movableElem.innerHTML=`<h3 class="moveableText">${returnLine}</h3>`;
+            // this.movableElem.innerHTML=`<h3 class="moveableText">${returnLine}</h3>`;
+            this.movableHelper.innerHTML=this.formatLineString("h3",returnLine);
             this.targetElemTop=this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight;
             while(this.targetElemTop<this.movableElem.offsetTop){
                 await this.moveSleepCheck(-this.getPixeljump(),0);
@@ -672,7 +677,7 @@ export class Animator{
             arrowHead.style.left=this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2+"px";
 
             arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
-
+            
             arrowHorizontal.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight/2-arrowHorizontal.offsetHeight/2+"px";
             
             arrowJoint.style.top=arrowHorizontal.offsetTop+"px";
@@ -848,18 +853,121 @@ export class Animator{
         await this.turnMovableHidden();
     }
 
-
-    async displayAddresserhoehung(i:number,hex:string){
+    async displayAddresserhoehung(id:number,i:number,hex:string){
         if(aniControl.isAni3()) return;
-        this.movableElem.innerHTML=this.formatLineString("h2","Erhöhe Adresszähler um: "+i);
-        this.setMovableParameters((this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.movableElem.offsetHeight),this.descriptionTableBox.offsetLeft);
-        this.movableHelper.style.top= this.addresszaehlerElem.offsetTop-5+"px";
-        this.movableHelper.style.left= this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetWidth-2+"px";
+        console.log(addressbyte+id);
+        let targetelem = document.getElementById(addressbyte+id);
+        this.movableElem.innerHTML=this.formatLineString("h1","+"+i);
+        let endaddr:string = Manipulator.formatHextoDat16(String(Manipulator.hexToDec(hex)-i));
+        console.log(endaddr);
+        if(targetelem != null){
+            this.movableElem.style.top= targetelem.offsetTop-this.descriptionLineElem.scrollTop+targetelem.offsetHeight/2-this.movableElem.offsetHeight/2+"px";
+            this.movableElem.style.left= targetelem.offsetLeft+targetelem.offsetWidth/2-this.movableElem.offsetWidth/2+"px";
+        }
+        else{
+            console.log("elem not found")
+            this.movableElem.style.top= this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.movableElem.offsetHeight+"px";
+            this.movableElem.style.left= this.descriptionTableBox.offsetLeft+this.descriptionTableBox.offsetWidth/2+"px";
+        }
+        this.targetElemLeft=this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetWidth;
+        this.targetElemTop =this.translatedinfoDividerDiv.offsetTop;
+
+        if(aniControl.isAni1()){
+            this.movableHelper.innerHTML=this.formatLineString("h1",endaddr);
+            this.movableHelper.style.left = this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetWidth/2-this.movableHelper.offsetWidth/2+"px";
+            this.movableHelper.style.top = this.translatedinfoDividerDiv.offsetTop+"px";
+            this.turnMovableVisible();
+    
+            await sleepStopStartTime();
+    
+            while(this.movableElem.offsetLeft>this.targetElemLeft){
+                await this.moveSleepCheck(0,-this.getPixeljump());
+            }
+            await sleepStopStartTime();
+    
+            while(this.movableElem.offsetTop<this.targetElemTop){
+                await this.moveSleepCheck(this.getPixeljump(),0);
+            }
+            this.movableElem.style.top=this.targetElemTop+"px";
+
+            this.turnMovableHelperVisible();
+    
+            await sleepStopStartTime();
+            await sleepStopStartTime();
+            await sleepStopStartTime();
+
+            this.turnMovableHidden();
+
+            this.movableHelper.innerHTML=this.formatLineString("h1",hex);
+            await sleepStopStartTime();
+            await sleepStopStartTime();
+
+            this.turnMovableHelperHidden();
+            return;
+        }
+        else{
+            let arrowHead = this.getArrowElem(arrowHeadID);
+            let arrowHorizontal = this.getArrowElem(arrowHorizontalID);
+            let arrowJoint = this.getArrowElem(arrowJointID);
+            let arrowVertical = this.getArrowElem(arrowVerticalID);
+
+            this.setClassOfHead(DOWN);
+            this.setClassOfJoint(1,JQ2);
+            this.toggleToUp(true);
+            this.movableHelper.innerHTML=this.formatLineString("h1","+"+i);
+            this.movableHelper.style.left = this.targetElemLeft+"px";
+            this.movableHelper.style.top = this.targetElemTop+"px";
+            
+            arrowHead.style.top=(this.movableHelper.offsetTop-arrowHead.offsetHeight)+"px";
+            arrowHead.style.left=(this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2)+"px";
+
+            arrowVertical.style.left=(arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2)+"px";
+
+            arrowHorizontal.style.top=(this.movableElem.offsetTop+this.movableElem.offsetHeight/2-arrowHorizontal.offsetHeight/2)+"px";
+
+            arrowJoint.style.top=(arrowHorizontal.offsetTop)+"px";
+            arrowJoint.style.left=(arrowVertical.offsetLeft)+"px";
+
+            arrowHorizontal.style.width=(this.movableElem.offsetWidth/overlapdivider+arrowJoint.offsetWidth/overlapdivider+this.movableElem.offsetLeft-arrowJoint.offsetLeft-arrowJoint.offsetWidth)+"px";
+            arrowHorizontal.style.left=(arrowJoint.offsetLeft+arrowJoint.offsetWidth-arrowJoint.offsetWidth/overlapdivider)+"px";
+            
+            arrowVertical.style.height=(arrowJoint.offsetHeight/overlapdivider+arrowHead.offsetHeight/overlapdivider+arrowHead.offsetTop-arrowJoint.offsetTop)+"px";
+            arrowVertical.style.top=(arrowJoint.offsetTop+arrowJoint.offsetHeight-arrowJoint.offsetHeight/overlapdivider)+"px";
+
+            this.turnMovableVisible();
+            this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
+            await this.turnMovableHelperVisible();
+            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+            await this.turnArrowElemsHidden();
+            await this.turnMovableHidden();
+
+
+            this.movableElem.innerHTML=this.formatLineString("h1",endaddr);
+            this.movableElem.style.left = this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetWidth/2-this.movableElem.offsetWidth/2+"px";
+            this.movableElem.style.top = this.translatedinfoDividerDiv.offsetTop+"px";
+
+            await this.turnMovableVisible();
+            await sleepStopStartTime();
+            await sleepStopStartTime();
+            await sleepStopStartTime();
+            this.turnMovableHelperHidden();
+            this.movableElem.innerHTML=this.formatLineString("h1",hex);
+            await sleepStopStartTime();
+            await sleepStopStartTime();
+            this.turnMovableHidden();
+            return;
+        }
+
+
+        // this.movableElem.innerHTML=this.formatLineString("h2","Erhöhe Adresszähler um: "+i);
+        // this.setMovableParameters((this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.movableElem.offsetHeight),this.descriptionTableBox.offsetLeft);
+        // this.movableHelper.style.top= this.addresszaehlerElem.offsetTop-5+"px";
+        // this.movableHelper.style.left= this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetWidth-2+"px";
         // this.movableHelper.style.height = this.addresszaehlerElem.offsetHeight+10+"px";
-        this.movableHelper.innerHTML=`<h2 class="adresserhohung">+${i}</h2>`
-        this.recalulateParameters(this.movableElem.id,bodyElem.id);
-        this.recalulateParameters(this.movableHelper.id,bodyElem.id);
-        this.turnMovableVisible();
+        // this.movableHelper.innerHTML=`<h2 class="adresserhohung">+${i}</h2>`
+        // this.recalulateParameters(this.movableElem.id,bodyElem.id);
+        // this.recalulateParameters(this.movableHelper.id,bodyElem.id);
+        /* this.turnMovableVisible();
         this.turnMovableHelperVisible();
         await sleepFor(4*this.turnSleepTime/this.getPixeljump());
         await checkIfPaused();
@@ -873,7 +981,7 @@ export class Animator{
         this.turnMovableHelperVisible();
         await sleepFor(2*this.turnSleepTime/this.getPixeljump());
         await checkIfPaused();
-        this.turnMovableHelperHidden();
+        this.turnMovableHelperHidden(); */
     }
 
     recalulateParameters(id:string,refernceID:string){
@@ -906,9 +1014,13 @@ export class Animator{
     }
 
     private formatLineString(tag:string,line:string):string{
+        if(line.length>30){
+            line = line.substring(0,30);
+            return `<${tag} class="moveableText">${line}...</${tag}>`;
+        }
         return `<${tag} class="moveableText">${line}</${tag}>`;
     }
-
+    //overflowElipsis
     private getArrowElem(s:string):HTMLDivElement{
         for(let i=0;i<this.arrowElems.length;i++){
             if(this.arrowElems[i].id===s){

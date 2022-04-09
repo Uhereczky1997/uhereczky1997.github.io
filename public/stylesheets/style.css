@@ -41,6 +41,8 @@
     --lightBKG:var(--lightBKGDark);
     --decreaseBKG: var(--decreaseBKGDark);
     --increaseBKG: var(--increaseBKGDark);
+    --fullscreenBKG_ON:var(--fullscreenBKG_ON_Dark);
+    --fullscreenBKG_OFF:var(--fullscreenBKG_OFF_Dark);
 
 }
 
@@ -78,9 +80,15 @@
     --lightBKG:var(--lightBKGLight);
     --decreaseBKG: var(--decreaseBKGLight);
     --increaseBKG: var(--increaseBKGLight);
+    --fullscreenBKG_ON:var(--fullscreenBKG_ON_Light);
+    --fullscreenBKG_OFF:var(--fullscreenBKG_OFF_Light);
+
 }
 .titel{
     color: var(--blue)!important;
+    text-align: center; 
+    align-self: center; 
+    padding: 0.2em 0.2em;
 }
 .arrowU{
     background-image: var(--arrowUp);
@@ -216,6 +224,20 @@
     background-size: auto 100%;
     background-image: var(--singleStep);
 }
+button[fullscreen="off"].fullscreenBKG{
+    background-image: var(--fullscreenBKG_ON);
+    background-position: center center;
+    /* background-size: contain; */
+    background-repeat: no-repeat;
+    background-size: auto 60%;
+}
+button[fullscreen="on"].fullscreenBKG{
+    background-image: var(--fullscreenBKG_OFF);
+    background-position: center center;
+    /* background-size: contain; */
+    background-repeat: no-repeat;
+    background-size: auto 60%;
+}
 #singleStep.selected{
     background-image: var(--singleStepActive)!important;
 }
@@ -279,10 +301,6 @@ body::after{
         url(../images/BlackBorderHorizontal.svg)
         url(../images/BlackBorderVertical.svg)
 
-        url(../images/BlackBorderLeftToUp.svg)
-        url(../images/BlackBorderLeftToDown.svg)
-        url(../images/BlackBorderUpToRight.svg)
-
         url(../images/WhiteBorderArrowDown.svg)
         url(../images/WhiteBorderArrowLeft.svg)
         url(../images/WhiteBorderArrowRight.svg)
@@ -291,9 +309,6 @@ body::after{
         url(../images/WhiteBorderVertical.svg)
         url(../images/WhiteBorderHorizontal.svg)
 
-        url(../images/WhiteBorderLeftToDown.svg)
-        url(../images/WhiteBorderLeftToUp.svg)
-        url(../images/WhiteBorderUpToRight.svg)
         url(../images/BlackBorderQ3.svg)
         url(../images/WhiteBorderQ3.svg)
         url(../images/buttonSVGs/decrease_button.svg)
@@ -351,6 +366,7 @@ body::after{
 body>* h1{
     text-align: center;
 }
+
 
 
 .noMargin{
@@ -509,6 +525,9 @@ body>* h1{
     height: 1px; 
     background-color: var(--bkg2);
 }
+.dividerdivSpan2{
+    grid-column: span 2;
+}
 #speedButtonDiv{
     grid-column: span 3;
     /* overflow: hidden;  */
@@ -569,7 +588,9 @@ button:hover{
 }
 #Machinenbefehl{
     border-left: 1px solid;
+    padding: 0.1em 0.2em;
 }
+
 #translated ,#translatedinfo,#translation,#toTranslate,#SymbolTable,#InputWindow,#OutputWindow{
     overflow: hidden;
 }
@@ -580,11 +601,4 @@ button:hover{
     grid-template-rows: 1fr;
     width: 100%;
     height: 100%;
-    /* overflow: hidden; */
 }
-/* #playResetSingleStep :first-child, #animationTypHolder :first-child, #utilityContainer :first-child{
-    border-right: 1px solid;
-}
-#playResetSingleStep :last-child, #animationTypHolder :last-child, #utilityContainer +button:last-child {
-    border-left: 1px solid;
-} */

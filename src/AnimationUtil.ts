@@ -46,9 +46,11 @@ export const sleepUntilNextStep=async():Promise <any>=>{
     }
 }
 export const sleepStaticAnimation= async():Promise <any> =>{
-    let b=2*aniControl.baseFrameTime*5;
+    let b=2*aniControl.baseFrameTime;
     let n=10*aniControl.speed;
+
     let date = Date.now();
+
     while(b>0){
         await sleepFor(n/aniControl.speed);
         // await checkIfPaused();
@@ -56,6 +58,7 @@ export const sleepStaticAnimation= async():Promise <any> =>{
     }
     console.log(Date.now()-date);
 }
+
 export const sleepStopStartTime= async():Promise <any> =>{
     let b=aniControl.baseFrameTime/2;
     while(b>0){
@@ -305,6 +308,7 @@ export class AnimationControl{
     setSpeed=(n:number)=>{
         this.speed=n;
         this.baseFrameTime=1300-this.speed*300;
+        this.setSmoothIfNecessery();
     }
     public createEventListeners=()=>{
         this.setAnimationTyp1();

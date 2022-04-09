@@ -301,6 +301,7 @@ export class ProjectWindow{
         }
         updateScroll("symbolTableLines");
     }
+
     private getLabelIfUnknown(i:number,b:boolean):string{
         let e:InputLine;
 
@@ -649,7 +650,10 @@ export class ProjectWindow{
                             this.repushSpeicherabbildOf(i,false);
                         }
                         else if(l.getEndAddr()!=""){
-                            machinenbefehl.innerHTML= `${this.inputLineControl.getDisplayableSpeicherabbild(l,false)}`;
+                            // machinenbefehl.innerHTML= `${this.inputLineControl.getDisplayableSpeicherabbild(l,false)}`;
+                            machinenbefehl.innerHTML= `
+                                ${Manipulator.formatSpeicherabbildandLabel(this.inputLineControl.getDisplayableSpeicherabbild(l,false),this.getLabelIfUnknown(l.getId(),false))}
+                                `;
                             
                             if(!skipped){
                                 await sleepUntilNextStep();
@@ -675,7 +679,7 @@ export class ProjectWindow{
             else{
                 if(!skipped){
                     await sleepUntilNextStep();
-                    await this.anim.displayAddresserhoehung(l.getLength(),l.getEndAddr());
+                    await this.anim.displayAddresserhoehung(l.getId(),l.getLength(),l.getEndAddr());
                 }
                 addresszahler.innerHTML= `${l.getEndAddr()}`;
             }

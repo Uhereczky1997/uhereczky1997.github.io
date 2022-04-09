@@ -13,9 +13,9 @@
     display: block;
 
 }
-.displayText + .end>p{
+/* .displayText + .end>p{
     text-align: end;
-}
+} */
 .displayText + .start>p{
     text-align: start;
     font-weight: bold;
@@ -36,7 +36,10 @@
     /* scroll-behavior: auto!important; */
 
 }
-
+.idSideBorder{
+    border-right: 1px solid black; 
+    text-align: center;
+}
 
 .overflowText{
     white-space: nowrap;

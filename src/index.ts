@@ -43,6 +43,51 @@ export const onscrollIn_Out = () =>{
         console.log(e);
     }
 }
+declare global {
+    interface Document {
+      mozCancelFullScreen?: () => Promise<void>;
+      msExitFullscreen?: () => Promise<void>;
+      webkitExitFullscreen?: () => Promise<void>;
+      mozFullScreenElement?: Element;
+      msFullscreenElement?: Element;
+      webkitFullscreenElement?: Element;
+    }
+  
+    interface HTMLElement {
+      msRequestFullscreen?: () => Promise<void>;
+      mozRequestFullscreen?: () => Promise<void>;
+      webkitRequestFullscreen?: () => Promise<void>;
+    }
+}
+
+const switchToFullscreen=()=>{
+    var elem = document.documentElement;
+    const elem2 = document.getElementById("vollbild");
+    if(elem!=null && elem2 !=null){
+        if(!fullscreened){
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+            elem2.setAttribute("fullscreen","on");
+            fullscreened =true;
+        }
+        else{
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+            elem2.setAttribute("fullscreen","off");
+            fullscreened=false;
+        }
+    }
+}
 const consoleWindowsize=()=>{
     console.log("Innerwidth: "+window.innerWidth);
     console.log("Innerheight: "+window.innerHeight);
@@ -107,7 +152,10 @@ const changeTheme = () =>{
     root!.setAttribute('color-scheme', `${theme}`);
     
 }
+
 let preferedTheme = "dark";
+let fullscreened:boolean = false;
+
 let p = new ProjectWindow();
 
 window.addEventListener('DOMContentLoaded', async() =>{
@@ -120,10 +168,11 @@ const  main =async ()=>{
     onscrollIn_Out();
     createClickListener("InputLines",setCurrentlyHovered);
     createClickListener("light",changeTheme);
-    createClickListener("OutputClip",outputClip)
-    syncScroll_MachineCode_Hexadecimal()
-
+    createClickListener("OutputClip",outputClip);
+    syncScroll_MachineCode_Hexadecimal();
+    createClickListener("vollbild",switchToFullscreen);
+    window.addEventListener("resize",consoleWindowsize);
+    document.getElementById("vollbild")!.setAttribute("fullscreen","off");
     
 }
-window.addEventListener("resize",consoleWindowsize);
 main();

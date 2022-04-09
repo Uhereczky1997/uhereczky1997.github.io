@@ -81,12 +81,12 @@ export class InputLineControl{
             this.inputlines.push(i);
             if(i.getValid()){ // UPDATE FOR ORG?????
                 // console.log(this.fHD16(String(this.startingAddrOfTranslated)));
-                if(this.startingAddrOfTranslated==0){
+                i.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
+                /* if(this.startingAddrOfTranslated==0){
                     i.setStartingAddr('0000h');
                 }
                 else{
-                    i.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
-                }
+                } */
                 // i.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
                 this.symbolliste.updateLabel(i.getLabel(),i.getStartingAddr());
             }
@@ -178,8 +178,8 @@ export class InputLineControl{
         let l:string|undefined = "";
         // console.log(i.getCommandLine()+" ... "+i.getLength()+" ... "+i.getHCode());
         if(i.getFirstPart().toUpperCase()=="RS"){
-            return "00 ... ("+i.getLength()+"x)";
-            // return (h.length>4?"00 ... ("+i.getLength()+"x)":h);
+            // return "00 ... ("+i.getLength()+"x)";
+            return (h.length>4?"00 ... ("+i.getLength()+"x)":h);
         }
         else if(i.getFirstPart().toUpperCase()=="ORG"){
             return "";
@@ -274,21 +274,21 @@ export class InputLineControl{
         let c:Constant;
         if(i.getFirstPart().toUpperCase()=="ORG"){
             saveInput(i,5);
-            i.saveDescriptionLine(`<span class="eingeruckt">`+"Addresszähler = "+this.fHD16WH(String(i.getLength()))+`</span>`);
+            i.saveDescriptionLine(`<span class="eingeruckt">"Addresszähler = <span id="addressbyte${i.getId()}">`+this.fHD16WH(String(i.getLength()))+`</span></span>`);
         }
         else if(i.getType()==InputLineType.TRANSLATED){
             saveInput(i,5);
             if(i.getFirstPart().toUpperCase()=="RS"){
                 i.saveDescriptionLine(`<span class="eingeruckt">`+s+" -> "+(h.length>4?"00 ("+i.getLength()+"x)":h)+`</span>`);
-                i.saveDescriptionLine(`<span class="eingeruckt">`+"Anzahl der Bytes: "+i.getLength()+`</span>`);
+                i.saveDescriptionLine(`<span class="eingeruckt">Anzahl der Bytes: <span id="addressbyte${i.getId()}">`+i.getLength()+`</span></span>`);
+                i.saveDescriptionLine(`<span class="eingeruckt">Erhöhe Adresszähler</span>`);
             }
-            /* else if(i.getFirstPart().toUpperCase()=="ORG"){
-                i.saveDescriptionLine(`<span class="eingeruckt">`+"Addresszähler = "+this.fHD16WH(String(i.getLength()))+`</span>`);
-            } */
             else
             {
                 i.saveDescriptionLine(`<span class="eingeruckt">`+s+" -> "+this.getDisplayableSpeicherabbild(i,false)+`</span>`);
-                i.saveDescriptionLine(`<span class="eingeruckt">`+"Anzahl der Bytes: "+i.getLength()+`</span>`);
+                i.saveDescriptionLine(`<span class="eingeruckt">Anzahl der Bytes: <span id="addressbyte${i.getId()}">`+i.getLength()+`</span></span>`);
+                i.saveDescriptionLine(`<span class="eingeruckt">Erhöhe Adresszähler</span>`);
+
             }
         }
     }

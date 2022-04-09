@@ -14,11 +14,11 @@
 
         <div id="toTranslate" class="SideBox boxBorder"> <!--3/12 -> 1/12 -->
             <div class="Title topDivider">
-                <h3 style="text-align: center; align-self: center; padding: 0.2em 0.2em;" class="noMargin titel">Quelltext</h3>
+                <h3 class="noMargin titel">Quelltext</h3>
             </div>
 
             <div id="InputText" class="overflowY customScrollbar">
-                <div id="InputID" class="displayText end"  style="border-right: 1px solid black; text-align: center;"></div>
+                <div id="InputID" class="displayText idSideBorder" ></div>
                 <div id="InputLines" class="displayText hoverable start"></div>
             </div>
             
@@ -28,14 +28,14 @@
 
         <div id="translation" class="MiddleBoxAlt boxBorder"> <!-- 4/10-> 1/10 -->
             <div class="Title topDivider">
-                <h3 style="text-align: center; align-self: center; padding: 0.2em 0.2em" class="noMargin titel">Quelltextzeile</h3>
+                <h3 class="noMargin titel">Quelltextzeile</h3>
             </div>
             <div id="currentLine">
-                <h2 id="currentLineLine" style=" align-self: end; margin:0px 0px; padding: 5px 10px; font: bold;">&nbsp;</h2>
+                <h2 id="currentLineLine" class="overflowElipsis">&nbsp;</h2>
             </div>
             <div class="dividerDiv"></div>
             <div id="Description">
-                <h3 style=" align-self: end; padding: 0 0.2em;" class="noMargin titel">Vorgang:</h3>
+                <h3 class="noMargin titel alignleft">Vorgang:</h3>
             </div>
             <div class="dividerDiv"></div>
             <div id="descriptionSymboltableBox">
@@ -44,25 +44,25 @@
                 </div>
             </div>
             <div id="translatedinfo" class="bottomDivider">
-                <h5  style="align-self: end; text-align: center;" class="noMargin titel">Adresszähler</h5>
-                <h5  style="align-self: end; text-align: start; margin: 0 0; padding-left: 8px;" class="titel">Maschinenbefehl</h5>
-                <div id="translatedinfoDividerDiv" class="dividerDiv" style="grid-column: span 2;"></div>
-                <h1 id="Addresszahler" style=" text-align: center; align-self: center; width: 100%; border-right: 1px solid;" class="noMargin">0000h</h1>
-                <h1 id="Machinenbefehl" style="align-self: center; text-align: start; margin: 0 0; padding-left: 8px;" ></h1>
+                <h5 class="noMargin titel aligncenter">Adresszähler</h5>
+                <h5 class="titel noMargin alignleft">Maschinenbefehl</h5>
+                <div id="translatedinfoDividerDiv" class="dividerDiv dividerDivSpan2"></div>
+                <h1 id="Addresszahler" class="noMargin aligncenter">0000h</h1>
+                <h1 id="Machinenbefehl" class="overflowElipsis alignleft noMargin"></h1>
             </div>
         </div>
 
         <div id="SymbolTable" class=" boxBorder">
-            <h3 style="align-items: end; margin: 0 0; padding-left: 8px;" class="titel">KonstantenTabelle (K) / LabelTabelle (L):</h3>
+            <h3 class="titel alignleft noMargin">KonstantenTabelle (K) / LabelTabelle (L):</h3>
             <div class="dividerDiv"></div>
             <div id="symbolTableLines"class="overflowY scrollSmooth customScrollbar"></div>
         </div>
         <div id="translated" class="SideBox boxBorder"> <!-- 3/12 -> 1/12 -->
             <div class="Title topDivider">
-                <h3 style="text-align: center; align-self: center; padding: 0.2em 0.2em" class="noMargin titel">Speicherabbild</h3>
+                <h3 class="noMargin titel">Speicherabbild</h3>
             </div>
             <div id="OutputText" class="overflowY customScrollbar">
-                <div id="OutputAddresses" class="displayText end" style="border-right: 1px solid black; text-align: center;"></div>
+                <div id="OutputAddresses" class="displayText  idSideBorder"></div>
                 <div id="OutputLines" class="displayText start"></div>
             </div>
             <!-- <div class="bottomDivider grid2080"></div> -->
@@ -70,7 +70,7 @@
         </div>
         <div id="buttonLeiste" class="MiddleLowerBox"> <!-- 4/1 -> 5/1 -->
             <button id="EditWindowOpenButton" class="leftBorderpRadius rightBorderpRadius tooltip">
-                <h4 class="noMargin">Edit</h4>
+                <h4 class="noMargin titel">Edit</h4>
                 <div class="tooltipText" style="margin-left: -100%;">
                     <h3>Eingabefenster</h3>
                     <p>Öffnet das Eingabefenster.</p>
@@ -99,7 +99,7 @@
                 </button>
             </div>
             
-            <button id="skip" class="button1 skipBKG"></button>
+            <button id="skip" ></button>
             <div id="animationTypHolder" class="leftBorderpRadius rightBorderpRadius">
                 <button id="animationsTyp1" class="slowerBKG leftBorderRadius tooltip">
                     <div class="tooltipText" style="margin-left: -100%;">
@@ -147,8 +147,7 @@
                         <p>Wechselft den Lichtmodus.</p>
                     </div>
                 </button>
-                <button  class="middleBorder tooltip">
-                    <h4 class="noMargin">Vollbild</h4>
+                <button id="vollbild" class="middleBorder tooltip fullscreenBKG">
                     <div class="tooltipText" style="margin-left: -100%;">
                         <h3>Vollbildmodus</h3>
                         <p>Wechselft auf Vollbildmodus.</p>
@@ -163,9 +162,9 @@
                 </button>    
             </div>
             
-            <button id="inputClip" onclick="inputClip()">inputClip</button>
+            <button id="inputClip" onclick="inputClip()"></button>
             <button id="TranslateWindow" class="leftBorderpRadius rightBorderpRadius tooltip">
-                <h4 class="noMargin">Hex</h4>
+                <h4 class="noMargin titel">Hex</h4>
                 <div class="tooltipText">
                     <h3>Ausgabefenster</h3>
                     <p>Öffnet das Ausgabefenster.</p>
@@ -173,8 +172,6 @@
             </button>
 
         </div>
-
-        
 
         <div id ="InputWindowContainter" class="backgroundContainer hidden">
             <div id="InputWindow" class="boxBorder inoutputbox">
@@ -188,10 +185,10 @@
 
         <div id ="OutputWindowContainer" class="backgroundContainer hidden">
             <div id="OutputWindow" class="boxBorder inoutputbox">
-                <h1 id="titleHextextareaOutput" class="titel">Hexadecimal</h1>
-                <h1 id="titleMachineCodeOutput"  class="titel">MachineCode</h1>
+                <h1 id="titleHextextareaOutput" class="titel">IntelHEX-Format</h1>
+                <h1 id="titleMachineCodeOutput"  class="titel">Maschinencode</h1>
                 <div id="OutputWindowMachineCode" class="overflowY customScrollbar">
-                    <div id="OutputWindowAddresses" class="displayText end" style="border-right: 1px solid black; text-align: center;"></div>
+                    <div id="OutputWindowAddresses" class="displayText idSideBorder"></div>
                     <div id="OutputWindowLines" class="displayText start"></div>
                 </div>
                 <textarea name="OutputTextArea" id="OutputTextArea" class="customScrollbar" ></textarea>

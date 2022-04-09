@@ -51,10 +51,10 @@
     --arrowDownDark: url(../images/WhiteBorderArrowDown.svg);
     --arrowLeftDark: url(../images/WhiteBorderArrowLeft.svg);
     --arrowRightDark: url(../images/WhiteBorderArrowRight.svg);
-    --jq1Dark:url(../images/WhiteBorderLeftToDown.svg);
-    --jq2Dark:url(../images/WhiteBorderUpToRight.svg);
+    --jq1Dark:url(../images/WhiteBorderQ1.svg);
+    --jq2Dark:url(../images/WhiteBorderQ2.svg);
     --jq3Dark:url(../images/WhiteBorderQ3.svg);
-    --jq4Dark:url(../images/WhiteBorderLeftToUp.svg);
+    --jq4Dark:url(../images/WhiteBorderQ4.svg);
 
     --verticalBackgroundLight: url(../images/BlackBorderVertical.svg);
     --horizontalBackgroundLight: url(../images/BlackBorderHorizontal.svg);
@@ -62,10 +62,10 @@
     --arrowDownLight: url(../images/BlackBorderArrowDown.svg);
     --arrowLeftLight: url(../images/BlackBorderArrowLeft.svg);
     --arrowRightLight: url(../images/BlackBorderArrowRight.svg);
-    --jq1Light:url(../images/BlackBorderLeftToDown.svg);
-    --jq2Light:url(../images/BlackBorderUpToRight.svg);
+    --jq1Light:url(../images/BlackBorderQ1.svg);
+    --jq2Light:url(../images/BlackBorderQ2.svg);
     --jq3Light:url(../images/BlackBorderQ3.svg);
-    --jq4Light:url(../images/BlackBorderLeftToUp.svg);
+    --jq4Light:url(../images/BlackBorderQ4.svg);
     
     /* BUTTON BACKGROUND URL CONFIG */
     --playBKGLight:url(../images/buttonSVGs/play_button.svg);
@@ -77,10 +77,10 @@
     --resetBKGLight:url(../images/buttonSVGs/reset_button.svg);
     --resetBKGDark:url(../images/buttonSVGs/resetWhite_button.svg);
     
-    --singleStepDark:url(../images/buttonSVGs/singleStep_White_button.svg);
-    --singleStepLight:url(../images/buttonSVGs/singleStep_button.svg);
-    --singleStepActiveDark:url(../images/buttonSVGs/singleStep_White_Active_button.svg);
-    --singleStepActiveLight:url(../images/buttonSVGs/singleStep_Active_button.svg);
+    --singleStepDark:url(../images/buttonSVGs/oneCommandWhite_button.svg);
+    --singleStepLight:url(../images/buttonSVGs/oneCommand_button.svg);
+    --singleStepActiveDark:url(../images/buttonSVGs/oneCommandWhitePressed_button.svg);
+    --singleStepActiveLight:url(../images/buttonSVGs/oneCommandPressed_button.svg);
     --slowerAniDark:url(../images/buttonSVGs/slowerAnimation_White_button.svg);
     --slowerAniLight:url(../images/buttonSVGs/slowerAnimation_button.svg);
 
@@ -104,11 +104,15 @@
     
     --lightBKGDark:url(../images/buttonSVGs/lightSwitch_White_button.svg);
     --lightBKGLight:url(../images/buttonSVGs/lightSwitch_button.svg);
+    --fullscreenBKG_ON_Dark:url(../images/buttonSVGs/fullscreenWhite_button.svg);
+    --fullscreenBKG_ON_Light:url(../images/buttonSVGs/fullscreen_button.svg);
+    --fullscreenBKG_OFF_Dark:url(../images/buttonSVGs/fullscreen_off_White_button.svg);
+    --fullscreenBKG_OFF_Light:url(../images/buttonSVGs/fullscreen_off_button.svg);
     /* ARROW SIZE CONFIG */
     /* W - width for screen | H- height for screen */
     --arrowHeadlrW: 40px;
-    --arrowHeadlrH: 45px;
-    --arrowBodyW: 25px;
+    --arrowHeadlrH: 40px;
+    --arrowBodyW: 20px;
     
     /* --arrowHeadlrW: 2rem;
     --arrowHeadlrH: 2.25rem;

@@ -48,11 +48,6 @@ const absoluteAdressierung:string = "Absolutadressierung"
 const stackBefehl:string = "Stackbefehl"
 const ioAdressierung:string = "IO Adressierung"
 
-const unknownError:string = "unbekannter Fehler ist aufgetreten!";
-const invalidCommand:string = "ungültiger Befehl";
-const labelBereitsDefiniert:string = "ist bereits Definiert";
-
-
 
 export class CommandMap{
 
@@ -225,7 +220,7 @@ export class CommandMap{
         if(strings.length>1){
         i.setComment(strings[1].trim());}
         saveInput(i,1);
-        i.saveDescriptionLine(this.formatErwartet(`Labeldefinition, Mnemocode oder Konstante (+EQU)`)); // REPLACE
+        i.saveDescriptionLine(this.formatErwartet(`Labeldef., Mnemocode oder Konstante (+EQU)`)); 
         //Auflösung von lebel wenn : gefunden
         if(commandLine.includes(":")){
             strings=Manipulator.splitStringHalf(commandLine,":");
@@ -374,6 +369,7 @@ export class CommandMap{
                     }
                     else{
                         // 3. Term nicht Register -> OFFSET Label || dat || const || label
+                        console.log(strings[1]+" "+this.getDataType(strings[1]))
                         if(this.getDataType(strings[1]) != DataType.NONE){
                             let type:DataType=this.getDataType(strings[1]);
                             switch(type){
@@ -404,14 +400,7 @@ export class CommandMap{
                                         i.setThirdPart((strings[1]));
                                         i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
                                         break;
-                                    }
-                                    else if(consoletostring.includes("dat_8")){
-                                        i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1]));
-                                        i.setError(strings[1]);
-                                        i.setValid(false);
-                                        return false;
-                                    }
-                                    else{
+                                    }else{
                                         i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                                         i.setError(strings[1]);
                                         i.setValid(false);
@@ -430,8 +419,14 @@ export class CommandMap{
 
                                         break;
                                     }
+                                    else if(consoletostring.includes("dat_8")){
+                                        i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1]));
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    }
                                     else{
-                                        i.saveDescriptionLine(StringConstructor.expectedDat16Plus(strings[1]));
+                                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
@@ -509,9 +504,6 @@ export class CommandMap{
 
                                     this.symbollist.setLabelWithoutPosition(strings[1]);
                                     i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[1]}</span>'`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+strings[1]));
-                                    if(strings[1].length>erlaubteLängeL_C){
-                                        i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
-                                    }
                                     i.setThirdPart(strings[1]);
                                     matches=matches.filter(e=>{
                                         if(e.getSource()=="label"){
@@ -983,128 +975,6 @@ export class CommandMap{
                 }
                 break;
 
-                //COMMENTED BECAUSE SAME FUNCTIONALITY
-
-            /*
-            case 'OR':case'XOR':case'CP':
-                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
-
-                save3(i);
-                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
-                consoletostring = this.getDests(matches).join(", ");
-                i.saveDescriptionLine(this.formatErwartet(consoletostring));
-                if(strings.length<2){
-                    i.saveDescriptionLine(StringConstructor.toofewCmd());
-                    return false;
-                }
-                if(this.getDests(matches).includes(strings[1].toUpperCase())){
-                    toSave=strings[1];
-                    strings[1]=strings[1].toUpperCase()
-                    i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],strings[0]+" "+strings[1]));
-                    matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
-                        if(e.getDestination() ==strings[1].toUpperCase()){
-                            return e;
-                        }
-                    });
-                    if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
-
-                        i.setSecondPart(toSave);
-                        i.setType(InputLineType.TRANSLATED);
-                        i.setLength(matches[0].getSize());
-                        i.setHCode(matches[0].getHexCode());
-                        i.setValid(true);
-                        //console.log(matches[0].toString());
-                        return true;
-                    }
-                    else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
-                        return false;
-                    }
-                }
-                else if(this.symbollist.isConst(strings[1])){
-                    
-                    i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
-                    matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
-                        if(e.getDestination() =="dat_8"){
-                            return e;
-                        }
-                    });
-                    if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
-
-                        i.setSecondPart(strings[1]);
-                        i.setType(InputLineType.TRANSLATED);
-                        i.setLength(matches[0].getSize());
-                        i.setHCode(matches[0].getHexCode());
-                        i.setValid(true);
-                        //console.log(matches[0].toString());
-                        return true;
-                    }
-                    else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
-                        return false;
-                    }
-                }
-                else if(Manipulator.isDat_8(strings[1])){
-                    i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
-                    matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
-                        if(e.getDestination() =="dat_8"){
-                            return e;
-                        }
-                    });
-                    if(matches.length==1){
-                        // Änderung
-                        // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
-                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
-
-                        i.setSecondPart((strings[1]));
-                        i.setType(InputLineType.TRANSLATED);
-                        i.setLength(matches[0].getSize());
-                        i.setHCode(matches[0].getHexCode());
-                        i.setValid(true);
-                        //console.log(matches[0].toString());
-                        return true;
-                    }
-                    else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
-                        return false;
-                    }
-                }
-                else{
-                    i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
-                    i.setError(strings[1]);
-                    return true;
-                }
-                break; */
-                //Bruv PLS
-
-                //COMMENTED BECAUSE SAME FUNCTIONALITY
-
-            /* case 'SHL':case'SHR':
-                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
-
-                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
-                if(strings.length>1){
-                    i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
-                    i.setError(strings[1]);
-                    return false;
-                }
-                if(matches.length==1){
-                    i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
-
-                    i.setType(InputLineType.TRANSLATED);
-                    i.setLength(matches[0].getSize());
-                    i.setHCode(matches[0].getHexCode());
-                    i.setValid(true);
-                    //console.log(matches[0].toString());
-                    return true;
-                }
-                else{
-                    i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
-                    return false;
-                }
-                break; */
             case 'SHL':case'SHR':case 'RCL':case'ROL':case'RCR':case'ROR':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
 
@@ -1568,8 +1438,8 @@ export class CommandMap{
             }
             return false;
         }
-        else if(!this.symbollist.isEligible(strings[1])){
-            i.saveDescriptionLine(StringConstructor.noValidConstOrOperand(strings[1]));
+        else if(!this.symbollist.isEligible(strings[0])){
+            i.saveDescriptionLine(StringConstructor.noValidConstOrOperand(strings[0]));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
                 i.setRest(" "+strings[1]);
@@ -1589,24 +1459,6 @@ export class CommandMap{
             i.setError(strings[0]);
             
             return false;
-        }
-    }
-
-    getAddressierungsart(i:InputLine){
-        let first=i.getFirstPart().toUpperCase(),second=i.getSecondPart(),third =i.getThirdPart();
-        if(i.getType()!=InputLineType.TRANSLATED && this.mCodes.includes(first)){
-            if(first=="INC" || first == "DEC"){
-
-            }
-            if(first[0]=="P"){
-
-            }
-            else if(first[0]=="J"){
-                if(second=="[IX]"){
-                    
-                }
-
-            }
         }
     }
 

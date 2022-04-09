@@ -29,8 +29,16 @@
 #currentLine *>*{
     height: fit-content;
 }
+#Addresszahler{
+    align-self: center; 
+    width: 100%; 
+    border-right: 1px solid;
+}
 #currentLineLine{
     height: fit-content;
+    margin:0px 0px; 
+    padding: 5px 10px; 
+    font: bold;
 }
 #currentLine>*>span{
     padding: 0.1em 0.2em;
