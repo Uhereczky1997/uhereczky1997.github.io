@@ -9,6 +9,9 @@ export class StringConstructor{
     constructor(){
 
     }
+    static info(s:string):string{
+        return `<span class="eingeruckt">${s}<span>`;
+    }
     static achtung(s:string):string{
         return `<span class="${warningClass} eingeruckt">Achtung : ${s}<span>`;
     }
@@ -21,6 +24,7 @@ export class StringConstructor{
     static warConstZuLang(s:string):string{
         return this.achtung(`Konstante ${s} >${erlaubteLängeL_C} Zeichen`);
     }
+
     static errLabelDef(s:string):string{
         return this.error(`Label '<span class="${labelClass}">${s}</span>' ist bereits definiert`); 
     }
@@ -54,6 +58,9 @@ export class StringConstructor{
     static expectedDat8():string{
         return this.error("erwartet war 8-bit Wert");
     }
+    static expectedDat8ConstToBig(s:string):string{
+        return this.error(`erwartet war 8-bit Wert, Konstante ${s} ist zu groß`);
+    }
     static expectedDat8Plus(s:string):string{
         return this.error(`erwartet war 8-bit Wert, ${s} ist kein gültiger Operand`);
     }
@@ -74,5 +81,29 @@ export class StringConstructor{
     }
     static noValidConstOrOperand(s:string){
         return this.error(`${s} ungültiger Befehl oder Konstantendefinition`);
+    }
+    static infoIsDat8():string{
+        return this.info("überprüfe auf 8-Bit Wert ... gefunden");
+    }
+    static infoNotDat8():string{
+        return this.info("überprüfe auf 8-Bit Wert ... nicht gefunden");
+    }
+    static infoIsDat16():string{
+        return this.info("überprüfe auf 16-Bit Wert ... gefunden");
+    }
+    static infoNotDat16():string{
+        return this.info("überprüfe auf 16-Bit Wert ... nicht gefunden");
+    }
+    static infoNoConst(s:string):string{
+        return this.info(`'${s}' ist kein gültiger Konstantenname`);
+    }
+    static infoIsConst(s:string):string{
+        return this.info(`suche 16-Bit Konstante <span class="${labelClass}">${s}<span> ... gefunden`);
+    }
+    static infoNoLabel(s:string):string{
+        return this.info(`'${s}' ist kein gültiges Label`);
+    }
+    static infoIsLabel(s:string):string{
+        return this.info(`suche Label <span class="${labelClass}">${s}<span> ... gefunden`);
     }
 }

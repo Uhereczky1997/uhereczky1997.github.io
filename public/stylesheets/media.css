@@ -59,7 +59,7 @@ h1
         font-size: calc(var(--maxfontsize30) - 11px);
     }
 */
-h1
+/* h1
 {
     font-size: calc(3vmin*30/30);
 }
@@ -83,39 +83,40 @@ h5{
 p,p>span,textarea
 {
     font-size: calc(3vmin*22/30);
-}
+} 
 #descriptionLines>* p,#descriptionLines>p>span,#descriptionLines>p{
     margin: calc(3vmin*2/30);
     font-size: calc(3vmin*19/30);
 }
-
+*/
 h1
 {
-    font-size: calc(1.465vmax*30/30);
+    font-size: calc(var(--fontsizeVar)*30/30);
 }
 h2 
 {
-    font-size: calc(1.465vmax*28/30);
+    font-size: calc(var(--fontsizeVar)*28/30);
 }
 h3 
 {
-    font-size: calc(1.465vmax*26/30);
+    font-size: calc(var(--fontsizeVar)*26/30);
 }
 h4 
 {
-    font-size: calc(1.465vmax*22/30);
+    font-size: calc(var(--fontsizeVar)*22/30);
 }
 h5{
-    font-size: calc(1.465vmax*16/30);
+    font-size: calc(var(--fontsizeVar)*16/30);
 }
 p,p>span,textarea
 {
-    font-size: calc(1.465vmax*22/30);
+    font-size: calc(var(--fontsizeVar)*22/30);
 }
 #descriptionLines>* p,#descriptionLines>p>span,#descriptionLines>p{
-    margin: calc(1.465vmax*2/30);
-    font-size: calc(1.465vmax*19/30);
+    margin: calc(var(--fontsizeVar)*2/30);
+    font-size: calc(var(--fontsizeVar)*19/30);
 }
+
 #body{
     position: absolute;
     top: 2.5vh;

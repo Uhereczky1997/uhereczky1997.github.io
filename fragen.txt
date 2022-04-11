@@ -2,7 +2,7 @@
 1.
     Ganz am ende zum Anfang scollen;
 2.
-    Warning einsetzen bei bekannten Label? oder bei erstmaligen vorkommen nur; // WARNING EINSETZEN?
+    //KONSTANTE ZU GROß? 
 x-----------------------------------------------------------------------
 Label1:Mov d,95h
 Lab1:Mob d,95h

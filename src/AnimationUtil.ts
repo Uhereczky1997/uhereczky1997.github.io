@@ -30,7 +30,7 @@ export const checkIfPaused= async():Promise <any> => {
 export const sleepUntilNextStep=async():Promise <any>=>{
     let c=aniControl.baseFrameTime;
     if(aniControl.isAni3()){
-        await sleepFor(5);
+        await sleepFor(5-aniControl.speed);
         await checkIfPaused();
         return;
     }
@@ -69,10 +69,10 @@ export const sleepStopStartTime= async():Promise <any> =>{
 }
 export const sleepForFrame = async():Promise<any>=>{
     // let b=aniControl.baseFrameTime/aniControl.frames;
-    let b=aniControl.baseFrameTime/120;
+    let b=aniControl.baseFrameTime/120/2;
     while(b>0){
-        await sleepFor(2);
-        b=b-2;
+        await sleepFor(1);
+        b=b-1;
         await checkIfPaused();
     }
 }
@@ -264,12 +264,14 @@ export class AnimationControl{
     }
     changePlayButtonBKG=()=>{
         let elem = getHtmlElement("play");
-        if(this.end){
+        if(this.end || this.pause || this.reset || this.stop){
             this.removeSmoothScroll();
             inputText.classList.remove("scrollDisabled");
             outputText.classList.remove("scrollDisabled");
             descriptionLines.classList.remove("scrollDisabled");
             symbolTableLines.classList.remove("scrollDisabled");
+            descriptionLines.classList.add("scrollSmooth");
+
 
             elem.classList.remove("pausedBKG");
             elem.classList.add("playingBKG");
@@ -278,32 +280,31 @@ export class AnimationControl{
         else if(this.play){
             inputText.classList.add("scrollDisabled");
             outputText.classList.add("scrollDisabled");
-            if(this.isAni3()) descriptionLines.classList.remove("scrollSmooth");
-
+            
             descriptionLines.classList.add("scrollDisabled");
             symbolTableLines.classList.add("scrollDisabled");
-
+            
             if(this.speed<3 && this.animationType!=AnimationsTyp.Typ3){
                 inputText.classList.add("scrollSmooth");
                 outputText.classList.add("scrollSmooth");
+                descriptionLines.classList.add("scrollSmooth");
             }   
+            if(this.isAni3()) descriptionLines.classList.remove("scrollSmooth");
 
             elem.classList.add("pausedBKG");
             elem.classList.remove("playingBKG");
             return;
         }
-        else if(this.pause || this.reset || this.stop){
-            this.removeSmoothScroll();
+        /* else if(this.pause || this.reset || this.stop){
+            this.setSmoothIfNecessery();
             inputText.classList.remove("scrollDisabled");
             outputText.classList.remove("scrollDisabled");
             descriptionLines.classList.remove("scrollDisabled");
             symbolTableLines.classList.remove("scrollDisabled");
-
-
-
+            descriptionLines.classList.add("scrollSmooth");
             elem.classList.remove("pausedBKG");
             elem.classList.add("playingBKG");
-        }
+        } */
     }
     setSpeed=(n:number)=>{
         this.speed=n;

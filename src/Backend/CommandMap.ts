@@ -358,7 +358,6 @@ export class CommandMap{
                             i.setLength(matches[0].getSize());
                             i.setHCode(matches[0].getHexCode());
                             i.setValid(true);
-                            //console.log(matches[0].toString());
                             return true;
                         }
                         else{
@@ -376,6 +375,7 @@ export class CommandMap{
                                 case DataType.dat_8:
                                     if(consoletostring.includes("dat_8")){
                                         //i.saveDescriptionLine(`Gefunden -> 'dat_8'`);
+                                        i.saveDescriptionLine(StringConstructor.infoIsDat8());
                                         i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat8(strings[1])));
     
                                         matches=matches.filter(e=>{
@@ -390,6 +390,8 @@ export class CommandMap{
                                         break;
                                     }else if(consoletostring.includes("dat_16")){
                                         //i.saveDescriptionLine(`Gefunden -> 'dat_16'`);
+                                        i.saveDescriptionLine(StringConstructor.infoIsDat16());
+
                                         i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
                                         matches=matches.filter(e=>{
                                             if(e.getSource()=="dat_16"){
@@ -401,6 +403,7 @@ export class CommandMap{
                                         i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
                                         break;
                                     }else{
+                                        
                                         i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                                         i.setError(strings[1]);
                                         i.setValid(false);
@@ -463,7 +466,7 @@ export class CommandMap{
                                         break;
                                     }
                                     else if(consoletostring.includes("dat_8")){
-                                        i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1]));
+                                        i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1])); //KONSTANTE ZU GROß?
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
@@ -592,7 +595,12 @@ export class CommandMap{
                             }
                         }
                         else{
-                            i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                            if(strings[1].trim()=="" || strings[1].trim()==" "){
+                                i.saveDescriptionLine(StringConstructor.toofewCmd());
+                            }
+                            else{
+                                i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                            }
                             i.setError(strings[1]);
                             return false;
                         }
@@ -609,9 +617,7 @@ export class CommandMap{
                     i.setSecondPart(strings[0]);
                     if(!this.symbollist.isLabel(strings[0])){ //Wenn label unbekannt dann neue Ansetzen
                         this.symbollist.setLabelWithoutPosition(strings[0]);
-                        if(strings[0].length>erlaubteLängeL_C){
-                            i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
-                        }
+
                     }
                     save4(i);
                     consoletostring=this.getScources(matches).join(", ");
@@ -659,17 +665,18 @@ export class CommandMap{
                     return false;
                 }
                 break;
-            case 'PUSH':
+            case 'POP':case 'PUSH':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
 
-                matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='PUSH'});
+                // matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='PUSH'});
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 if(strings.length>1){
                     i.saveDescriptionLine(StringConstructor.tooManyCmd());
                     i.setError(strings[1]);
                     return false;
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErkannt(stackBefehl));
+                    // i.saveDescriptionLine(this.formatErkannt(stackBefehl));
 
                     i.setType(InputLineType.TRANSLATED);
                     i.setLength(matches[0].getSize());
@@ -678,25 +685,7 @@ export class CommandMap{
                     return true;
                     }
                 break;
-            case 'POP':
-                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
-
-                matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='POP'});
-                if(strings.length>1){
-                    i.saveDescriptionLine(StringConstructor.tooManyCmd());
-                    i.setError(strings[1]);
-                    return false;
-                }
-                else{
-                    i.saveDescriptionLine(this.formatErkannt(stackBefehl));
-
-                    i.setType(InputLineType.TRANSLATED);
-                    i.setLength(matches[0].getSize());
-                    i.setHCode(matches[0].getHexCode());
-                    i.setValid(true);
-                    return true;
-                    }
-                break;
+            
             case 'IN':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
 
@@ -718,10 +707,16 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErwartet("dat_8"));
 
                     if(strings.length<2){
-                        i.saveDescriptionLine(StringConstructor.tooManyCmd());
+                        i.saveDescriptionLine(StringConstructor.toofewCmd());
+                        i.setError("");
                         return false;
                     }
                     if(this.symbollist.isConst(strings[1])){
+                        if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
+                            i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
+                            i.setError(strings[1]);
+                            return false;
+                        }
                         i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],"IN A, "+strings[1]));
                         i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
 
@@ -774,6 +769,11 @@ export class CommandMap{
                 strings = Manipulator.splitStringHalf(strings[1],",");
                 strings = this.filterForEmtpyStrings(strings);
                 if(this.symbollist.isConst(strings[0])){
+                    if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[0])!.getValue())){
+                        i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[0]));
+                        i.setError(strings[0]);
+                        return false;
+                    }
                     i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[0],i.getFirstPart().toUpperCase()+" "+strings[0]+" ..."))
                     // WARNING EINSETZEN?
                     i.setSecondPart(strings[0]);
@@ -860,7 +860,7 @@ export class CommandMap{
                         }
                     });
                     if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
+                        // i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
 
                         //ÄNDERUNG
                         i.setSecondPart(toSave);
@@ -879,7 +879,7 @@ export class CommandMap{
                 else{
                     i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
                     i.setError(strings[1]);
-                    return true;
+                    return false;
                 }
                 break;
             case 'ADD':case'SUB':case'AND':case 'OR':case'XOR':case'CP':
@@ -923,7 +923,11 @@ export class CommandMap{
                     }
                 }
                 else if(this.symbollist.isConst(strings[1])){
-                    // WARNING EINSETZEN?
+                    if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
+                        i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
+                        i.setError(strings[1]);
+                        return false;
+                    }
                     i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="dat_8"){
@@ -1020,12 +1024,12 @@ export class CommandMap{
                     });
                     if(!this.symbollist.isLabel(strings[1])){
                         this.symbollist.setLabelWithoutPosition(strings[1]);
-                        if(strings[1].length>erlaubteLängeL_C){
-                            i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
-                        }
+                        // if(strings[1].length>erlaubteLängeL_C){
+                        //     i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
+                        // }
                     }
                     if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
+                        // i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
 
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
@@ -1068,9 +1072,9 @@ export class CommandMap{
                     });
                     if(!this.symbollist.isLabel(strings[1])){
                         this.symbollist.setLabelWithoutPosition(strings[1]);
-                        if(strings[1].length>erlaubteLängeL_C){
-                            i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
-                        }
+                        // if(strings[1].length>erlaubteLängeL_C){
+                        //     i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
+                        // }
                     }
                     if(matches.length==1){
                         i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
@@ -1127,25 +1131,7 @@ export class CommandMap{
                     i.setError("");
                     return false;
                 }
-                if(strings[1]=="[IX]"){
-                    matches=this.mnemoCommands.filter(e=>{return e.getDestination()=="[IX]"});
-                    if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt(indirekteRegAdressierung));
-                        
-                        i.setSecondPart(strings[1]);
-                        i.setType(InputLineType.TRANSLATED);
-                        i.setLength(matches[0].getSize());
-                        i.setHCode(matches[0].getHexCode());
-                        i.setValid(true);
-                        //console.log(matches[0].toString());
-                        return true;
-                    }
-                    else{
-                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
-                        return false;
-                    }
-                }
-                else if(this.symbollist.isLabel(strings[1]) || this.symbollist.isEligible(strings[1])){ // MUSS label sein
+                if(this.symbollist.isLabel(strings[1]) || this.symbollist.isEligible(strings[1])){ // MUSS label sein
                     // WARNING EINSETZEN?
                     i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[1]}</span>'`,strings[0]+" "+strings[1]));
                     matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
@@ -1155,12 +1141,12 @@ export class CommandMap{
                     });
                     if(!this.symbollist.isLabel(strings[1])){
                         this.symbollist.setLabelWithoutPosition(strings[1]);
-                        if(strings[1].length>erlaubteLängeL_C){
-                            i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
-                        }
+                        // if(strings[1].length>erlaubteLängeL_C){
+                        //     i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
+                        // }
                     }
                     if(matches.length==1){
-                        i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
+                        // i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
                         i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -1179,7 +1165,7 @@ export class CommandMap{
                     return false;
                 }
                 break;
-            case 'HALT':case 'NOP':case 'RET':
+            case 'HALT':case 'NOP':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
 
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
@@ -1246,6 +1232,7 @@ export class CommandMap{
                 case 'RS':
                     i.saveDescriptionLine(this.formatErwartet("dat_8"));
                     save3(i);
+                
                     if(Manipulator.isDat_8(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`8-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])))
                         i.setSecondPart((strings[1]));
@@ -1253,6 +1240,24 @@ export class CommandMap{
                         i.setType(InputLineType.TRANSLATED);
                         let Hcode="";
                         for(let i=0;i<Manipulator.hexToDec(strings[1]);i++){
+                            Hcode+='00';
+                        }
+                        i.setHCode(Hcode);
+                        i.setValid(true);
+                        return true;
+                    }
+                    else if(this.symbollist.isConst(strings[1])){
+                        if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
+                            i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
+                            i.setError(strings[1]);
+                            return false;
+                        }
+                        i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
+                        i.setSecondPart((strings[1])); //KONST ??
+                        i.setLength(Manipulator.formatHextoDat8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue()));
+                        i.setType(InputLineType.TRANSLATED);
+                        let Hcode="";
+                        for(let i=0;i<Manipulator.hexToDec(this.symbollist.getSpecificConstantByName(strings[1])!.getValue());i++){
                             Hcode+='00';
                         }
                         i.setHCode(Hcode);
@@ -1268,9 +1273,17 @@ export class CommandMap{
 
                 case 'DW':
                     save3(i);
-                    i.saveDescriptionLine(this.formatErwartet("16-bit Wert"));
+                    i.saveDescriptionLine(this.formatErwartet("dat_16"));
                     if(Manipulator.isDat_16(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
+                        i.setLength(2);
+                        i.setSecondPart((strings[1]));
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setValid(true);
+                        return true;
+                    }
+                    else if(this.symbollist.isConst(strings[1])){
+                        i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
                         i.setLength(2);
                         i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
@@ -1289,9 +1302,9 @@ export class CommandMap{
                             }
                             else if(this.symbollist.isEligible(temp[1])){
                                 this.symbollist.setLabelWithoutPosition(temp[1]);
-                                if(strings[1].length>erlaubteLängeL_C){
-                                    i.saveDescriptionLine(StringConstructor.warLabelZuLang(temp[1]));
-                                }
+                                // if(strings[1].length>erlaubteLängeL_C){
+                                //     i.saveDescriptionLine(StringConstructor.warLabelZuLang(temp[1]));
+                                // }
                                 i.saveDescriptionLine(this.formatGefunden(`OFFSET`,"DW OFFSET "+temp[1]));
                             }
                             else{
@@ -1315,9 +1328,22 @@ export class CommandMap{
 
                 case 'DB':
                     save3(i);
-                    i.saveDescriptionLine(this.formatErwartet("Konstante (8-bit)"));
+                    i.saveDescriptionLine(this.formatErwartet("dat_8"));
                     if(Manipulator.isDat_8(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`8-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])))
+                        i.setLength(1);
+                        i.setSecondPart((strings[1]));
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setValid(true);
+                        return true;
+                    }
+                    else if(this.symbollist.isConst(strings[1])){
+                        if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
+                            i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
+                            i.setError(strings[1]);
+                            return false;
+                        }
+                        i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
                         i.setLength(1);
                         i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
@@ -1333,10 +1359,17 @@ export class CommandMap{
 
                 case 'ORG':
                     save3(i);
-                    i.saveDescriptionLine(this.formatErwartet("16-bit Wert"));
+                    i.saveDescriptionLine(this.formatErwartet("dat_16"));
                     if(Manipulator.isDat_16(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
                         i.setLength(Manipulator.hexToDec(strings[1]));
+                        i.setSecondPart((strings[1]));
+                        i.setValid(true);
+                        return true;
+                    }
+                    else if(this.symbollist.isConst(strings[1])){
+                        i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
+                        i.setLength(Manipulator.hexToDec(this.symbollist.getSpecificConstantByName(strings[1])!.getValue()));
                         i.setSecondPart((strings[1]));
                         i.setValid(true);
                         return true;
@@ -1348,18 +1381,13 @@ export class CommandMap{
                     }
                     break;
 
-                case 'EXT':
-                    i.saveDescriptionLine(this.formatErrorMassage(`Pseudo-Mnemocode 'EXT' ist nicht unterstützt!`));
-                    i.setFirstPart('EXT');
+                case 'EXT':case 'ENT':
+                    i.saveDescriptionLine(this.formatErrorMassage(`Pseudo-Mnemocode '${strings[0].toUpperCase()}' ist nicht unterstützt!`));
+                    i.setFirstPart(strings[0].toUpperCase());
+                    i.setError(strings[0])
                     return false;
                     break;
-
-                case 'ENT':
-                    i.saveDescriptionLine(this.formatErrorMassage(`Pseudo-Mnemocode 'ENT' ist nicht unterstützt!`));
-                    i.setFirstPart('ENT');
-                    return false;
-                    break;
-
+                
                 default: 
                     i.saveDescriptionLine(StringConstructor.bugSwitchDefault());
                     i.setError(strings[1]);
@@ -1457,7 +1485,6 @@ export class CommandMap{
         else{
             i.saveDescriptionLine(this.formatErrorMassage(`unkown error`));
             i.setError(strings[0]);
-            
             return false;
         }
     }

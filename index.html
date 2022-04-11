@@ -69,15 +69,34 @@
 
         </div>
         <div id="buttonLeiste" class="MiddleLowerBox"> <!-- 4/1 -> 5/1 -->
-            <button id="EditWindowOpenButton" class="leftBorderpRadius rightBorderpRadius tooltip">
+            <div></div>
+            <button id="inputClip" onclick="inputClip()">ic</button>
+            <button id="EditWindowOpenButton" class="leftBorderpRadius rightBorderpRadius dividerdivSpan2 tooltip">
                 <h4 class="noMargin titel">Edit</h4>
                 <div class="tooltipText" style="margin-left: -100%;">
                     <h3>Eingabefenster</h3>
                     <p>Öffnet das Eingabefenster.</p>
                 </div>
             </button>
-            <div></div>
-            <div></div>
+            <button id="light"class="lightButton leftBorderpRadius rightBorderpRadius tooltip">
+                <div class="tooltipText" style="margin-left: -100%;">
+                    <h3>Lichtmodus</h3>
+                    <p>Wechselft den Lichtmodus.</p>
+                </div>
+            </button>
+            
+            <button id="skip" >sk</button>
+            <!-- <div id="utilityContainer" class="leftBorderpRadius rightBorderpRadius">
+                
+                
+                <button class="rightBorderRadius tooltip">
+                    <h4 class="noMargin">credits</h4>
+                    <div class="tooltipText" style="margin-left: -50%;">
+                        <h3>INFO</h3>
+                    </div>
+                </button>    
+            </div> -->
+
             <div id="playResetSingleStep" class="leftBorderpRadius rightBorderpRadius">
                 <button id="play" class="button1 playingBKG leftBorderRadius tooltip">
                     <div class="tooltipText" style="margin-left: -100%;">
@@ -98,8 +117,23 @@
                     </div>
                 </button>
             </div>
-            
-            <button id="skip" ></button>
+            <div id="speedButtonDiv" class="leftBorderpRadius rightBorderpRadius">
+                <button id="speedDecrease" class="leftBorderRadius tooltip" >
+                    <div class="tooltipText" >
+                        <h3>Langsammer</h3>
+                        <p>Verringer die Animationsgeschwindigkeit.</p>
+                    </div>
+                </button>
+                <div id="speedSliderContainer" class="middleBorder tooltip">
+                    <input id="speedSlider" class="tooltip"style="width: 97%!important; height: 100%;" type="range" min="1" max="4" value="2">
+                </div>
+                <button id="speedIncrease" class="rightBorderRadius tooltip">
+                    <div class="tooltipText" style="margin-left: -900%;" >
+                        <h3>Schneller</h3>
+                        <p>Erhöht die Animationsgeschwindigkeit.</p>
+                    </div>
+                </button>
+            </div>
             <div id="animationTypHolder" class="leftBorderpRadius rightBorderpRadius">
                 <button id="animationsTyp1" class="slowerBKG leftBorderRadius tooltip">
                     <div class="tooltipText" style="margin-left: -100%;">
@@ -120,50 +154,17 @@
                     </div>
                 </button>
             </div>
+            <button id="speed">sp</button>
             
-            <div></div>
-            <div id="speedButtonDiv" class="leftBorderpRadius rightBorderpRadius">
-                <button id="speedDecrease" class="leftBorderRadius tooltip" >
-                    <div class="tooltipText" >
-                        <h3>Langsammer</h3>
-                        <p>Verringer die Animationsgeschwindigkeit.</p>
-                    </div>
-                </button>
-                <div id="speedSliderContainer" class="middleBorder tooltip">
-                    <input id="speedSlider" class="tooltip"style="width: 97%!important; height: 100%;" type="range" min="1" max="4" value="2">
+            
+           
+            <button id="vollbild" class="leftBorderpRadius rightBorderpRadius tooltip fullscreenBKG">
+                <div class="tooltipText" style="margin-left: -100%;">
+                    <h3>Vollbildmodus</h3>
+                    <p>Wechselft auf Vollbildmodus.</p>
                 </div>
-                <button id="speedIncrease" class="rightBorderRadius tooltip">
-                    <div class="tooltipText" style="margin-left: -900%;" >
-                        <h3>Schneller</h3>
-                        <p>Erhöht die Animationsgeschwindigkeit.</p>
-                    </div>
-                </button>
-            </div>
-            <button id="speed"></button>
-            <div id="utilityContainer" class="leftBorderpRadius rightBorderpRadius">
-                <button id="light"class="lightButton leftBorderRadius tooltip">
-                    <div class="tooltipText" style="margin-left: -100%;">
-                        <h3>Lichtmodus</h3>
-                        <p>Wechselft den Lichtmodus.</p>
-                    </div>
-                </button>
-                <button id="vollbild" class="middleBorder tooltip fullscreenBKG">
-                    <div class="tooltipText" style="margin-left: -100%;">
-                        <h3>Vollbildmodus</h3>
-                        <p>Wechselft auf Vollbildmodus.</p>
-                    </div>
-                </button>
-                <button class="rightBorderRadius tooltip">
-                    <h4 class="noMargin">credits</h4>
-                    <div class="tooltipText" style="margin-left: -50%;">
-                        <h3>INFO</h3>
-                        <!-- <p>Wechselft den Lichtmodus.</p> -->
-                    </div>
-                </button>    
-            </div>
-            
-            <button id="inputClip" onclick="inputClip()"></button>
-            <button id="TranslateWindow" class="leftBorderpRadius rightBorderpRadius tooltip">
+            </button>
+            <button id="TranslateWindow" class="leftBorderpRadius rightBorderpRadius dividerdivSpan2 tooltip">
                 <h4 class="noMargin titel">Hex</h4>
                 <div class="tooltipText">
                     <h3>Ausgabefenster</h3>
@@ -177,9 +178,15 @@
             <div id="InputWindow" class="boxBorder inoutputbox">
                 <textarea name="InputTextArea" id="InputTextArea" class="customScrollbar" placeholder="Hier können Sie den Quellcode eingeben"></textarea>
                 <div id="InputTextAreaEnumerationDiv"></div>
-                <button id="Submit">Los</button>
-                <button id="GenerateDummy"> GenerateDummy </button>
-                <button id="CloseInputWindow">Abbrechen</button>
+                <button id="Submit">
+                    <h4 class="noMargin titel">Übernehmen</h4>
+                </button>
+                <button id="GenerateDummy">
+                     GenerateDummy 
+                    </button>
+                <button id="CloseInputWindow">
+                    <h4 class="noMargin titel">Abbrechen</h4>
+                </button>
             </div>
         </div>
 
@@ -192,8 +199,12 @@
                     <div id="OutputWindowLines" class="displayText start"></div>
                 </div>
                 <textarea name="OutputTextArea" id="OutputTextArea" class="customScrollbar" ></textarea>
-                <button id="CloseOutputWindow">Schließen</button>
-                <button id="OutputClip">Clipboard</button>
+                <button id="CloseOutputWindow">
+                    <h4 class="noMargin titel">Schließen</h4>
+                </button>
+                <button id="OutputClip">
+                    <h4 class="noMargin titel">Clipboard</h4>
+                </button>
             </div>
         </div>
 

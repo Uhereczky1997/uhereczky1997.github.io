@@ -92,7 +92,7 @@ export class SymbolList{
         else return false;
     }
     isConst(s:string):boolean{
-        if(this.Consts.find(element => element.getName()==s) !=undefined){
+        if(this.Consts.find(element => element.getName().toLowerCase()==s.toLowerCase()) !=undefined){
             return true;
         }
         return false;
@@ -127,7 +127,7 @@ export class SymbolList{
         return this.Consts;
     }
     getSpecificConstantByName(addr:string):Constant|undefined{
-        return this.Consts.find(e=>e.getName()==addr);
+        return this.Consts.find(e=>e.getName().toLowerCase()==addr.toLowerCase());
     }
     getSpecificLabelByName(addr:string):Label|undefined{
         //  case-sensitive

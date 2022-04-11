@@ -121,3 +121,23 @@
                     return false;
                 }
                 break; */
+
+                /* case 'POP':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
+
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='POP'});
+                if(strings.length>1){
+                    i.saveDescriptionLine(StringConstructor.tooManyCmd());
+                    i.setError(strings[1]);
+                    return false;
+                }
+                else{
+                    i.saveDescriptionLine(this.formatErkannt(stackBefehl));
+
+                    i.setType(InputLineType.TRANSLATED);
+                    i.setLength(matches[0].getSize());
+                    i.setHCode(matches[0].getHexCode());
+                    i.setValid(true);
+                    return true;
+                    }
+                break; */

@@ -1,5 +1,6 @@
 import { aniControl, AnimationsTyp, checkIfPaused, sleepFor, sleepForFrame, sleepStopStartTime, sleepUntilNextStep } from "./AnimationUtil";
 import { Manipulator } from "./Backend/Manipulator";
+import { root, rootVariables } from "./index";
 import { symbolTableLines, targetlabelValuePlaceholder, targetSymbolTableLine } from "./ProjectWindow";
 import { getHtmlElement, updateScrollOfIn_Out, updateScrollOfSymbolTable } from "./Tools";
 
@@ -134,6 +135,15 @@ export class Animator{
             await this.turnMovableHelperHidden();
             await this.turnMovableHidden();
         }
+    }
+    getStaticBodyWidth(){
+        // console.log("Arrowbody width: "+rootVariables.getPropertyValue("--arrowBodyW"));
+        // console.log("Arrowhead width: "+rootVariables.getPropertyValue("--arrowHeadlrW"));
+        // console.log("Arrowhead height: "+rootVariables.getPropertyValue('--arrowHeadlrH'));
+        let s:number = Number(rootVariables.getPropertyValue("--arrowBodyW").replace("px",""));
+        // console.log(s);
+        return s;
+
     }
     
     async moveLabeltoSymboltableALTMoveableHelper(hex:string){
@@ -1050,7 +1060,7 @@ export class Animator{
     }
 
     private getPixeljump():number{
-        return aniControl.speed+1;
+        return aniControl.speed;
     }
 
     async adjustWidthOfMovable(n:number,w:number){

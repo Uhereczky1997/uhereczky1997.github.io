@@ -436,44 +436,48 @@ export class ProjectWindow{
             }
         }
     }
+    
     private displaySecondPhase=async()=>{
         let sleeptime = 400;
-        if(!skipped) await sleepFor(1000);
+        if(!skipped) await sleepUntilNextStep();
 
         descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
         updateScroll(descriptionLines.id);
 
-        if(!skipped) await sleepFor(sleeptime);
+        // if(!skipped) await sleepFor(sleeptime);
+        if(!skipped) await sleepUntilNextStep();
+
         descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
         updateScroll(descriptionLines.id);
 
-        if(!skipped) await sleepFor(sleeptime);
+        if(!skipped) await sleepUntilNextStep();
 
         descriptionLines.innerHTML += `<p>************************</p>`;
         updateScroll(descriptionLines.id);
 
-        if(!skipped) await sleepFor(sleeptime*2);
+        if(!skipped) await sleepUntilNextStep();
 
         descriptionLines.innerHTML += `<p>2.Phase LinkerAuflösung</p>`;
         updateScroll(descriptionLines.id);
 
-        if(!skipped) await sleepFor(sleeptime*2);
+        if(!skipped) await sleepUntilNextStep();
 
         descriptionLines.innerHTML += `<p>************************</p>`;
         updateScroll(descriptionLines.id);
 
-        if(!skipped) await sleepFor(sleeptime*2);
+        if(!skipped) await sleepUntilNextStep();
 
         descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
         updateScroll(descriptionLines.id);
 
-        if(!skipped) await sleepFor(sleeptime);
+        if(!skipped) await sleepUntilNextStep();
 
         descriptionLines.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
         updateScroll(descriptionLines.id);
 
-        if(!skipped) await sleepFor(sleeptime);
+        if(!skipped) await sleepUntilNextStep();
     }
+
     public linkerAuflosung=async ()=>{
         this.repushTranslations();
         if(this.linkerAuflosungB){
@@ -485,10 +489,12 @@ export class ProjectWindow{
             }
         }
     }
+
     private clearMachinenbefehlandCurrentLine(){
         machinenbefehl.innerHTML="&nbsp;";
         currentLineLine.innerHTML="&nbsp;";
     }
+
     public repushTranslations=async()=>{
         OutputTextAreaElement.innerHTML="";
         windowOutputLines.innerHTML="";
@@ -780,7 +786,8 @@ export class ProjectWindow{
     }
 
     public speed=()=>{
-        aniControl.consoleFlags();
+        // aniControl.consoleFlags();
+        this.anim.getStaticBodyWidth();
     }
 
     public reset=async()=>{
@@ -812,7 +819,7 @@ export class ProjectWindow{
             createClickListener('TranslateWindow',this.openOutputWindow);
             createClickListener('play',this.toggleStop);
             // createClickListener('stop',this.pause);
-            createClickListener('speed',sleepStaticAnimation);
+            createClickListener('speed',this.speed);
             createClickListener('skip',this.skipToFinish);
             createClickListener('reset',this.reset);
             aniControl.createEventListeners();

@@ -216,36 +216,53 @@ export class InputLine{
     
         let dsrl=this.initialLine.split(";")[0];
         let ss = [];
+        let temp:string[]=[];
         if(this.label!=""){
-            ss.push(dsrl.split(this.label)[0]);
+            // temp =dsrl.split(this.label);
+            temp =Manipulator.sliceString(dsrl,this.label);
+            ss.push(temp[0]);
             ss.push(`<span id="crLabel">${this.label}</span>`);
-            dsrl =dsrl.split(this.label)[1];
+            dsrl =temp[1];
         }
         if(this.firstPart!=""){
-            ss.push(dsrl.split(this.firstPart)[0]);
+            // temp =dsrl.split(this.firstPart)
+            temp =Manipulator.sliceString(dsrl,this.firstPart)
+            ss.push(temp[0]);
             ss.push(`<span id="crFirst">${this.firstPart}</span>`);
-            dsrl =dsrl.split(this.firstPart)[1];
+            dsrl =temp[1];
         }
         if(this.secondPart!=""){
-            ss.push(dsrl.split(this.secondPart)[0]);
+            console.log("dsrl : "+dsrl);
+            // temp =dsrl.split(this.secondPart,2)
+            temp =Manipulator.sliceString(dsrl,this.secondPart)
+            // console.log("SECOND:")
+            // console.log(Manipulator.sliceString(dsrl,this.secondPart));
+            ss.push(temp[0]);
             ss.push(`<span id="crSecond">${this.secondPart}</span>`);
-            dsrl =dsrl.split(this.secondPart)[1];
+            dsrl =temp[1];
         }
         if(this.thirdPart!=""){
+            // temp =dsrl.split(this.thirdPart)
+            temp =Manipulator.sliceString(dsrl,this.thirdPart)
             ss.push(dsrl.split(this.thirdPart)[0]);
+            // console.log("THIRD:")
+            // console.log(Manipulator.sliceString(dsrl,this.thirdPart));
+
             ss.push(`<span id="crThird">${this.thirdPart}</span>`);
-            dsrl =dsrl.split(this.thirdPart)[1];
+            dsrl =temp[1];
         }
         if(this.error!=""){
+            // temp =dsrl.split(this.error)
+            temp =Manipulator.sliceString(dsrl,this.error)
             ss.push(dsrl.split(this.error)[0]);
             ss.push(`<span id="crError">${this.error}</span>`);
-            dsrl =dsrl.split(this.error)[1];
+            dsrl =temp[1];
         }
         ss.push(dsrl);
         /* if(this.rest!=""){
             dsrl+=`<span id="crRest">${this.rest}</span>`;
         } */
-
+        console.log(ss);
         return ss.join("");
     }
 
@@ -285,7 +302,7 @@ export class InputLine{
         if(second.toUpperCase()=="EQU"){
             second=second.toUpperCase();
         }
-        if(["DW","ORG"].includes(first.toUpperCase())){
+        else if(["DW","ORG"].includes(first.toUpperCase())){
             second = Manipulator.formatHextoDat16(second);
         }
         else{

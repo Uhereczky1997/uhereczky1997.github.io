@@ -185,14 +185,25 @@ export class InputLineControl{
             return "";
         }
         else if(i.getFirstPart().toUpperCase()=='DB'){
-            h=i.getSecondPart();
+            if(this.symbolliste.isConst(i.getSecondPart())){
+                h = this.symbolliste.getSpecificConstantByName(i.getSecondPart())!.getValue();
+            }
+            else{
+                h=i.getSecondPart();
+            }
             return `${this.fHD8WH(h)}`;
         }
         else if(i.getFirstPart().toUpperCase()=='DW'){
             if(i.hasOffsetLabel()){
                 return ((this.symbolliste.getPositionOfSpecificLabel(i.getLabelOfOffset())==undefined ||!flag)?"????":this.getLittleEndianOf(this.symbolliste.getPositionOfSpecificLabel(i.getLabelOfOffset())!));
-            }  
-            else h=i.getSecondPart();
+            }
+
+            if(this.symbolliste.isConst(i.getSecondPart())){
+                h = this.symbolliste.getSpecificConstantByName(i.getSecondPart())!.getValue();
+            }
+            else{
+                h=i.getSecondPart();
+            }
             return this.getLittleEndianOf(h);
         }
         else{
@@ -274,6 +285,7 @@ export class InputLineControl{
         let c:Constant;
         if(i.getFirstPart().toUpperCase()=="ORG"){
             saveInput(i,5);
+            
             i.saveDescriptionLine(`<span class="eingeruckt">"Addresszähler = <span id="addressbyte${i.getId()}">`+this.fHD16WH(String(i.getLength()))+`</span></span>`);
         }
         else if(i.getType()==InputLineType.TRANSLATED){
@@ -283,8 +295,7 @@ export class InputLineControl{
                 i.saveDescriptionLine(`<span class="eingeruckt">Anzahl der Bytes: <span id="addressbyte${i.getId()}">`+i.getLength()+`</span></span>`);
                 i.saveDescriptionLine(`<span class="eingeruckt">Erhöhe Adresszähler</span>`);
             }
-            else
-            {
+            else{
                 i.saveDescriptionLine(`<span class="eingeruckt">`+s+" -> "+this.getDisplayableSpeicherabbild(i,false)+`</span>`);
                 i.saveDescriptionLine(`<span class="eingeruckt">Anzahl der Bytes: <span id="addressbyte${i.getId()}">`+i.getLength()+`</span></span>`);
                 i.saveDescriptionLine(`<span class="eingeruckt">Erhöhe Adresszähler</span>`);
@@ -363,6 +374,12 @@ export class InputLineControl{
         }
         else if(e.getFirstPart().toUpperCase()=='DB'){
             h=e.getSecondPart();
+            if(this.symbolliste.isConst(i.getSecondPart())){
+                h = this.symbolliste.getSpecificConstantByName(i.getSecondPart())!.getValue();
+            }
+            else{
+                h=i.getSecondPart();
+            }
             rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
             e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(h)}${this.fHD8WH(rest)}`);
         }
@@ -371,7 +388,14 @@ export class InputLineControl{
                 h= (this.symbolliste.getPositionOfSpecificLabel(i.getLabelOfOffset())==undefined?"????":this.symbolliste.getPositionOfSpecificLabel(i.getLabelOfOffset()));
                 h= flag?"????":h;
             }  
-            else h=e.getSecondPart(); 
+            else {
+                if(this.symbolliste.isConst(i.getSecondPart())){
+                    h = this.symbolliste.getSpecificConstantByName(i.getSecondPart())!.getValue();
+                }
+                else{
+                    h=i.getSecondPart();
+                }
+            }
             rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h!));
             e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.getSpeicherAbbild(e,flag)}${this.fHD8WH(rest)}`);
         }

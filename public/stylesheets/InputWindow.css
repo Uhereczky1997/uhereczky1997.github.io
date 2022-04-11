@@ -89,7 +89,7 @@ p{
 #OutputWindowMachineCode *>p{
     line-height: 114%!important;
 }
-#Submit, #CloseOutputWindow{
+#Submit,  #OutputClip{
     position:absolute;
     
     top: 87.5%;
@@ -100,7 +100,7 @@ p{
     font-weight: bold;
     font-family: 'Courier New', Courier, monospace;
 }
-#CloseInputWindow, #OutputClip{
+#CloseInputWindow, #CloseOutputWindow{
     position:absolute;
     top: 87.5%;
     left: 80%;

@@ -1,4 +1,4 @@
-import { OutputTextAreaElement, OutputWindowMachineCode, ProjectWindow } from "./ProjectWindow";
+import { InputLines, OutputTextAreaElement, OutputWindowMachineCode, ProjectWindow } from "./ProjectWindow";
 import { createClickListener, getHtmlElement } from "./Tools";
 import { aniControl, sleepFor } from "./AnimationUtil";
 import { addClassTo, getIDOfSelected, inputText, outputText, removeClassOfAll } from "./ProjectWindow";
@@ -43,6 +43,8 @@ export const onscrollIn_Out = () =>{
         console.log(e);
     }
 }
+export const root = document.documentElement;
+export const rootVariables = getComputedStyle(root);
 declare global {
     interface Document {
       mozCancelFullScreen?: () => Promise<void>;
@@ -134,15 +136,17 @@ const syncScroll_MachineCode_Hexadecimal = () =>{
 }
 export const setCurrentlyHovered = async (e: any) =>{ //Eventbubbling is f-ing sick!
     let id:string;
-    if(e instanceof PointerEvent){
-        if(e.target instanceof HTMLElement){
-            removeClassOfAll("highlighted");
-            id=getIDOfSelected(e.target.id);
-            addClassTo(id+"inputP","highlighted");
-            addClassTo(id+"outputP","highlighted");
-            
-        }
+    if(e.target instanceof HTMLElement){
+        removeClassOfAll("highlighted");
+        id=getIDOfSelected(e.target.id);
+        console.log(id);
+        addClassTo(id+"inputP","highlighted");
+        addClassTo(id+"outputP","highlighted");
+        
     }
+    /* if(e instanceof PointerEvent){
+    } */
+    return false;
 }
 
 const changeTheme = () =>{
@@ -159,14 +163,15 @@ let fullscreened:boolean = false;
 let p = new ProjectWindow();
 
 window.addEventListener('DOMContentLoaded', async() =>{
-    const root = document.querySelector(':root');
-    root!.setAttribute('color-scheme', `${preferedTheme}`);
+    const root1 = document.querySelector(':root');
+    root1!.setAttribute('color-scheme', `${preferedTheme}`);
 })
 const  main =async ()=>{
     
     p.createListeners();
     onscrollIn_Out();
     createClickListener("InputLines",setCurrentlyHovered);
+    InputLines.addEventListener("touchstart",setCurrentlyHovered);
     createClickListener("light",changeTheme);
     createClickListener("OutputClip",outputClip);
     syncScroll_MachineCode_Hexadecimal();

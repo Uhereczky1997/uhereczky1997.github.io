@@ -15,6 +15,12 @@ export class Manipulator {
             addr=addr.replace(/h$/g,"");
             return Number(parseInt(addr,16).toString(10));
     }
+    static sliceString(s1:string,s2:string):string[]{
+        let n:number,p:number;
+        n=s1.indexOf(s2);
+        p=s2.length;
+        return [s1.substring(0,n),s1.substring(n+p)];
+    }
     static splitStringHalf(addr:string,ch:string):string[]{
         let reString:string[]=[];
         let p:number =addr.indexOf(ch);

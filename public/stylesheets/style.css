@@ -374,11 +374,12 @@ body>* h1{
 }
 
 #buttonLeiste{
-    grid-column: 2/10;
+    grid-column: 1/11;
     grid-row: 12/13;
     display: grid;
     grid-template-columns: repeat(20,1fr);
     grid-template-rows: 1fr;
+    gap: 0 5px;
     justify-items: center;
     /* background-color: var(--bkg2); */
 }
@@ -410,8 +411,8 @@ body>* h1{
     box-sizing: border-box;
     position: relative;
 }
-#buttonLeiste h4{
- background-color: transparent!important;
+#buttonLeiste h4, #InputWindow h4, #OutputWindow h4{
+    background-color: transparent!important;
 }
 .tooltip{
     position: relative;
@@ -529,7 +530,7 @@ body>* h1{
     grid-column: span 2;
 }
 #speedButtonDiv{
-    grid-column: span 3;
+    grid-column: span 2;
     /* overflow: hidden;  */
     display: grid;
     grid-template-columns: 15% 1fr 15%;
