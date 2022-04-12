@@ -368,7 +368,7 @@ export class CommandMap{
                     }
                     else{
                         // 3. Term nicht Register -> OFFSET Label || dat || const || label
-                        console.log(strings[1]+" "+this.getDataType(strings[1]))
+                        // console.log(strings[1]+" "+this.getDataType(strings[1]))
                         if(this.getDataType(strings[1]) != DataType.NONE){
                             let type:DataType=this.getDataType(strings[1]);
                             switch(type){

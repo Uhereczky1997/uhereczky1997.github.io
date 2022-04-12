@@ -14,15 +14,18 @@ export const resetButton = getHtmlElement("reset") as HTMLButtonElement;
 
 
 export const checkIfPaused= async():Promise <any> => {
+    if (aniControl.play){
+        return true;
+    }
     while (true) {
+        if (aniControl.play){
+            return true;
+        }
         if (aniControl.reset){
             throw Error('Reset pressed');
         }
         if(aniControl.stop){
             throw Error('Stop pressed');
-        }
-        if (aniControl.play){
-            return true;
         }
         await sleepFor(100);
     }
@@ -30,7 +33,7 @@ export const checkIfPaused= async():Promise <any> => {
 export const sleepUntilNextStep=async():Promise <any>=>{
     let c=aniControl.baseFrameTime;
     if(aniControl.isAni3()){
-        await sleepFor(5-aniControl.speed);
+        await sleepFor(5-(aniControl.speed+1));
         await checkIfPaused();
         return;
     }
@@ -48,15 +51,11 @@ export const sleepUntilNextStep=async():Promise <any>=>{
 export const sleepStaticAnimation= async():Promise <any> =>{
     let b=2*aniControl.baseFrameTime;
     let n=10*aniControl.speed;
-
-    let date = Date.now();
-
     while(b>0){
-        await sleepFor(n/aniControl.speed);
-        // await checkIfPaused();
+        await sleepFor(n/(aniControl.speed));
+        await checkIfPaused();
         b=b-10;
     }
-    console.log(Date.now()-date);
 }
 
 export const sleepStopStartTime= async():Promise <any> =>{
@@ -208,15 +207,6 @@ export class AnimationControl{
         this.stop   = true;
         this.changePlayButtonBKG();
     }
-    consoleFlags=()=>{
-        console.log("AniControlFlags:");
-        console.log("this.play : "+this.play);
-        console.log("this.pause : "+this.pause);
-        console.log("this.reset : "+this.reset);
-        console.log("this.end : "+this.end);
-        console.log("this.stop : "+this.stop);
-        console.log("this.singleStep : "+this.singleStepFlag);
-    }
     setPaused=()=>{
         if(this.start &&!this.stop && !this.reset){
             this.play   = false;
@@ -231,8 +221,7 @@ export class AnimationControl{
         this.reset  = true;
         setTimeout(function(){
             aniControl.reset=false;
-            // aniControl.consoleFlags();
-        },1000);
+        },500);
         this.changePlayButtonBKG();
     }
 

@@ -1,36 +1,36 @@
 ??
 
-dropdown für bsp programme im EingabeFenster
-dropdown biblothek im EingabeFenster
+      dropdown für bsp programme im EingabeFenster
+      dropdown biblothek im EingabeFenster
 
 !!!!!!!!
 
 
-x      andere addresszähler erhöhung animation -> 
-x                        Anzahl der Bytes: 2
-x                  !!!!  Erhöhe adresszähler
-x                  -->
-x                  Danach wird der 2 hervorgehoben auf den adresszahler animiert: zuerst nach link und dann nach unten
-x                  2-er verschmilzt mit dem der adresse -> wird erhöht
-x                  machinenbefehl verschinden bei Erhöhung
-x      SHR/SHL fehler -> falsche länge -> es könnte zu bugs kommen.
-x      überall wo adressierungs art nicht eindeutig ist (IN,OUT,SHR,SHL) keine adressierungsart ausgeben
+% x      andere addresszähler erhöhung animation -> 
+% x                        Anzahl der Bytes: 2
+% x                  !!!!  Erhöhe adresszähler
+% x                  -->
+% x                  Danach wird der 2 hervorgehoben auf den adresszahler animiert: zuerst nach link und dann nach unten
+% x                  2-er verschmilzt mit dem der adresse -> wird erhöht
+% x                  machinenbefehl verschinden bei Erhöhung
+% x      SHR/SHL fehler -> falsche länge -> es könnte zu bugs kommen.
+% x      überall wo adressierungs art nicht eindeutig ist (IN,OUT,SHR,SHL) keine adressierungsart ausgeben
 
-~      smoothscroll verschindet wenn geschw zu hoch wird, keine zurücksetzung;
-~      bessere Geschwindigkeiten für Animationen/Schritte 
-~      x y,"" -> too few commands instead of invalid command
+% ~      smoothscroll verschindet wenn geschw zu hoch wird, keine zurücksetzung
+% ~      bessere Geschwindigkeiten für Animationen/Schritte 
+% ~      x y,"" -> too few commands instead of invalid command
 
 
-      slidergröße von bildschrimauflösung abhängig machen
+      slidergröße von bildschrimauflösung abhängig machen ?
 
       mehr detailierte Fehlerbeschreibung ->    xy ist keine Konstante
                                                 xy ist keine Label
                                                 xy ist nicht ...
 
 
-      knopf positionierung anders gestalten -> <edit> -> .... -> <play,..> - <...> - <...> -> ... <hex> 
-                  ?wohin vollbild, lichtmodus, credits?
-      farbenzusammensetzung überprüfen lassen
+      % knopf positionierung anders gestalten -> <edit> -> .... -> <play,..> - <...> - <...> -> ... <hex> 
+      %             ?wohin vollbild, lichtmodus, credits?
+      % farbenzusammensetzung überprüfen lassen
 
       linkerauflösung bessere geschw. 
       animationstyp 3 von geschw. slider abhängig -> bei maximalen nichts anzeigen bis auf speicherabbild
@@ -40,10 +40,15 @@ x      überall wo adressierungs art nicht eindeutig ist (IN,OUT,SHR,SHL) keine 
                                4: keine descriptionLine
       
       
+      css dynamic:
+            Padding
+            Border
+            Borderradius
+            Gridgap
 
-
-      dynamische Bildeinteilung? mittels relative position & "%"
-      hauptbestandteile auf flex umstellen
+      %''''''''''''' dynamische Bildeinteilung? mittels relative position  - NOPE
+      %'''''''''''''hauptbestandteile auf flex umstellen
+      
       
       bewegteText maximal länge festlegen
 

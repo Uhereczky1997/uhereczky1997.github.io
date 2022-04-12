@@ -232,7 +232,7 @@ export class InputLine{
             dsrl =temp[1];
         }
         if(this.secondPart!=""){
-            console.log("dsrl : "+dsrl);
+            // console.log("dsrl : "+dsrl);
             // temp =dsrl.split(this.secondPart,2)
             temp =Manipulator.sliceString(dsrl,this.secondPart)
             // console.log("SECOND:")
@@ -262,7 +262,7 @@ export class InputLine{
         /* if(this.rest!=""){
             dsrl+=`<span id="crRest">${this.rest}</span>`;
         } */
-        console.log(ss);
+        // console.log(ss);
         return ss.join("");
     }
 

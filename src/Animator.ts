@@ -1,4 +1,4 @@
-import { aniControl, AnimationsTyp, checkIfPaused, sleepFor, sleepForFrame, sleepStopStartTime, sleepUntilNextStep } from "./AnimationUtil";
+import { aniControl, AnimationsTyp, checkIfPaused, sleepFor, sleepForFrame, sleepStaticAnimation, sleepStopStartTime, sleepUntilNextStep } from "./AnimationUtil";
 import { Manipulator } from "./Backend/Manipulator";
 import { root, rootVariables } from "./index";
 import { symbolTableLines, targetlabelValuePlaceholder, targetSymbolTableLine } from "./ProjectWindow";
@@ -85,15 +85,7 @@ export class Animator{
                                     this.targetElemLeft);
         let n = updateScrollOfSymbolTable(targetSymbolTableLine);
         this.targetElemTop=targetElem.offsetTop-n+targetElem.offsetHeight/2-this.movableElem.offsetHeight/2;
-       /*  console.log(this.targetElemTop);
-        if(-this.symbolTableBox.offsetTop+this.symbolTableElem.offsetTop+this.symbolTableElem.scrollHeight>this.symbolTableBox.clientHeight){
-            this.targetElemTop = this.symbolTableBox.offsetTop+this.symbolTableBox.clientHeight-this.movableElem.offsetHeight;
-        }
-        else{
-            // console.log(this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight+"  "+(this.symbolTableElem.children.item(0)!.scrollHeight*1.5));
-            this.targetElemTop=this.symbolTableElem.offsetTop+this.symbolTableElem.offsetHeight-(this.symbolTableElem.children.item(0)!.scrollHeight*1.5);
-        }
-        console.log(this.targetElemTop); */
+
         if(aniControl.isAni1()){
 
             this.turnMovableVisible();
@@ -130,7 +122,7 @@ export class Animator{
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
             await this.turnMovableHelperVisible();
-            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+           await sleepStaticAnimation();
             await this.turnArrowElemsHidden();
             await this.turnMovableHelperHidden();
             await this.turnMovableHidden();
@@ -222,7 +214,7 @@ export class Animator{
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
             await this.turnMovableHelperVisible();
-            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+            await sleepStaticAnimation();
             await this.turnArrowElemsHidden();
             await this.turnMovableHelperHidden();
             await this.turnMovableHidden();
@@ -233,7 +225,7 @@ export class Animator{
         if(aniControl.isAni3()) return;
         let targetElem = getHtmlElement(targetSymbolTableLine);
 
-        this.movableElem.innerHTML=this.formatLineString("h4",line);
+        this.movableElem.innerHTML=this.formatLineString("h3",line);
         this.setMovableParameters((this.descriptionLineElem.offsetTop+this.descriptionLineElem.offsetHeight-this.vorgangElem.offsetHeight),this.descriptionLineElem.offsetLeft);
         let n = updateScrollOfSymbolTable(targetSymbolTableLine);
         this.targetElemTop=targetElem.offsetTop-n+targetElem.offsetHeight/2-this.movableElem.offsetHeight/2;
@@ -259,30 +251,30 @@ export class Animator{
 
         }
         else{
-            this.movableHelper.innerHTML=this.formatLineString("h4",line);
+            this.movableHelper.innerHTML=this.formatLineString("h3",line);
             this.movableHelper.style.top=this.targetElemTop+"px";
             this.movableHelper.style.left=this.targetElemLeft+"px";
             let arrowHead = this.getArrowElem(arrowHeadID);
             let arrowVertical = this.getArrowElem(arrowVerticalID);
             this.setClassOfHead(DOWN);
             this.toggleToUp(true);
-            // arrowHead.style.top=this.movableHelper.offsetTop-arrowHead.offsetHeight+"px";
-            arrowHead.style.top=(this.movableHelper.offsetTop-arrowHead.offsetHeight)*100/bodyElem.offsetHeight+"%";
-            // arrowHead.style.left=this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2+"px";
-            arrowHead.style.left=(this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2)*100/bodyElem.offsetWidth+"%";
-            // arrowVertical.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider+"px";
-            arrowVertical.style.top=(this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider)*100/bodyElem.offsetHeight+"%";
-            // arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
-            arrowVertical.style.left=(arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2)*100/bodyElem.offsetWidth+"%";
-            // arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight+"px";
-            arrowVertical.style.height=(arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight)*100/bodyElem.offsetHeight+"%";
+            arrowHead.style.top=this.movableHelper.offsetTop-arrowHead.offsetHeight+"px";
+            // arrowHead.style.top=(this.movableHelper.offsetTop-arrowHead.offsetHeight)*100/bodyElem.offsetHeight+"%";
+            arrowHead.style.left=this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2+"px";
+            // arrowHead.style.left=(this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2)*100/bodyElem.offsetWidth+"%";
+            arrowVertical.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider+"px";
+            // arrowVertical.style.top=(this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider)*100/bodyElem.offsetHeight+"%";
+            arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
+            // arrowVertical.style.left=(arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2)*100/bodyElem.offsetWidth+"%";
+            arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight+"px";
+            // arrowVertical.style.height=(arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight)*100/bodyElem.offsetHeight+"%";
             
             /* this.recalulateParameters(arrowHeadID,bodyElem.id);
             this.recalulateParameters(arrowVerticalID,bodyElem.id) */;
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
             await this.turnMovableHelperVisible();
-            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+            await sleepStaticAnimation();
             await this.turnArrowElemsHidden();
             await this.turnMovableHelperHidden();
             await this.turnMovableHidden();
@@ -348,7 +340,7 @@ export class Animator{
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
             this.turnMovableHelperVisible();
 
-            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+            await sleepStaticAnimation();
 
             await this.turnArrowElemsHidden();
             await this.turnMovableHelperHidden();
@@ -374,7 +366,7 @@ export class Animator{
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
             this.turnMovableHelperVisible();
 
-            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+           await sleepStaticAnimation();
 
             await this.turnArrowElemsHidden();
             await this.turnMovableHelperHidden();
@@ -387,7 +379,7 @@ export class Animator{
         let childelem = getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}outputP`);
 
         let n= updateScrollOfIn_Out(this.outPutText.id,childelem.id);
-        console.log(n);
+        // console.log(n);
         await this.setMovableParameters(childelem.offsetTop-n,this.outPutText.offsetLeft);
         this.movableElem.innerHTML=this.formatLineString("h3",line);
         this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-this.movableElem.offsetHeight;
@@ -397,7 +389,6 @@ export class Animator{
             if(this.targetElemTop>this.movableElem.offsetTop){
                 while(this.targetElemTop>this.movableElem.offsetTop){
                     await this.moveSleepCheck(this.getPixeljump(),0);
-                    // await this.adjustHeightOfMovable(this.getPixeljump(),this.currentLineElem.offsetHeight/5*4);
                 }
                 this.movableElem.style.top=this.targetElemTop+"px";
             }
@@ -406,7 +397,6 @@ export class Animator{
             else{
                 while(this.targetElemTop<this.movableElem.offsetTop){
                     await this.moveSleepCheck(-this.getPixeljump(),0);
-                    // await this.adjustHeightOfMovable(this.getPixeljump(),this.currentLineElem.offsetHeight/5*4);
                 }
                 this.movableElem.style.top=this.targetElemTop+"px";
             }
@@ -474,7 +464,7 @@ export class Animator{
                 this.turnMovableVisible();
                 this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID,arrowHorizontalID2,arrowJointID2]);
                 await this.turnMovableHelperVisible();
-                await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+               await sleepStaticAnimation();
                 await this.turnArrowElemsHidden();
                 await this.turnMovableHelperHidden();
                 await this.turnMovableHidden();
@@ -499,7 +489,7 @@ export class Animator{
         this.turnMovableVisible();
         this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
         await this.turnMovableHelperVisible();
-        await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+       await sleepStaticAnimation();
         await this.turnArrowElemsHidden();
         await this.turnMovableHelperHidden();
         await this.turnMovableHidden();
@@ -512,7 +502,7 @@ export class Animator{
         this.movableElem.innerHTML=this.formatLineString("h3",line);
 
         await this.setStartTopToInputLine(id);
-        this.targetElemTop=this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-this.movableElem.offsetHeight;
+        this.targetElemTop= this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-this.movableElem.offsetHeight;
         this.targetElemLeft = this.currentLineElem.offsetLeft;
         this.turnMovableVisible();
         if(aniControl.isAni1()){
@@ -597,7 +587,7 @@ export class Animator{
                 this.turnMovableVisible();
                 this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID,arrowHorizontalID2,arrowJointID2]);
                 await this.turnMovableHelperVisible();
-                await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+               await sleepStaticAnimation();
                 await this.turnArrowElemsHidden();
                 await this.turnMovableHelperHidden();
                 await this.turnMovableHidden();
@@ -625,7 +615,7 @@ export class Animator{
         this.turnMovableVisible();
         this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
         await this.turnMovableHelperVisible();
-        await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+       await sleepStaticAnimation();
         await this.turnArrowElemsHidden();
         await this.turnMovableHelperHidden();
         await this.turnMovableHidden();
@@ -748,7 +738,7 @@ export class Animator{
                 this.turnMovableVisible();
                 this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID,arrowHorizontalID2,arrowJointID2]);
                 await this.turnMovableHelperVisible();
-                await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+               await sleepStaticAnimation();
                 await this.turnArrowElemsHidden();
                 await this.turnMovableHelperHidden();
                 await this.turnMovableHidden();
@@ -770,7 +760,7 @@ export class Animator{
                 this.turnMovableVisible();
                 this.turnArrowElemVisible([arrowHeadID,arrowHorizontalID]);
                 await this.turnMovableHelperVisible();
-                await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+               await sleepStaticAnimation();
                 await this.turnArrowElemsHidden();
                 await this.turnMovableHelperHidden();
                 await this.turnMovableHidden();
@@ -823,7 +813,7 @@ export class Animator{
                 this.turnMovableVisible();
                 this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID,arrowHorizontalID2,arrowJointID2]);
                 await this.turnMovableHelperVisible();
-                await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+               await sleepStaticAnimation();
                 await this.turnArrowElemsHidden();
                 await this.turnMovableHelperHidden();
                 await this.turnMovableHidden();
@@ -857,7 +847,7 @@ export class Animator{
         this.turnMovableVisible();
         this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
         await this.turnMovableHelperVisible();
-        await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+       await sleepStaticAnimation();
         await this.turnArrowElemsHidden();
         await this.turnMovableHelperHidden();
         await this.turnMovableHidden();
@@ -947,7 +937,7 @@ export class Animator{
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
             await this.turnMovableHelperVisible();
-            await this.sleepInAnimation2(aniTp2TimeAdjuster-this.getPixeljump());
+            await sleepStaticAnimation();
             await this.turnArrowElemsHidden();
             await this.turnMovableHidden();
 
@@ -967,31 +957,6 @@ export class Animator{
             this.turnMovableHidden();
             return;
         }
-
-
-        // this.movableElem.innerHTML=this.formatLineString("h2","Erhöhe Adresszähler um: "+i);
-        // this.setMovableParameters((this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.movableElem.offsetHeight),this.descriptionTableBox.offsetLeft);
-        // this.movableHelper.style.top= this.addresszaehlerElem.offsetTop-5+"px";
-        // this.movableHelper.style.left= this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetWidth-2+"px";
-        // this.movableHelper.style.height = this.addresszaehlerElem.offsetHeight+10+"px";
-        // this.movableHelper.innerHTML=`<h2 class="adresserhohung">+${i}</h2>`
-        // this.recalulateParameters(this.movableElem.id,bodyElem.id);
-        // this.recalulateParameters(this.movableHelper.id,bodyElem.id);
-        /* this.turnMovableVisible();
-        this.turnMovableHelperVisible();
-        await sleepFor(4*this.turnSleepTime/this.getPixeljump());
-        await checkIfPaused();
-        this.turnMovableHidden();
-        this.turnMovableHelperHidden();
-        await sleepStopStartTime();
-        this.movableHelper.innerHTML=this.formatLineString("h2",hex);
-        this.movableHelper.style.left = this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetWidth/2-this.movableHelper.offsetWidth/2+"px";
-        this.movableHelper.style.top = this.addresszaehlerElem.offsetTop+this.addresszaehlerElem.offsetHeight/2-this.movableHelper.offsetHeight/2+"px";
-        this.recalulateParameters(this.movableHelper.id,bodyElem.id);
-        this.turnMovableHelperVisible();
-        await sleepFor(2*this.turnSleepTime/this.getPixeljump());
-        await checkIfPaused();
-        this.turnMovableHelperHidden(); */
     }
 
     recalulateParameters(id:string,refernceID:string){
@@ -1025,12 +990,11 @@ export class Animator{
 
     private formatLineString(tag:string,line:string):string{
         if(line.length>30){
-            line = line.substring(0,30);
+            line = line.substring(0,25);
             return `<${tag} class="moveableText">${line}...</${tag}>`;
         }
         return `<${tag} class="moveableText">${line}</${tag}>`;
     }
-    //overflowElipsis
     private getArrowElem(s:string):HTMLDivElement{
         for(let i=0;i<this.arrowElems.length;i++){
             if(this.arrowElems[i].id===s){
@@ -1154,13 +1118,6 @@ export class Animator{
         return newElem;
     }
 
-    private async sleepInAnimation2(n:number){
-        for(let i=0;i<n*10;i++){
-            await sleepFor(this.turnSleepTime/(10*this.getPixeljump()));
-            await checkIfPaused();
-        }
-    }
-
     private setClassOfHead(s:string){
         let elem =this.getArrowElem(arrowHeadID);
         switch(s){
@@ -1232,7 +1189,11 @@ export class Animator{
         if(childElem!=null){
             let n= updateScrollOfIn_Out(this.outPutText.id,childElem.id);
             console.log(n);
+
             this.movableElem.style.top = childElem.offsetTop-n-1/2*this.movableElem.offsetHeight+1/2*childElem.offsetHeight+"px";
+            if(this.movableElem.offsetTop<this.inputText.offsetTop){
+                this.movableElem.style.top=this.inputText.offsetTop+"px";
+            }
             this.movableElem.style.left= childElem.offsetLeft+"px";
 
         }
@@ -1297,4 +1258,3 @@ export class Animator{
         this.movableHelper.style.left = (100*this.movableHelper.offsetLeft/bodyElem.offsetWidth+mLeft/5)+"%"; */
     }
 }
-// export let animator = new Animator();

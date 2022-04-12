@@ -1,0 +1,220 @@
+#buttonLeiste *> button, #buttonLeiste> button{
+    width: 100%;
+    height: 100%;
+    padding: 0!important;
+    margin: 0 0;
+    border: none;
+    cursor: pointer;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
+}
+#buttonLeiste h4, #InputWindow h4, #OutputWindow h4{
+    background-color: transparent!important;
+}
+#buttonLeiste>div,#buttonLeiste *>div{
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    background-color: var(--bkg2);
+}
+.tooltip{
+    position: relative;
+}
+.tooltip .tooltiptext{
+    visibility: hidden;
+    width: max-content;
+    background-color: var(--green)!important;
+    /* color: var(--bkg2)!important; */
+    padding: 5px 0;                                     /* Padding */
+    border-radius: 10px;                                /* Borderradius */
+    bottom: 105%;
+    left: 50%;
+    margin-left: -200%;
+    /* line-break: strict; */
+    position: absolute;
+    z-index: 1;
+}
+.tooltip .tooltiptext h3{
+    white-space: nowrap;
+    color: var(--text-light);
+}
+.tooltip .tooltiptext p{
+    color: var(--text-light);
+    white-space: pre-line;
+    /* font-weight: normal; */
+}
+.tooltip:hover >.tooltiptext {
+    visibility: visible;
+}
+.tooltiptext>h3,.tooltiptext>p{
+    text-align: start;
+    margin: 0 2;                                        /* Padding */
+    padding: 0.2em;                                     /* Padding */
+    background: transparent!important;
+}
+
+
+.leftBorderpRadius{
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    border-top:3px solid!important;                     /* Border */
+    border-bottom:3px solid!important;                  /* Border */
+    border-left: 3px solid!important;                   /* Border */
+    border-right: 1px solid;                            /* Border */    
+}
+.leftBorderRadius{
+    border-top-left-radius: 6px;    /* Borderradius */
+    border-bottom-left-radius: 8px; /* Borderradius */
+}
+.rightBorderRadius{
+    border-top-right-radius: 5px;   /* Borderradius */
+    border-bottom-right-radius: 5px;    /* Borderradius */
+}
+.rightBorderpRadius{
+    border-top-right-radius: 10px;  /* Borderradius */
+    border-bottom-right-radius: 10px;   /* Borderradius */
+    border-top:3px solid!important; /* Border */
+    border-bottom:3px solid!important;  /* Border */
+    border-right: 3px solid!important;  /* Border */
+    border-left: 1px solid; /* Border */
+}
+.middleBorder{
+    border-right: 1px solid!important;  /* Border */
+    border-left: 1px solid!important;   /* Border */
+}
+
+
+#animationButtonContainer{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    grid-row: span 1;
+    grid-column: 7/15;
+    display: flex;
+/*     display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: repeat(11,1fr);
+    gap: 0 5px; */
+    gap: 0 1%;
+    background-color: transparent!important;
+}
+#playResetSingleStep, #animationTypHolder{
+    /* grid-column: ; */
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr;
+    width: 100%;
+    height: 100%;
+}
+#playResetSingleStep, #animationTypHolder,#speedButtonDiv{
+    position: absolute;
+    width: 29% !important;
+}
+#playResetSingleStep{
+    left:0;
+    top:0;
+}
+#animationTypHolder{
+    left:30%;
+    top:0;
+}
+#speedSliderContainer{
+    background-color: var(--bkg1)!important;
+}
+
+#speedButtonDiv{
+    top:0;
+    left:60%;
+    display: grid;
+    grid-template-columns: 15% 1fr 15%;
+    grid-template-rows: 1fr;
+    width: 100%;
+    height: 100%;
+}
+#speedButtonDiv>*{
+    width: 100%;
+    height: 100%;
+}
+#settingsButtonContainer{
+    display: flexbox;
+    position: absolute;
+    flex-direction: column;
+    box-sizing: border-box;
+    border-top: 0px solid!important;
+    border-left: 0px solid!important;
+    border-right: 0px solid!important;
+    border-bottom: 0px solid!important;
+
+    background-color: var(--bkg1)!important;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    width:10%;
+    height:0%;
+    right:0;
+    bottom:95%;
+    overflow:hidden;
+    transition: height 0.5s linear,border 0.01s linear 0.5s;
+    /* transition: border 0.5s linear; */
+}
+#settingsButtonContainer>:first-child{
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+    border-bottom: 1px solid; /* Border */
+}
+#settingsButtonContainer>:last-child{
+    border-top: 1px solid;  /* Border */
+}
+#settingsButtonContainer:hover{
+    overflow:visible;
+}
+#settingsButtonContainer>button{
+    visibility: hidden;
+}
+#settingsButtonContainer>button.tooltip .tooltiptext{
+    top: 0%;
+    left: 205%;
+    height: fit-content;
+    /* margin-left: -200%; */
+}
+div[expand="on"]#settingsButtonContainer>button{
+    visibility: visible;
+    transition: visibility 0.5s ease 0.5s;
+}
+
+div[expand="on"]#settingsButtonContainer{
+    border-top: 3px solid!important;
+    border-left: 3px solid!important;
+    border-right: 3px solid!important;
+    border-bottom: 3px solid!important;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    height: 300%;
+
+    transition: height 0.5s linear,border 0.01s linear;
+}
+button#settings{
+    position:absolute;
+    left:90%;
+    top:0;
+    box-sizing: border-box;
+    width: 10%!important;
+    border-bottom: 3px solid!important;
+    border-left: 3px solid!important;
+    border-right: 3px solid!important;
+    border-top:3px solid!important;
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    transition: border-top-left-radius 0.01s linear 0.5s,
+    border-top-right-radius 0.01s linear 0.5s;
+}
+button[expand="on"]#settings{
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    transition: border-top-left-radius 0.01s linear,
+    border-top-right-radius 0.01s linear;
+}
+#settingsButtonContainer>button{
+    height: 33.5%!important;
+}

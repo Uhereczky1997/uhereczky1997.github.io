@@ -7,8 +7,8 @@
     margin-top: 0;
     margin-bottom:0;
     padding: 0;
-    padding-left: 2%;
-    padding-right:3px;
+    padding-left: 2%;       /* Padding */
+    padding-right: 3px;     /* Padding */
     line-height: 140%;
     display: block;
 
@@ -37,7 +37,7 @@
 
 }
 .idSideBorder{
-    border-right: 1px solid black; 
+    border-right: 1px solid black;  /* Border */
     text-align: center;
 }
 

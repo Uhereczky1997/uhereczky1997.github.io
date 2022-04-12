@@ -35,16 +35,17 @@
     --orange-light: #ff932d;
     --orange-dark: #ff7b00;
 
-    --text-light: #111;
+    --text-light: #222;
     --bkg1-light: #fbfbfb;
-    --bkg2-light: #111;
+    --bkg2-light: #222;
   
-    --text-dark: white;
+    --text-dark: #fbfbfb;
     /* --bkg1-dark: #222; */
-    --bkg1-dark: #111;
-    --bkg2-dark: #ffffff;
+    --bkg1-dark: #222;
+    --bkg2-dark: #fbfbfb;
 
     /* ARROW BACKGROUND URL CONFIG (LIGHT & DARK) */
+
     --verticalBackgroundDark: url(../images/WhiteBorderVertical.svg);
     --horizontalBackgroundDark: url(../images/WhiteBorderHorizontal.svg);
     --arrowUpDark: url(../images/WhiteBorderArrowUp.svg);
@@ -68,52 +69,47 @@
     --jq4Light:url(../images/BlackBorderQ4.svg);
     
     /* BUTTON BACKGROUND URL CONFIG */
-    --playBKGLight:url(../images/buttonSVGs/play_button.svg);
+
     --playBKGDark:url(../images/buttonSVGs/playWhite_button.svg);
-
-    --pauseBKGLight:url(../images/buttonSVGs/pause_button.svg);
     --pauseBKGDark:url(../images/buttonSVGs/pauseWhite_button.svg);
-    
-    --resetBKGLight:url(../images/buttonSVGs/reset_button.svg);
     --resetBKGDark:url(../images/buttonSVGs/resetWhite_button.svg);
-    
-    --singleStepDark:url(../images/buttonSVGs/oneCommandWhite_button.svg);
-    --singleStepLight:url(../images/buttonSVGs/oneCommand_button.svg);
-    --singleStepActiveDark:url(../images/buttonSVGs/oneCommandWhitePressed_button.svg);
-    --singleStepActiveLight:url(../images/buttonSVGs/oneCommandPressed_button.svg);
-    --slowerAniDark:url(../images/buttonSVGs/slowerAnimation_White_button.svg);
-    --slowerAniLight:url(../images/buttonSVGs/slowerAnimation_button.svg);
-
-    --fasterAniDark:url(../images/buttonSVGs/fasterAnimation_White_button_Alt.svg);
-    --fasterAniLight:url(../images/buttonSVGs/fasterAnimation_button_Alt.svg);
-
-    --noAnimationDark:url(../images/buttonSVGs/noAnimationWhite_button.svg);
-    --noAnimationLight:url(../images/buttonSVGs/noAnimation_button.svg);
-
-    
-    /* will be set to single step */
-    --skipBKGLight:url(../images/buttonSVGs/skip_button.svg);
     --skipBKGDark:url(../images/buttonSVGs/skipWhite_button.svg);
-
-    
+    --slowerAniDark:url(../images/buttonSVGs/slowerAnimation_White_button.svg);
+    --fasterAniDark:url(../images/buttonSVGs/fasterAnimation_White_button_Alt.svg);
+    --noAnimationDark:url(../images/buttonSVGs/noAnimationWhite_button.svg);
+    --singleStepDark:url(../images/buttonSVGs/oneCommandWhite_button.svg);
+    --singleStepActiveDark:url(../images/buttonSVGs/oneCommandWhitePressed_button.svg);
     --decreaseBKGDark:url(../images/buttonSVGs/decreaseWhite_button.svg);
-    --decreaseBKGLight:url(../images/buttonSVGs/decrease_button.svg);
-    
     --increaseBKGDark:url(../images/buttonSVGs/increaseWhite_button.svg);
-    --increaseBKGLight:url(../images/buttonSVGs/increase_button.svg);
-    
+    --settinngBKGDark:url(../images/buttonSVGs/settingsWhite_button.svg);
     --lightBKGDark:url(../images/buttonSVGs/lightSwitch_White_button.svg);
-    --lightBKGLight:url(../images/buttonSVGs/lightSwitch_button.svg);
     --fullscreenBKG_ON_Dark:url(../images/buttonSVGs/fullscreenWhite_button.svg);
-    --fullscreenBKG_ON_Light:url(../images/buttonSVGs/fullscreen_button.svg);
     --fullscreenBKG_OFF_Dark:url(../images/buttonSVGs/fullscreen_off_White_button.svg);
+    
+    --playBKGLight:url(../images/buttonSVGs/play_button.svg);
+    --pauseBKGLight:url(../images/buttonSVGs/pause_button.svg);
+    --resetBKGLight:url(../images/buttonSVGs/reset_button.svg);
+    --skipBKGLight:url(../images/buttonSVGs/skip_button.svg);
+    --slowerAniLight:url(../images/buttonSVGs/slowerAnimation_button.svg);
+    --fasterAniLight:url(../images/buttonSVGs/fasterAnimation_button_Alt.svg);
+    --noAnimationLight:url(../images/buttonSVGs/noAnimation_button.svg);
+    --lightBKGLight:url(../images/buttonSVGs/lightSwitch_button.svg);
+    --singleStepLight:url(../images/buttonSVGs/oneCommand_button.svg);
+    --singleStepActiveLight:url(../images/buttonSVGs/oneCommandPressed_button.svg);
+    --decreaseBKGLight:url(../images/buttonSVGs/decrease_button.svg);
+    --increaseBKGLight:url(../images/buttonSVGs/increase_button.svg);
+    --settinngBKGLight:url(../images/buttonSVGs/settings_button.svg);
+    --fullscreenBKG_ON_Light:url(../images/buttonSVGs/fullscreen_button.svg);
     --fullscreenBKG_OFF_Light:url(../images/buttonSVGs/fullscreen_off_button.svg);
+
     /* ARROW SIZE CONFIG */
     /* W - width for screen | H- height for screen */
     --arrowHeadlrW: 40px;
     --arrowHeadlrH: 40px;
     --arrowBodyW: 20px;
     --fontsizeVar:1.465vmax;
+
+    --size5px:5px;
     /* --arrowHeadlrW: 2rem;
     --arrowHeadlrH: 2.25rem;
     --arrowBodyW: 1.25rem; */

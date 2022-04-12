@@ -102,7 +102,7 @@ export class InputLineControl{
         this.map.mapInputLineByCase(i);
         this.createSummary(i);
         this.inputlines.push(i);
-        console.log(i);
+        // console.log(i);
         if(i.getValid()){
             this.calculateStartingAddr(i);
             this.calculateTranslation(i,false);
@@ -463,7 +463,7 @@ export class InputLineControl{
                         }
                         else if(Manipulator.isDat_16(e.getThirdPart())){
                             h=e.getThirdPart();
-                            console.log(h);
+                            // console.log(h);
                             rest=this.fHD8(this.calculateRest(String(e.getLength()),(hex),addr,h));
                             e.setTranslation(`${this.fHD8WH(String(e.getLength()))}${this.fHD16WH(addr)}00${this.fHD8WH(hex)}${this.getLittleEndianOf(h)}${this.fHD8WH(rest)}`);
                         }

@@ -2,6 +2,7 @@ import { InputLines, OutputTextAreaElement, OutputWindowMachineCode, ProjectWind
 import { createClickListener, getHtmlElement } from "./Tools";
 import { aniControl, sleepFor } from "./AnimationUtil";
 import { addClassTo, getIDOfSelected, inputText, outputText, removeClassOfAll } from "./ProjectWindow";
+import { Manipulator } from "./Backend/Manipulator";
 
 export const onscrollIn_Out = () =>{
     /* let inputText= document.getElementById("InputText");
@@ -89,6 +90,34 @@ const switchToFullscreen=()=>{
             fullscreened=false;
         }
     }
+    /* 
+    function toggleFullScreen() {
+        var doc = window.document;
+        var docEl = doc.documentElement;
+
+        var requestFullScreen =
+            docEl.requestFullscreen ||
+            docEl.mozRequestFullScreen ||
+            docEl.webkitRequestFullScreen ||
+            docEl.msRequestFullscreen;
+        var cancelFullScreen =
+            doc.exitFullscreen ||
+            doc.mozCancelFullScreen ||
+            doc.webkitExitFullscreen ||
+            doc.msExitFullscreen;
+
+        if (
+            !doc.fullscreenElement &&
+            !doc.mozFullScreenElement &&
+            !doc.webkitFullscreenElement &&
+            !doc.msFullscreenElement
+        ) {
+            requestFullScreen.call(docEl);
+        } else {
+            cancelFullScreen.call(doc);
+        }
+    }
+    */
 }
 const consoleWindowsize=()=>{
     console.log("Innerwidth: "+window.innerWidth);
@@ -106,8 +135,8 @@ const outputClip = () =>{
 }
 const syncScroll_MachineCode_Hexadecimal = () =>{
     var ignoreScrollEvents2 = false;
-    console.log(OutputWindowMachineCode.scrollTop);
-    console.log(OutputTextAreaElement.scrollTop);
+    // console.log(OutputWindowMachineCode.scrollTop);
+    // console.log(OutputTextAreaElement.scrollTop);
     try{
         if(OutputWindowMachineCode!=null && OutputTextAreaElement!=null){
             OutputWindowMachineCode.onscroll = function(){
@@ -139,7 +168,7 @@ export const setCurrentlyHovered = async (e: any) =>{ //Eventbubbling is f-ing s
     if(e.target instanceof HTMLElement){
         removeClassOfAll("highlighted");
         id=getIDOfSelected(e.target.id);
-        console.log(id);
+        // console.log(id);
         addClassTo(id+"inputP","highlighted");
         addClassTo(id+"outputP","highlighted");
         
@@ -157,7 +186,7 @@ const changeTheme = () =>{
     
 }
 
-let preferedTheme = "dark";
+let preferedTheme = "light";
 let fullscreened:boolean = false;
 
 let p = new ProjectWindow();
@@ -166,8 +195,19 @@ window.addEventListener('DOMContentLoaded', async() =>{
     const root1 = document.querySelector(':root');
     root1!.setAttribute('color-scheme', `${preferedTheme}`);
 })
+const testBinToHex=()=>{
+    let ss:string[]=[
+        Manipulator.binToHex("1111"),
+        Manipulator.binToHex("01111"),
+        Manipulator.binToHex("001111"),
+        Manipulator.binToHex("001111"),
+        Manipulator.binToHex("0001111"),
+        Manipulator.binToHex("00001111"),
+        Manipulator.binToHex("000001111")
+    ];
+    ss.forEach(e=>console.log(e));
+}
 const  main =async ()=>{
-    
     p.createListeners();
     onscrollIn_Out();
     createClickListener("InputLines",setCurrentlyHovered);
@@ -178,6 +218,6 @@ const  main =async ()=>{
     createClickListener("vollbild",switchToFullscreen);
     window.addEventListener("resize",consoleWindowsize);
     document.getElementById("vollbild")!.setAttribute("fullscreen","off");
-    
+    // testBinToHex();
 }
 main();

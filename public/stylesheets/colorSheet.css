@@ -11,14 +11,14 @@
 }
 .eingeruckt{
   margin: 0 0;
-  padding-left: 1em;
+  padding-left: 1em; /* Padding */
 }
 .highlighted{
   background-color: var(--green)!important;
 }
 .crInvert{
   background-color: var(--green);
-  border: 0.05em solid var(--bkg2)!important;
+  border: 0.05em solid var(--bkg2)!important; /* Border */
   border-radius: var(--hBorderRadius);
 }
 .warning{

@@ -44,9 +44,6 @@ export class Manipulator {
         else reString[0]=s;
         return reString;
     }
-    static removeExcessWhiteSpace(addr:string):string{
-        return addr.replace(/\s+/g,' ').trim();
-    }
     static isHex(addr:string):boolean{    
         if(addr.endsWith("h")||addr.endsWith("H")){
             addr=addr.replace(/h$/i,"");
@@ -115,32 +112,6 @@ export class Manipulator {
         }
         else return false;
     }
-    /* static formatHex(addr:string):string{
-        addr=addr.replace(/^0+/,'');
-        if(addr=="h" || addr==""){
-            return "0000h";
-        }
-        //addr=addr.replace(/^0/,'');
-        if(Manipulator.isDat_8(addr)){
-            if(this.isDec(addr)){
-                addr=Manipulator.decToHex(addr);
-            }
-
-            if(addr.length==2){
-                addr='0'+addr;
-            }
-        }
-        else if(Manipulator.isDat_16(addr)){
-            if(this.isDec(addr)){
-                addr = Manipulator.decToHex(addr);
-            }
-
-            if(addr.length==4){
-                addr='0'+addr;
-            }
-        }
-        return addr;
-    } */
     static formatHextoDat8(addr:string):string{
         addr=addr.replace(/^0{1,}/,'0');
 
@@ -154,6 +125,9 @@ export class Manipulator {
             if(addr.length==2){
                 addr='0'+addr;
             }
+        }
+        else{
+            throw new Error("Expected was Dat8 but got instead "+addr);
         }
         return addr;
     }
@@ -170,6 +144,9 @@ export class Manipulator {
             if(addr.length==2){
                 addr='0'+addr;
             }
+        }
+        else{
+            throw new Error("Expected was Dat8 but got instead "+addr);
         }
         return addr.replace(/h$/,"");
     }
@@ -195,6 +172,9 @@ export class Manipulator {
                     break;
             }
         }
+        else{
+            throw new Error("Expected was Dat16 but got instead "+addr);
+        }
         return addr;
     }
     static formatHextoDat16WithoutH(addr:string):string{
@@ -218,6 +198,9 @@ export class Manipulator {
                 case 4: addr='0'+addr;
                     break;
             }
+        }
+        else{
+            throw new Error("Expected was Dat16 but got instead "+addr);
         }
         return addr.replace(/h$/g,"");
     }

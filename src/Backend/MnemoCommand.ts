@@ -16,9 +16,6 @@ export class MnemoCommand {
         this.hexCode=Manipulator.binToHex(bC.replace(/\s/g,""));
         this.size=l;
     }
-    toString():string{
-        return `${this.mCode} ${this.destination} ${this.source} \n ${this.hexCode}`
-    }
     getMCode():string{
         return this.mCode;
     }

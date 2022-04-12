@@ -82,6 +82,8 @@ export class StringConstructor{
     static noValidConstOrOperand(s:string){
         return this.error(`${s} ungültiger Befehl oder Konstantendefinition`);
     }
+
+    
     static infoIsDat8():string{
         return this.info("überprüfe auf 8-Bit Wert ... gefunden");
     }
