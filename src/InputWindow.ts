@@ -6,13 +6,14 @@ import { getHtmlElement, createClickListener, updateScroll } from "./Tools";
 import { aniControl, sleepFor, sleepUntilNextStep } from "./AnimationUtil";
 
 
-let errorDescriptionDiv:HTMLElement = getHtmlElement('ErrorDescription');
-let inputWindowContainer:HTMLElement = getHtmlElement('InputWindowContainter');
+const errorDescriptionDiv:HTMLElement = getHtmlElement('ErrorDescription');
+const inputWindowContainer:HTMLElement = getHtmlElement('InputWindowContainter');
 
 
-
+export const inputSelect:HTMLInputElement = getHtmlElement("bsppSelect") as HTMLInputElement;
 
 export class InputWindow{
+    private previousP:string="0";
     private inputcontrol:InputLineControl=InputLineControl.getInstance();
     private InputTextAreaElement:HTMLTextAreaElement;
     private pWindow:ProjectWindow;
@@ -54,6 +55,19 @@ export class InputWindow{
             await this.pWindow.displayInputLines();
         }
     }
+    private switchInputContent=()=>{
+        let s:string = inputSelect.value;
+        if(s=="0"){
+            bsp0 =this.InputTextAreaElement.value.split("\n");
+        }
+        console.log(bsp0);
+        console.log(s);
+        this.previousP=s;
+        // this.addLinetoTextArea()
+    }
+    /* private getBsp=(s:string):string[]=>{
+        Object.keys
+    } */
     public openEditWindow =()=>{
         try{
             aniControl.setPaused();
@@ -90,57 +104,26 @@ export class InputWindow{
         // createClickListener('Preview',this.previewTranslation);
         createClickListener('GenerateDummy',this.generateDummy);
         createClickListener('CloseInputWindow',this.openEditWindow);
+        inputSelect.addEventListener("change",this.switchInputContent);
     }
     public generateDummy = ():void=>{
-        this.addLinetoTextArea([
-            "Label1:Mov A,95h",
-            "Mov B,95h",
-            "Mov C,95h",
-            "Mov IX,1295h",
-            "Mov HL,1095h",
-            "Mov SP,2395h",
-            "Mov A,B",
-            "Mov A,C",
-            "Mov B,A",
-            "Mov B,C",
-            "Mov C,A",
-            "Mov C,B",
-            "Mov A,Label1",
-            "Mov HL,Label1",
-            "Mov IX,Label1",
-            "Mov Label1,A",
-            "Mov Label1,HL",
-            "Mov Label1,IX",
-            "MOV A,[HL]",
-            "MOV [HL],A",
-            "PUSH",
-            "POP",
-            "IN A, 67h",
-            "OUT 46, A",
-            "INC A",
-            "DEC A",
-            "ADD A",
-            "SUB A",
-            "AND A",
-            "OR A",
-            "XOR A",
-            "SHL",
-            "SHR",
-            "RCL",
-            "ROL",
-            "RCR",
-            "ROR",
-            "CP A",
-            "JP Label1",
-            "CALL Label1",
-            "RET",
-            "HALT",
-            "NOP",
-            "DB 45h",
-            "DW 45h",
-            "RS 3",
-            "ORG 2323h",
-            "const1 EQU 3434h",
-        ]);
+        this.addLinetoTextArea(bsp1);
     }
 } 
+let bsp0:string[]=[]
+const bsp1:string[]=[
+    "Label1:Mov A,95h","Mov B,95h","Mov C,95h","Mov IX,1295h","Mov HL,1095h","Mov SP,2395h","Mov A,B",
+    "Mov A,C","Mov B,A","Mov B,C","Mov C,A","Mov C,B","Mov A,Label1","Mov HL,Label1","Mov IX,Label1",
+    "Mov Label1,A","Mov Label1,HL","Mov Label1,IX","MOV A,[HL]","MOV [HL],A","PUSH","POP","IN A, 67h",
+    "OUT 46, A","INC A","DEC A","ADD A","SUB A","AND A","OR A","XOR A","SHL","SHR","RCL","ROL","RCR",
+    "ROR","CP A","JP Label1","CALL Label1","RET","HALT","NOP","DB 45h","DW 45h","RS 3","ORG 2323h",
+    "const1 EQU 3434h",
+]
+const bsp2:string[]=[
+    "Label1:Mov A,95h","Mov B,95h","Mov C,95h","Mov IX,1295h","Mov HL,1095h","Mov SP,2395h","Mov A,B",
+    "Mov A,C","Mov B,A","Mov B,C","Mov C,A","Mov C,B","Mov A,Label1","Mov HL,Label1","Mov IX,Label1",
+    "Mov Label1,A","Mov Label1,HL","Mov Label1,IX","MOV A,[HL]","MOV [HL],A","PUSH","POP","IN A, 67h",
+    "OUT 46, A","INC A","DEC A","ADD A","SUB A","AND A","OR A","XOR A","SHL","SHR","RCL","ROL","RCR",
+    "ROR","CP A","JP Label1","CALL Label1","RET","HALT","NOP","DB 45h","DW 45h","RS 3","ORG 2323h",
+    "const1 EQU 3434h",
+]

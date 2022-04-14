@@ -100,10 +100,10 @@ export class InputLineControl{
             return;
         }
         this.map.mapInputLineByCase(i);
-        this.createSummary(i);
         this.inputlines.push(i);
         // console.log(i);
         if(i.getValid()){
+            this.createSummary(i);
             this.calculateStartingAddr(i);
             this.calculateTranslation(i,false);
             if(i.hasLabel()){
@@ -283,10 +283,10 @@ export class InputLineControl{
         let h = i.getHCode()
         let l:string|undefined = "";
         let c:Constant;
-        if(i.getFirstPart().toUpperCase()=="ORG"){
+        if(i.getFirstPart().toUpperCase()=="ORG" && i.getValid()){
             saveInput(i,5);
             
-            i.saveDescriptionLine(`<span class="eingeruckt">"Addresszähler = <span id="addressbyte${i.getId()}">`+this.fHD16WH(String(i.getLength()))+`</span></span>`);
+            i.saveDescriptionLine(`<span class="eingeruckt">Addresszähler = <span id="addressbyte${i.getId()}">`+this.fHD16WH(String(i.getLength()))+`</span></span>`);
         }
         else if(i.getType()==InputLineType.TRANSLATED){
             saveInput(i,5);

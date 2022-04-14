@@ -153,7 +153,7 @@
     right:0;
     bottom:95%;
     overflow:hidden;
-    transition: height 0.5s linear,border 0.01s linear 0.5s;
+    transition: height var(--btnEXPspeed) linear,border 0.01s linear var(--btnEXPspeed);
     /* transition: border 0.5s linear; */
 }
 #settingsButtonContainer>:first-child{
@@ -178,7 +178,7 @@
 }
 div[expand="on"]#settingsButtonContainer>button{
     visibility: visible;
-    transition: visibility 0.5s ease 0.5s;
+    transition: visibility var(--btnEXPspeed) ease var(--btnEXPspeed);
 }
 
 div[expand="on"]#settingsButtonContainer{
@@ -190,7 +190,7 @@ div[expand="on"]#settingsButtonContainer{
     border-top-right-radius: 10px;
     height: 300%;
 
-    transition: height 0.5s linear,border 0.01s linear;
+    transition: height var(--btnEXPspeed) linear,border 0.01s linear;
 }
 button#settings{
     position:absolute;
@@ -206,8 +206,8 @@ button#settings{
     border-bottom-right-radius: 10px;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
-    transition: border-top-left-radius 0.01s linear 0.5s,
-    border-top-right-radius 0.01s linear 0.5s;
+    transition: border-top-left-radius 0.01s linear var(--btnEXPspeed),
+    border-top-right-radius 0.01s linear var(--btnEXPspeed);
 }
 button[expand="on"]#settings{
     border-top-left-radius: 0;

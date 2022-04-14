@@ -193,17 +193,32 @@
             </button>
 
         </div>
-
+        <div id="translatingContainer" displayable="true">
+            <h3>Übersetze Zeile <span id="translatingInfo">TEST</span> ... </h3>
+        </div>
         <div id ="InputWindowContainter" class="backgroundContainer hidden">
             <div id="InputWindow" class="boxBorder inoutputbox">
+                <h1 id="titleTextareaInput" class="titel">Eingabefeld</h1>
                 <textarea name="InputTextArea" id="InputTextArea" class="customScrollbar" placeholder="Hier können Sie den Quellcode eingeben"></textarea>
                 <div id="InputTextAreaEnumerationDiv"></div>
                 <button id="Submit">
                     <h4 class="noMargin titel">Übernehmen</h4>
                 </button>
+                <div id = "bspp">
+                    <select id="bsppSelect">
+                        <option value="0">Eigenes Programm</option>
+                        <option value="1">Beispiel Programm 1</option>
+                        <option value="2">Beispiel Programm 2</option>
+                        <option value="3">Beispiel Programm 3</option>
+                    </select>
+                </div>
+                <!-- <select id="bsppSelect2">
+                    <option value="0">Eigenes Programm</option>
+                    <option value="1">Beispiel Programm 1</option>
+                </select> -->
                 <button id="GenerateDummy">
                      GenerateDummy 
-                    </button>
+                </button>
                 <button id="CloseInputWindow">
                     <h4 class="noMargin titel">Abbrechen</h4>
                 </button>

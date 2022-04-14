@@ -7,6 +7,7 @@
 @import "./buttonBackground.css";
 @import "./media.css";
 @import "./buttonLeiste.css";
+@import "./selectStyling.css";
 
 [color-scheme="dark"]{
     --text: var(--text-dark);
@@ -263,10 +264,70 @@ body>* h1{
 }
 
 
+
 #translatedinfo{
     display:grid;
     grid-template-columns: 15% 85%;
     grid-template-rows: 35% 1px 1fr;    /* Border */
+}
+/* Special divs */
+.testElemStyle{
+    position: absolute;
+    background-color: var(--green)!important;
+    height: fit-content;
+    width: fit-content;
+    margin-top: 0;
+    margin-bottom: 0;
+    border-radius: var(--hBorderRadius);
+    border: 0.12em solid var(--bkg2);
+}
+.testElemStyle>*{
+    background-color: var(--green)!important;
+    border-radius: var(--hBorderRadius);
+    font-family: 'Courier New', Courier, monospace;
+}
+.moveableText{
+    margin:0px 0px; 
+    padding: 5px 10px; 
+    font: bold;
+    text-align: center;
+}
+.adresserhohung{
+    margin:0px 0px; 
+    padding: 10px 10px; 
+    font: bold;
+}
+
+#translatingContainer{
+    position: absolute;
+    visibility: hidden;
+    display: flex;
+    background-color: transparent;
+    top: 20%;
+    left: 35%;
+    width: 30%;
+    height: fit-content;
+    text-align: center;
+    align-items: center;
+    justify-items: center;
+    align-content: center;
+    justify-content: center;
+}
+#translatingContainer h3{
+    /* position: absolute; */
+    background-color: var(--green);
+    height: fit-content;
+    width: max-content;
+    align-self: center;
+    justify-self: center;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding: 0.4em 0.8em;
+    border-radius: var(--hBorderRadius);
+    border: 0.12em solid var(--bkg2);
+}
+#translatingContainer h3>span{
+    background-color: var(--green);
 }
 /* GRID CONFIG */
 

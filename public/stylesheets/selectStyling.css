@@ -1,0 +1,40 @@
+#bspp{
+    position:absolute;
+    top: 8%;
+    right: 26%;
+    width: 20%;
+    height: 5%;
+    resize: none;
+/*     font-weight: bold;
+    font-family: 'Courier New', Courier, monospace; */
+}
+
+#bsppSelect2{
+    position:absolute;
+    top: 87.5%;
+    left: 20%;
+    width: 20%;
+    height: 5%;
+    /* resize: none; */
+/*     font-weight: bold;
+    font-family: 'Courier New', Courier, monospace; */
+}
+#bspp select{
+    width:100%;
+    height: 100%;
+}
+#bspp select option{
+    border-bottom:1px solid #ddd; 
+    padding:6px 0px 6px 6px;
+}
+
+
+#bspp>*{
+    /* height: 100%; */
+    text-align: center;
+    font-weight: bold;
+    font-family: 'Courier New', Courier, monospace;
+}
+/* #bspp option{
+    height: 30px;
+} */

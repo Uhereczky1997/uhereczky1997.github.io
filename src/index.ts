@@ -46,6 +46,7 @@ export const onscrollIn_Out = () =>{
 }
 export const root = document.documentElement;
 export const rootVariables = getComputedStyle(root);
+export let contentloaded:boolean= false;
 declare global {
     interface Document {
       mozCancelFullScreen?: () => Promise<void>;
@@ -62,7 +63,6 @@ declare global {
       webkitRequestFullscreen?: () => Promise<void>;
     }
 }
-
 const switchToFullscreen=()=>{
     var elem = document.documentElement;
     const elem2 = document.getElementById("vollbild");
@@ -194,6 +194,8 @@ let p = new ProjectWindow();
 window.addEventListener('DOMContentLoaded', async() =>{
     const root1 = document.querySelector(':root');
     root1!.setAttribute('color-scheme', `${preferedTheme}`);
+    contentloaded=true;
+    aniControl.setLoaded(true);
 })
 const testBinToHex=()=>{
     let ss:string[]=[

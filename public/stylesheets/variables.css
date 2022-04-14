@@ -14,7 +14,7 @@
 
     --bottomHeight: calc(70/894*100%);
     --hBorderRadius: 0.2em;
-
+    --btnEXPspeed: 0.2s;
     /* COLOR CONFIG (LIGHT & DARK) */
     --green-light: #bbf125;
     --green-dark: #8fc400;

@@ -302,9 +302,10 @@ export class InputLine{
         if(second.toUpperCase()=="EQU"){
             second=second.toUpperCase();
         }
-        else if(["DW","ORG"].includes(first.toUpperCase())){
+        /* else if(["DW","ORG"].includes(first.toUpperCase())){
+            if(SymbolL
             second = Manipulator.formatHextoDat16(second);
-        }
+        } */
         else{
             first=first.toUpperCase();
             temp = Manipulator.splitStringHalf(second," ");

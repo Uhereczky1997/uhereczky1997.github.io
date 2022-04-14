@@ -1,7 +1,11 @@
 ??
 
       dropdown für bsp programme im EingabeFenster
+
       dropdown biblothek im EingabeFenster
+
+      addresserhohung -> verschwindend hinter addresszähler
+
 
 !!!!!!!!
 
@@ -20,25 +24,28 @@
 % ~      bessere Geschwindigkeiten für Animationen/Schritte 
 % ~      x y,"" -> too few commands instead of invalid command
 
+      % slidergröße von bildschrimauflösung abhängig machen ? NAH
 
-      slidergröße von bildschrimauflösung abhängig machen ?
-
-      mehr detailierte Fehlerbeschreibung ->    xy ist keine Konstante
-                                                xy ist keine Label
-                                                xy ist nicht ...
+      mehr detailierte Fehlerbeschreibung ->
+            xy ist keine dat_8    
+            xy ist keine Label
+            xy ist keine Konstante
+            xy ist nicht ...
 
 
       % knopf positionierung anders gestalten -> <edit> -> .... -> <play,..> - <...> - <...> -> ... <hex> 
       %             ?wohin vollbild, lichtmodus, credits?
       % farbenzusammensetzung überprüfen lassen
 
-      linkerauflösung bessere geschw. 
+      % linkerauflösung bessere geschw. 
       animationstyp 3 von geschw. slider abhängig -> bei maximalen nichts anzeigen bis auf speicherabbild
-                  vorschlag -> 1: wie jetzt
-                               2: descriptionLine update nur nach Zeilenabschnitte
-                               3: keine currentLine
-                               4: keine descriptionLine
+                  vorschlag -> 1: wie jetzt /2
+                               2: wie jetzt
+                               3: keine currentLine nur abschnitte
+                               4: keine descriptionLine wie jetzt mit "Übersetze Zeile x/xy ... "
       
+      
+      lookupSymboltableentry !!
       
       css dynamic:
             Padding
@@ -50,15 +57,25 @@
       %'''''''''''''hauptbestandteile auf flex umstellen
       
       
-      bewegteText maximal länge festlegen
+      % bewegteText maximal länge festlegen
 
-      ??          -> // ??
+      ??          ->    // ??
+                        // need?
 
       Alle Texts zusammenschreiben (und in KonstantenSpeichern ((zum Wiederverwendung)))
-      damit Prof einmal darüberschauen kann.
-      //Wenn zu Wenige Operand -> Erroranzeige ändern NICHT AN AKZEPTIERTEN STOPPEN -> i.setError("");
+            damit Prof einmal darüberschauen kann.
+      % //Wenn zu Wenige Operand -> Erroranzeige ändern NICHT AN AKZEPTIERTEN STOPPEN -> i.setError("");
 
       Ausführliches testen von randfällen
+
+      dokumentation:
+            ~ 40 Seiten - 
+            Titel : 
+            Anfang: kurzfassung 3/4
+
+            Inhaltsverzeichnis: 
+                  Einleitung:
+                  Anforderungen:
 
 
 

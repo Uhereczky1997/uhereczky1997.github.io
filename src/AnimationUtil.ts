@@ -1,4 +1,5 @@
-import { descriptionLines, inputText, outputText, symbolTableLines } from "./ProjectWindow";
+import { contentloaded } from "./index";
+import { currentLineLine, descriptionLines, inputText, outputText, setTranslatingDivHidden, setTranslatingDivVisible, symbolTableLines } from "./ProjectWindow";
 import { createClickListener, getHtmlElement } from "./Tools";
 
 export const sleepFor = (ms:number):Promise <any> => new Promise(resolve => setTimeout(resolve,ms));
@@ -12,6 +13,15 @@ export const animationTyp3BTN= getHtmlElement("animationsTyp3") as HTMLButtonEle
 export const playButton = getHtmlElement("play") as HTMLButtonElement;
 export const resetButton = getHtmlElement("reset") as HTMLButtonElement;
 
+export const setCurrentLineHidden=()=>{
+    if(aniControl.speed>=3 && aniControl.isAni3() &&  aniControl.play){
+        currentLineLine.style.visibility="hidden";
+    }
+    
+}
+export const setCurrentLineVisible=()=>{
+    currentLineLine.style.visibility="visible";
+}
 
 export const checkIfPaused= async():Promise <any> => {
     if (aniControl.play){
@@ -33,7 +43,12 @@ export const checkIfPaused= async():Promise <any> => {
 export const sleepUntilNextStep=async():Promise <any>=>{
     let c=aniControl.baseFrameTime;
     if(aniControl.isAni3()){
-        await sleepFor(5-(aniControl.speed+1));
+        if(aniControl.speed==1){
+            await sleepFor(10);
+            await checkIfPaused();
+            return;
+        }
+        await sleepFor(3);
         await checkIfPaused();
         return;
     }
@@ -88,6 +103,7 @@ export class AnimationControl{
     public end:boolean;
     public reset:boolean;
     public singleStepFlag:boolean;
+    public loaded:boolean;
 
     public speed:number;
     public baseFrameTime:number;
@@ -102,10 +118,14 @@ export class AnimationControl{
         this.reset=false;
         this.singleStepFlag=false;
         this.end=false;
+        this.loaded=false;
         this.speed=1;
-        this.baseFrameTime=1000;
+        this.baseFrameTime=800;
         this.setSpeed(speedSlider.valueAsNumber);
         this.frames=60;
+    }
+    setLoaded(b:boolean){
+        this.loaded=b;
     }
     resetFlags=()=>{
         while(!aniControl.reset){
@@ -125,9 +145,7 @@ export class AnimationControl{
     setSinglestep=()=>{
         if(this.singleStepFlag) this.singleStepFlag=false;
         else this.singleStepFlag=true;
-        console.log(this.singleStepFlag);
         this.singleStepFlag?singleStepBTN.classList.add("selected"):singleStepBTN.classList.remove("selected");
-        console.log(this.singleStepFlag);
 
     }
     setSpeedTo=(n:number)=>{
@@ -221,7 +239,7 @@ export class AnimationControl{
         this.reset  = true;
         setTimeout(function(){
             aniControl.reset=false;
-        },500);
+        },200);
         this.changePlayButtonBKG();
     }
 
@@ -254,6 +272,8 @@ export class AnimationControl{
     changePlayButtonBKG=()=>{
         let elem = getHtmlElement("play");
         if(this.end || this.pause || this.reset || this.stop){
+            setTranslatingDivHidden();
+            setCurrentLineVisible();
             this.removeSmoothScroll();
             inputText.classList.remove("scrollDisabled");
             outputText.classList.remove("scrollDisabled");
@@ -267,6 +287,9 @@ export class AnimationControl{
             return;
         }
         else if(this.play){
+            setTranslatingDivVisible();
+            setCurrentLineHidden();
+
             inputText.classList.add("scrollDisabled");
             outputText.classList.add("scrollDisabled");
             
@@ -297,8 +320,17 @@ export class AnimationControl{
     }
     setSpeed=(n:number)=>{
         this.speed=n;
-        this.baseFrameTime=1300-this.speed*300;
+        this.baseFrameTime=1000-this.speed*220;
+        if(!this.loaded) return;
         this.setSmoothIfNecessery();
+        if(n>=3){
+            setTranslatingDivVisible();
+            setCurrentLineHidden();
+        }
+        else{
+            setTranslatingDivHidden();
+            setCurrentLineVisible();
+        }
     }
     public createEventListeners=()=>{
         this.setAnimationTyp1();

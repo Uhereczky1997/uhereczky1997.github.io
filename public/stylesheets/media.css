@@ -51,9 +51,9 @@ p,p>span,textarea
 {
     font-size: calc(var(--fontsizeVar)*22/30);
 }
-#descriptionLines>* p, #descriptionLines>p>span ,#descriptionLines>p{
+#descriptionLines p>span ,#descriptionLines p{
     margin: calc(var(--fontsizeVar)*2/30);
-    font-size: calc(var(--fontsizeVar)*19/30);
+    font-size: calc(var(--fontsizeVar)*20/30);
 }
 
 #body{

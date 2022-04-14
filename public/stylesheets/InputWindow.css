@@ -115,14 +115,20 @@ p{
     height: 80%;
     display:flex;
 }
-
-
+#titleTextareaInput{
+    position:absolute;
+    top: 7.5%;
+    left: 5%;
+    width:20%;
+    text-align: center;
+    margin: 0 0;
+}
 #InputWindow>textarea{
     position:absolute;
     border: 1px solid;  /* Border */
 
     border-radius: 10px;
-    top: 10%;
+    top: 13%;
     left: 5%;
     width: 90%;
     height: 70%;

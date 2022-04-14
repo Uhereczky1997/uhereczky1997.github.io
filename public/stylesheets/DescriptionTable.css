@@ -65,29 +65,3 @@
     font-family: 'Courier New', Courier, monospace;
 }
 
-.testElemStyle{
-    position: absolute;
-    background-color: var(--green)!important;
-    height: fit-content;
-    width: fit-content;
-    margin-top: 0;
-    margin-bottom: 0;
-    border-radius: var(--hBorderRadius);
-    border: 0.12em solid var(--bkg2);
-}
-.testElemStyle>*{
-    background-color: var(--green)!important;
-    border-radius: var(--hBorderRadius);
-    font-family: 'Courier New', Courier, monospace;
-}
-.moveableText{
-    margin:0px 0px; 
-    padding: 5px 10px; 
-    font: bold;
-    text-align: center;
-}
-.adresserhohung{
-    margin:0px 0px; 
-    padding: 10px 10px; 
-    font: bold;
-}
