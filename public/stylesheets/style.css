@@ -329,6 +329,9 @@ body>* h1{
 #translatingContainer h3>span{
     background-color: var(--green);
 }
+.hiddenDescriptionDiv{
+    visibility: hidden;
+}
 /* GRID CONFIG */
 
 .topDivider{

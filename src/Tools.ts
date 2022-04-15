@@ -54,3 +54,24 @@ export const updateScrollOfIn_Out=(id:string,targetID:string):number=>{
     }
     return elem.scrollTop;
 }
+export const removeClassOfAll=(s:string)=>{
+    let elements = Array.from(document.querySelectorAll("."+s+""));
+    for(let elem of elements){
+        elem.classList.remove(s);
+    }
+}
+export const addClassTo=(id:string,cls:string)=>{
+    let elem = getHtmlElement(id);
+    if(elem !=null || elem != undefined){
+        elem.classList.add(cls);
+    }
+}
+export const getIDOfSelected=(s:string):string=>{
+    return s[0]+s[1];
+}
+
+export const updateScrollOfDescriptionLines=(id:string,targetID:string)=>{
+    var elem = getHtmlElement(id);
+    var targetElem = getHtmlElement(targetID);
+    targetElem.scrollTop=elem.offsetTop-targetElem.offsetTop;
+}

@@ -971,6 +971,9 @@ export class Animator{
             await sleepStopStartTime();
             await sleepStopStartTime();
             await sleepStopStartTime();
+            while(this.movableElem.offsetLeft+this.movableElem.offsetWidth>this.movableHelper.offsetLeft+this.movableHelper.offsetWidth){
+                await this.moveSleepCheck(0,-this.getPixeljump());
+            }
 
             this.turnMovableHidden();
 
@@ -1026,6 +1029,9 @@ export class Animator{
             await sleepStopStartTime();
             await sleepStopStartTime();
             await sleepStopStartTime();
+            while(this.movableElem.offsetLeft+this.movableElem.offsetWidth>this.movableHelper.offsetLeft+this.movableHelper.offsetWidth){
+                await this.moveSleepCheck(0,-this.getPixeljump());
+            }
             this.turnMovableHelperHidden();
             this.movableElem.innerHTML=this.formatLineString("h1",hex);
             await sleepStopStartTime();
@@ -1083,7 +1089,7 @@ export class Animator{
     }
 
     private getPixeljump():number{
-        return aniControl.speed;
+        return aniControl.speed+1;
     }
 
     async adjustWidthOfMovable(n:number,w:number){

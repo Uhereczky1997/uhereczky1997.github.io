@@ -26,11 +26,11 @@
 
       % slidergröße von bildschrimauflösung abhängig machen ? NAH
 
-      mehr detailierte Fehlerbeschreibung ->
-            xy ist keine dat_8    
-            xy ist keine Label
-            xy ist keine Konstante
-            xy ist nicht ...
+      % mehr detailierte Fehlerbeschreibung ->
+      %       xy ist keine dat_8    
+      %       xy ist keine Label
+      %       xy ist keine Konstante
+      %       xy ist nicht ...
 
 
       % knopf positionierung anders gestalten -> <edit> -> .... -> <play,..> - <...> - <...> -> ... <hex> 

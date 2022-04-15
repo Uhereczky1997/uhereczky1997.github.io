@@ -1,7 +1,7 @@
 import { InputLines, OutputTextAreaElement, OutputWindowMachineCode, ProjectWindow } from "./ProjectWindow";
-import { createClickListener, getHtmlElement } from "./Tools";
+import { addClassTo, createClickListener, getHtmlElement, getIDOfSelected, removeClassOfAll } from "./Tools";
 import { aniControl, sleepFor } from "./AnimationUtil";
-import { addClassTo, getIDOfSelected, inputText, outputText, removeClassOfAll } from "./ProjectWindow";
+import { inputText, outputText } from "./ProjectWindow";
 import { Manipulator } from "./Backend/Manipulator";
 
 export const onscrollIn_Out = () =>{

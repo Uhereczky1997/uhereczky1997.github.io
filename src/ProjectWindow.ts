@@ -8,7 +8,7 @@ import { Constant } from "./Backend/Constant";
 import { InputLineControl } from "./Backend/InputLineControl";
 import { InputLine } from "./Backend/InputLine";
 import { InputWindow } from "./InputWindow";
-import { getHtmlElement, createClickListener, updateScroll, updateScrollOfIn_Out } from "./Tools";
+import { getHtmlElement, createClickListener, updateScroll, updateScrollOfIn_Out, removeClassOfAll, addClassTo, updateScrollOfDescriptionLines } from "./Tools";
 import { aniControl, AnimationsTyp, checkIfPaused, playButton, resetButton, sleepFor, sleepStaticAnimation, sleepUntilNextStep } from "./AnimationUtil";
 import { Animator } from "./Animator";
 
@@ -35,27 +35,7 @@ export const targetSymbolTableLine:string="bufferTargetSymbolTable";
 export const targetlabelValuePlaceholder:string="labelValuePlaceholder"
 let skipped:boolean=false;
 
-export const removeClassOfAll=(s:string)=>{
-    let elements = Array.from(document.querySelectorAll("."+s+""));
-    for(let elem of elements){
-        elem.classList.remove(s);
-    }
-}
-export const addClassTo=(id:string,cls:string)=>{
-    let elem = getHtmlElement(id);
-    if(elem !=null || elem != undefined){
-        elem.classList.add(cls);
-    }
-}
-export const getIDOfSelected=(s:string):string=>{
-    return s[0]+s[1];
-}
 
-const updateScrollOfDescriptionLines=(id:string,targetID:string)=>{
-    var elem = getHtmlElement(id);
-    var targetElem = getHtmlElement(targetID);
-    targetElem.scrollTop=elem.offsetTop-targetElem.offsetTop;
-}
 const searchEntryLabel:string="searchEntryLabel";
 const symboladdress:string="symboladdress";
 export const translating:HTMLElement=getHtmlElement("translatingContainer");
@@ -602,7 +582,6 @@ export class ProjectWindow{
                 translatingInfo.innerHTML=`${i+1}/${this.inputstrings.length}`;
                 if(this.inputLines.length>i){
                     input = this.inputLines[i];
-                    if(this.checkForNoAniStep()) await this.clearMachinenbefehlandCurrentLine();
                     iP= getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}inputP`);
                     await updateScrollOfIn_Out("InputText",`${(i+1)<10?"0"+(i+1):(i+1)}inputP`);
 
@@ -633,9 +612,6 @@ export class ProjectWindow{
 
             this.linkerAuflosungB=this.aufzulosendeLabel();
             await this.linkerAuflosung();
-
-            // console.log("finished");
-            // await sleepFor(100);
             await updateScroll(descriptionLines.id);
             aniControl.setEnd();
         }
@@ -654,6 +630,9 @@ export class ProjectWindow{
         newElem = document.createElement("div");
         newElem.id=`${(i+1)<10?"0"+(i+1):(i+1)}DescriptionDiv`;
         newElem.classList.add("noMP");
+        if(!this.checkForSkip()){
+            newElem.classList.add("hiddenDescriptionDiv");
+        }
         descriptionLines.appendChild(newElem);
         l=this.inputLines[i];
         ss=l.getDescriptionLine();
@@ -765,6 +744,8 @@ export class ProjectWindow{
 
         l.formatInputToDisplay();
         this.refreshInputListItem(i);
+        await this.clearMachinenbefehlandCurrentLine();
+
         updateScroll(descriptionLines.id);
         getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}inputP`).onclick=((e:MouseEvent)=>{
             if(!aniControl.play){
@@ -828,7 +809,7 @@ export class ProjectWindow{
         }
     }
 
-    public skipToFinish=async()=>{
+    /* public skipToFinish=async()=>{
         if(this.inputstrings.length>0){
             await this.reset();
             try {
@@ -849,7 +830,7 @@ export class ProjectWindow{
             console.log("no Input");
         }
         // console.log(this.iWindow);
-    }
+    } */
 
     public pause=()=>{
         aniControl.setPaused();
@@ -889,7 +870,7 @@ export class ProjectWindow{
             createClickListener('play',this.toggleStop);
             // createClickListener('stop',this.pause);
             createClickListener('speed',setTranslatingDivVisible);
-            createClickListener('skip',this.skipToFinish);
+            // createClickListener('skip',this.skipToFinish);
             createClickListener('reset',this.reset);
             aniControl.createEventListeners();
             // createClickListener(InputID.id,setScrollbarOfDescriptionLine);

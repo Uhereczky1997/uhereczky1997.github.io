@@ -1,6 +1,6 @@
 import { contentloaded } from "./index";
 import { currentLineLine, descriptionLines, inputText, outputText, setTranslatingDivHidden, setTranslatingDivVisible, symbolTableLines } from "./ProjectWindow";
-import { createClickListener, getHtmlElement } from "./Tools";
+import { createClickListener, getHtmlElement, removeClassOfAll } from "./Tools";
 
 export const sleepFor = (ms:number):Promise <any> => new Promise(resolve => setTimeout(resolve,ms));
 
@@ -169,6 +169,11 @@ export class AnimationControl{
         this.setSpeed(this.setSpeedTo(speedSlider.valueAsNumber-1));
     }
     setAnimationTyp1=()=>{
+        if(this.isAni3() && this.speed>=3){
+            removeClassOfAll("hiddenDescriptionDiv");
+            setTranslatingDivHidden();
+            setCurrentLineVisible();
+        }
         this.animationType=AnimationsTyp.Typ1;
         this.setSmoothIfNecessery();
         
@@ -183,8 +188,14 @@ export class AnimationControl{
         }
     }
     setAnimationTyp2=()=>{
+        if(this.isAni3() && this.speed>=3){
+            setTranslatingDivHidden();
+            setCurrentLineVisible();
+            removeClassOfAll("hiddenDescriptionDiv");
+        }
         this.animationType=AnimationsTyp.Typ2;
         this.setSmoothIfNecessery();
+
         try{
             descriptionLines.classList.add("scrollSmooth");
             animationTyp1BTN.classList.remove("selected");
@@ -275,6 +286,8 @@ export class AnimationControl{
             setTranslatingDivHidden();
             setCurrentLineVisible();
             this.removeSmoothScroll();
+            removeClassOfAll("hiddenDescriptionDiv");
+
             inputText.classList.remove("scrollDisabled");
             outputText.classList.remove("scrollDisabled");
             descriptionLines.classList.remove("scrollDisabled");
@@ -307,16 +320,6 @@ export class AnimationControl{
             elem.classList.remove("playingBKG");
             return;
         }
-        /* else if(this.pause || this.reset || this.stop){
-            this.setSmoothIfNecessery();
-            inputText.classList.remove("scrollDisabled");
-            outputText.classList.remove("scrollDisabled");
-            descriptionLines.classList.remove("scrollDisabled");
-            symbolTableLines.classList.remove("scrollDisabled");
-            descriptionLines.classList.add("scrollSmooth");
-            elem.classList.remove("pausedBKG");
-            elem.classList.add("playingBKG");
-        } */
     }
     setSpeed=(n:number)=>{
         this.speed=n;
@@ -330,6 +333,9 @@ export class AnimationControl{
         else{
             setTranslatingDivHidden();
             setCurrentLineVisible();
+        }
+        if(n!=4){
+            removeClassOfAll("hiddenDescriptionDiv");
         }
     }
     public createEventListeners=()=>{
