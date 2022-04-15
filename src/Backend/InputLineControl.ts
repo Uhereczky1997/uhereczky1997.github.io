@@ -52,6 +52,7 @@ export class InputLineControl{
         this.translatedIDs=[];
         this.invalidIDs=[];
         this.symbolliste.empty();
+        this.map.resetConstDefFlag();
     }
 
     setInputStrings(s:string[]){
@@ -285,8 +286,12 @@ export class InputLineControl{
         let c:Constant;
         if(i.getFirstPart().toUpperCase()=="ORG" && i.getValid()){
             saveInput(i,5);
-            
-            i.saveDescriptionLine(`<span class="eingeruckt">Addresszähler = <span id="addressbyte${i.getId()}">`+this.fHD16WH(String(i.getLength()))+`</span></span>`);
+            if(this.symbolliste.isConst(i.getSecondPart())){
+                i.saveDescriptionLine(`<span class="eingeruckt">Addresszähler = <span id="addressbyte${i.getId()}">`+this.fHD16WH(this.symbolliste.getSpecificConstantByName(i.getSecondPart())!.getValue())+`</span></span>`);
+            }
+            else{
+                i.saveDescriptionLine(`<span class="eingeruckt">Addresszähler = <span id="addressbyte${i.getId()}">`+i.getSecondPart()+`</span></span>`);
+            }
         }
         else if(i.getType()==InputLineType.TRANSLATED){
             saveInput(i,5);

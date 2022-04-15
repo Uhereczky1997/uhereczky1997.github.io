@@ -186,6 +186,8 @@ export class CommandMap{
 
     public Regs:string[] = ["A", "B", "C", "IX", "HL", "SP", "[HL]", "[IX]"];
 
+    private constDefFlag:boolean=true;
+
     private constructor(){
     }
     public static getInstance(){
@@ -213,6 +215,9 @@ export class CommandMap{
     filterForEmtpyStrings(s:string[]):string[]{
         return s.filter(e=>{ if(!/^[\s+]/g.test(e) && e!=""){return e;}});
     }
+    resetConstDefFlag(){
+        this.constDefFlag=true;
+    }
 
     mapInputLineByCase(i:InputLine):boolean{
         let strings:string[] = Manipulator.splitStringHalf(i.getInitialLine(),';');
@@ -220,7 +225,10 @@ export class CommandMap{
         if(strings.length>1){
         i.setComment(strings[1].trim());}
         saveInput(i,1);
-        i.saveDescriptionLine(this.formatErwartet(`Labeldef., Mnemocode oder Konstante (+EQU)`)); 
+        this.constDefFlag
+            ?i.saveDescriptionLine(this.formatErwartet(`Labeldef., Mnemocode oder Konstante (+EQU)`))
+            :i.saveDescriptionLine(this.formatErwartet(`Labeldef. oder Mnemocode`));
+
         //Auflösung von lebel wenn : gefunden
         if(commandLine.includes(":")){
             strings=Manipulator.splitStringHalf(commandLine,":");
@@ -272,7 +280,8 @@ export class CommandMap{
         if(this.mCodes.includes(strings[0].toUpperCase())){
             i.setFirstPart(strings[0]);
             strings[0] = strings[0].toUpperCase();
-           return this.parseToMnemoCode(i,strings);
+
+            return this.parseToMnemoCode(i,strings);
         }//erster Term PseudoMnemoCode - mögliche ConstantenName
         else if(this.pseudoMCodes.includes(strings[0].toUpperCase()) || this.symbollist.isEligible(strings[0])){
             return this.parsetoPseudoMnemoCode(i,strings);
@@ -295,6 +304,8 @@ export class CommandMap{
         let consoletostring="";
         let matches:MnemoCommand[]=[];
         let toSave:string="";
+        this.constDefFlag=false;
+
         //Behandlung aller Fälle wo der 1. Term mit einem MnemoCode anfangt
         switch(strings[0]){
             case 'MOV':
@@ -378,7 +389,8 @@ export class CommandMap{
                                         //i.saveDescriptionLine(`Gefunden -> 'dat_8'`);
                                         // i.saveDescriptionLine(StringConstructor.infoIsDat8());
                                         this.saveExtraInfo(i,consoletostring,strings[1]);
-                                        i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat8(strings[1])));
+                                        // i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat8(strings[1])));
+                                        i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+strings[1],"MOV "+strings[0]+", "+strings[1])); // DecOrHex
     
                                         matches=matches.filter(e=>{
                                             if(e.getSource()=="dat_8"){
@@ -394,7 +406,8 @@ export class CommandMap{
                                         //i.saveDescriptionLine(`Gefunden -> 'dat_16'`);
                                         // i.saveDescriptionLine(StringConstructor.infoIsDat16());
                                         this.saveExtraInfo(i,consoletostring,strings[1]);
-                                        i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
+                                        i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+strings[1],"MOV "+strings[0]+", "+strings[1])); // DecOrHex
+                                        // i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
                                         matches=matches.filter(e=>{
                                             if(e.getSource()=="dat_16"){
                                                 return e;
@@ -414,7 +427,8 @@ export class CommandMap{
                                 case DataType.dat_16:
                                     if(consoletostring.includes("dat_16") && ['HL','SP','IX'].includes(strings[0])){
                                         this.saveExtraInfo(i,consoletostring,strings[1]);
-                                        i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
+                                        // i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
+                                        i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+strings[1],"MOV "+strings[0]+", "+strings[1])); // DecOrHex
                                         matches=matches.filter(e=>{
                                             if(e.getSource()=="dat_16"){
                                                 return e;
@@ -789,7 +803,8 @@ export class CommandMap{
                     else if(Manipulator.isDat_8(strings[1])){
                         this.saveExtraInfo(i,consoletostring,strings[1]);
 
-                        i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),"IN A, "+Manipulator.formatHextoDat8(strings[1])));
+                        i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+strings[1],"IN A, "+strings[1])); // DecOrHex
+                        // i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),"IN A, "+Manipulator.formatHextoDat8(strings[1])));
                         i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
                         
                         i.setThirdPart((strings[1]));
@@ -876,7 +891,8 @@ export class CommandMap{
                 }
                 else if(Manipulator.isDat_8(strings[0])){
                     // this.saveExtraInfo(i,consoletostring,strings[0]);
-                    i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[0]),i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+" ..."));
+                    i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+strings[0],i.getFirstPart().toUpperCase()+" "+strings[0]+" ...")); // DecOrHex
+                    // i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[0]),i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+" ..."));
                     
                     i.setSecondPart((strings[0]));
                     save4(i);
@@ -887,7 +903,8 @@ export class CommandMap{
                         return false;
                     }
                     if(strings[1].toUpperCase() =="A"){
-                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+", A"));
+                        // i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+", A"));
+                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+strings[0]+", A")); // DecOrHex
                         i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
 
                         i.setThirdPart(strings[1])
@@ -1030,7 +1047,8 @@ export class CommandMap{
                 else if(Manipulator.isDat_8(strings[1])){
                     this.saveExtraInfo(i,consoletostring,strings[1]);
 
-                    i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
+                    // i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
+                    i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+strings[1],strings[0]+" "+strings[1])); // DecOrHex
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="dat_8"){
                             return e;
@@ -1302,7 +1320,9 @@ export class CommandMap{
     parsetoPseudoMnemoCode(i:InputLine,strings:string[]):boolean{
         let temp: string[];
         let consoletostring;
+
         if(this.pseudoMCodes.includes(strings[0].toUpperCase())){ //gefunden Pseudo-MnemoCode
+            this.constDefFlag=false;
             i.setFirstPart(strings[0]);
             strings[0]=strings[0].toUpperCase();
             i.saveDescriptionLine(this.formatGefunden(`Pseudo-Mnemocode ${strings[0]}`,strings[0]+" ..."));
@@ -1318,9 +1338,10 @@ export class CommandMap{
                     consoletostring="dat_8"
                     this.saveExtraInfo(i,consoletostring,strings[1]);
                     if(Manipulator.isDat_8(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden(`8-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])))
+                        // i.saveDescriptionLine(this.formatGefunden(`8-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
+                        i.saveDescriptionLine(this.formatGefunden(`8-bit Wert `+strings[1],strings[0]+" "+strings[1])); // DecOrHex
                         i.setSecondPart((strings[1]));
-                        i.setLength(Manipulator.formatHextoDat8(strings[1]));
+                        i.setLength(strings[1]); // DecOrHex ??
                         i.setType(InputLineType.TRANSLATED);
                         let Hcode="";
                         for(let i=0;i<Manipulator.hexToDec(Manipulator.formatHextoDat8(strings[1]));i++){
@@ -1364,7 +1385,8 @@ export class CommandMap{
                     consoletostring="dat_16"
                     this.saveExtraInfo(i,consoletostring,strings[1]);
                     if(Manipulator.isDat_16(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
+                        i.saveDescriptionLine(this.formatGefunden(`16-bit Wert `+strings[1],strings[0]+" "+strings[1])); // DecOrHex
+                        // i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])));
                         i.setLength(2);
                         i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
@@ -1422,7 +1444,8 @@ export class CommandMap{
                     consoletostring="dat_8"
                     this.saveExtraInfo(i,consoletostring,strings[1]);
                     if(Manipulator.isDat_8(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden(`8-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])))
+                        // i.saveDescriptionLine(this.formatGefunden(`8-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
+                        i.saveDescriptionLine(this.formatGefunden(`8-bit Wert `+strings[1],strings[0]+" "+strings[1])); // DecOrHex
                         i.setLength(1);
                         i.setSecondPart((strings[1]));
                         i.setType(InputLineType.TRANSLATED);
@@ -1438,7 +1461,7 @@ export class CommandMap{
                         }
                         i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
                         i.setLength(1);
-                        i.setSecondPart((strings[1]));
+                        i.setSecondPart(strings[1]);
                         i.setType(InputLineType.TRANSLATED);
                         i.setValid(true);
                         return true;
@@ -1460,16 +1483,17 @@ export class CommandMap{
                     // console.log(Manipulator.isDat_16(strings[1]));
                     // console.log(this.symbollist.isConst(strings[1]));
                     if(Manipulator.isDat_16(strings[1])){
-                        i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])))
+                        // i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1]))); 
+                        i.saveDescriptionLine(this.formatGefunden(`16-bit Wert `+strings[1],strings[0]+" "+strings[1]));  // DecOrHex
                         i.setLength(Manipulator.hexToDec(Manipulator.formatHextoDat16(strings[1])));
-                        i.setSecondPart((strings[1]));
+                        i.setSecondPart(strings[1]);
                         i.setValid(true);
                         return true;
                     }
                     else if(this.symbollist.isConst(strings[1])){
                         i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
                         i.setLength(Manipulator.hexToDec(this.symbollist.getSpecificConstantByName(strings[1])!.getValue()));
-                        i.setSecondPart((strings[1]));
+                        i.setSecondPart(strings[1]);
                         i.setValid(true);
                         return true;
                     }
@@ -1496,14 +1520,19 @@ export class CommandMap{
             }
             
         }
-        else if(this.symbollist.isEligible(strings[0])&&!this.symbollist.isConst(strings[0])&&!this.symbollist.isLabel(strings[0]) && i.getLabel() ==""){
+        else if(!this.constDefFlag){
+            i.saveDescriptionLine(StringConstructor.noConstDefAllowed());
+            i.setError(strings[0]);
+            return false;
+        }
+        else if(this.symbollist.isEligible(strings[0])&&!this.symbollist.isConst(strings[0])&&!this.symbollist.isLabel(strings[0]) && i.getLabel() =="" ){
             i.saveDescriptionLine(this.formatGefunden(`Konstante ${strings[0]}`,strings[0]+" ..."));
             save2(i);
             i.saveDescriptionLine(this.formatErwartet(`EQU`));
             if(strings.length<2){
                 i.saveDescriptionLine(StringConstructor.toofewCmd());
                 i.setError("");
-                i.setError(strings[0]);
+                // i.setError(strings[0]);
                 return false;
             }
             let new_commands=Manipulator.splitStringHalf(strings[1]," ");
@@ -1519,14 +1548,16 @@ export class CommandMap{
                 if(new_commands.length>1){
                     let type=this.getDataType(new_commands[1]);
                     if(type ==DataType.dat_8){
-                        i.saveDescriptionLine(this.formatGefunden(`8-bit Wert ${Manipulator.formatHextoDat8(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat8(new_commands[1])));
+                        i.saveDescriptionLine(this.formatGefunden(`8-bit Wert ${new_commands[1]}`,i.getFirstPart()+" "+new_commands[0]+" "+new_commands[1])); // DecOrHex
+                        // i.saveDescriptionLine(this.formatGefunden(`8-bit Wert ${Manipulator.formatHextoDat8(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat8(new_commands[1]))); 
                         i.setThirdPart((new_commands[1]));
                         i.setValid(true);
                         this.symbollist.setConst(strings[0],new_commands[1]);
                         return true;
                     }
                     else if(type ==DataType.dat_16){
-                        i.saveDescriptionLine(this.formatGefunden(`16-bit Wert ${Manipulator.formatHextoDat16(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat16(new_commands[1])));
+                        // i.saveDescriptionLine(this.formatGefunden(`16-bit Wert ${Manipulator.formatHextoDat16(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat16(new_commands[1])));
+                        i.saveDescriptionLine(this.formatGefunden(`16-bit Wert ${new_commands[1]}`,i.getFirstPart()+" "+new_commands[0]+" "+new_commands[1])); // DecOrHex
                         i.setThirdPart((new_commands[1]));
                         i.setValid(true);
                         this.symbollist.setConst(strings[0],new_commands[1]);

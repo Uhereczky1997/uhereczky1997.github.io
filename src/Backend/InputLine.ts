@@ -75,10 +75,11 @@ export class InputLine{
     }
     getEndAddr():string{
         if(this.firstPart.toUpperCase()=="ORG"){
-            return Manipulator.formatHextoDat16(String(this.length));
+            return Manipulator.formatHextoDat16(String(this.length)); // DecOrHex
+            // return String(this.length);
         }
         if(this.startingAddr!=""){
-           return Manipulator.formatHextoDat16(String(Manipulator.hexToDec(this.startingAddr)+this.length));
+           return String(Manipulator.hexToDec(this.startingAddr)+this.length);
         }
         else return "";
     }
@@ -88,7 +89,7 @@ export class InputLine{
     setRest(s:string){
         this.rest=s;
     }
-    getWarning():string{
+    /* getWarning():string{
         let l:string|undefined;
         l = this.getLabelorUndefined();
         if(l !=undefined){
@@ -105,7 +106,7 @@ export class InputLine{
             return `<span class="warning">Warnung: ${this.getWarning()} </span>`
         }
         return "";
-    }
+    } */
     getLabelorUndefined():string|undefined{
         if(this.label != "" && this.label.length > erlaubteLängeL_C ){
             return this.label;
@@ -317,10 +318,12 @@ export class InputLine{
             }
             else if(second !=""){
                 if(Manipulator.isDat_8(second)){
-                    second=Manipulator.formatHextoDat8(second);
+                    second=second; // DecOrHex
+                    // second=Manipulator.formatHextoDat8(second); 
                 }
                 else if(Manipulator.isDat_16(second)){
-                    second=Manipulator.formatHextoDat16(second);
+                    second=second;// DecOrHex
+                    // second=Manipulator.formatHextoDat16(second);
                 }
             }
             temp = Manipulator.splitStringHalf(third," ");
@@ -332,10 +335,12 @@ export class InputLine{
             }
             else if(third !=""){
                 if(Manipulator.isDat_8(third)&&this.length<3){
-                    third=Manipulator.formatHextoDat8(third);
+                    // third=Manipulator.formatHextoDat8(third); 
+                    third=third; // DecOrHex
                 }
                 else if(Manipulator.isDat_16(third)){
-                    third=Manipulator.formatHextoDat16(third);
+                    // third=Manipulator.formatHextoDat16(third);
+                    third=third; // DecOrHex
                 }
             }
             

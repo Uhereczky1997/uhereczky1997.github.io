@@ -88,6 +88,9 @@ export class StringConstructor{
     static notValidLabelSinceItsConst(s:string){
         return this.plusError(`<span class="${labelClass}">${s}</span> ist kein gültiges Label, bereits als Konstante definiert`);
     }
+    static noConstDefAllowed(){
+        return this.error(`Konstantendefinition nur am Anfang erlaubt`)
+    }
     
     static infoIsDat8():string{
         return this.info("überprüfe auf 8-Bit Wert ... gefunden");

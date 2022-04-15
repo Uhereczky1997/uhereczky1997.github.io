@@ -1,7 +1,7 @@
-import { aniControl, AnimationsTyp, checkIfPaused, sleepFor, sleepForFrame, sleepStaticAnimation, sleepStopStartTime, sleepUntilNextStep } from "./AnimationUtil";
+import { aniControl, AnimationsTyp, checkIfPaused, sleepFor, sleepForFrame, sleepStaticAnimation, sleepStaticAnimationHalf, sleepStopStartTime, sleepUntilNextStep } from "./AnimationUtil";
 import { Manipulator } from "./Backend/Manipulator";
 import { root, rootVariables } from "./index";
-import { symbolTableLines, targetlabelValuePlaceholder, targetSymbolTableLine } from "./ProjectWindow";
+import { p2LabelValuePlaceholder, symboladdress, targetlabelValuePlaceholder, targetSymbolTableLine } from "./ProjectWindow";
 import { getHtmlElement, updateScrollOfIn_Out, updateScrollOfSymbolTable } from "./Tools";
 
 
@@ -340,7 +340,7 @@ export class Animator{
             await this.turnMovableHidden();
         }
     }
-    async searchEntryInSymboltable(idToSearch:string,entryName:string,idToFind:number,valueToReturn:string){
+    async searchEntryInSymboltablephaseOne(idToSearch:string,entryName:string,idToFind:number){
         if(aniControl.isAni3()) return;
         let isSuccessful:boolean =false;
         let fromElem = document.getElementById(idToSearch);
@@ -402,7 +402,7 @@ export class Animator{
         }
         for(let i=0;i<=idToFind;i++){
             if(i==0){
-                await sleepStaticAnimation();
+                await sleepStaticAnimationHalf();
                 continue;
             }
             if(this.symbolTableElem.childElementCount==i){
@@ -421,7 +421,7 @@ export class Animator{
             }
             // arrowVertical.style.height=arrowVertical.offsetHeight+toElem.offsetHeight+"px";
             //wait for a step
-            await sleepStaticAnimation();
+            await sleepStaticAnimationHalf();
             //next turn
         }
         //set everything invisible
@@ -429,26 +429,36 @@ export class Animator{
         // await this.turnMovableHelperHidden();
         await this.turnMovableHidden();
 
-        if(!isSuccessful){
-            return;
+
+    }
+    async searchEntryInSymboltablephaseTwo(fromId:number,valueToReturn:string){
+        if(aniControl.isAni3()) return;
+        let fromElem=getHtmlElement(symboladdress+(fromId));;
+        let toElem = getHtmlElement(p2LabelValuePlaceholder);
+        if(toElem==null){
+            throw new Error("placeholder-div was not found");
         }
         //setup return value
         this.movableElem.innerHTML=this.formatLineString("h3",valueToReturn);
         this.movableHelper.innerHTML=this.formatLineString("h3",valueToReturn);
 
-        fromElem=getHtmlElement("symboladdress"+(idToFind));
-        n =updateScrollOfSymbolTable(fromElem.id);
+        
+        let n =updateScrollOfSymbolTable(fromElem.id);
 
         this.movableElem.style.left=fromElem.offsetLeft+fromElem.offsetWidth/2-this.movableElem.offsetWidth/2+"px";
         this.movableElem.style.top=fromElem.offsetTop-(n>0?n:0)+fromElem.offsetHeight/2-this.movableElem.offsetHeight/2+"px";
         
-        this.movableHelper.style.left=this.movableElem.offsetLeft+"px";
-        this.movableHelper.style.top=this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.movableHelper.offsetHeight+"px";
+        this.movableHelper.style.top=toElem.offsetTop-this.descriptionLineElem.scrollTop+toElem.offsetHeight/2-this.movableHelper.offsetHeight/2+"px";
+        this.movableHelper.style.left=toElem.offsetLeft+toElem.offsetWidth/2-this.movableHelper.offsetWidth/2+"px";
         
-
 
         if(aniControl.isAni1()){
             this.turnMovableVisible();
+            await sleepStopStartTime();
+            while(this.movableElem.offsetLeft<this.movableHelper.offsetLeft){
+                await this.moveSleepCheck(0,this.getPixeljump());
+            }
+            this.movableElem.style.left=this.movableHelper.offsetLeft+"px";
             await sleepStopStartTime();
             while(this.movableElem.offsetTop>this.movableHelper.offsetTop){
                 await this.moveSleepCheck(-this.getPixeljump(),0);
@@ -459,17 +469,32 @@ export class Animator{
             return;
         }
         else{
+            let arrowHead = this.getArrowElem(arrowHeadID);
+            let arrowHorizontal = this.getArrowElem(arrowHorizontalID);
+            let arrowJoint = this.getArrowElem(arrowJointID);
+            let arrowVertical = this.getArrowElem(arrowVerticalID);
+
             this.setClassOfHead(UP);
-            //arrowHead+ArrowVertical
+            this.setClassOfJoint(1,JQ4);
+            this.toggleToUp(true);
             arrowHead.style.top=this.movableHelper.offsetTop+this.movableHelper.offsetHeight+"px";
             arrowHead.style.left= this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2+"px";
 
             arrowVertical.style.top= arrowHead.offsetTop+arrowHead.offsetHeight-arrowHead.offsetHeight/overlapdivider+"px";
             arrowVertical.style.left = arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
-            arrowVertical.style.height=-arrowHead.offsetTop+this.movableElem.offsetTop+arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+"px";
+            
+            arrowHorizontal.style.top = this.movableElem.offsetTop+this.movableElem.offsetHeight/2-arrowHorizontal.offsetHeight/2+"px";
+            arrowHorizontal.style.left = this.movableElem.offsetLeft+this.movableElem.offsetWidth-this.movableElem.offsetWidth/overlapdivider+"px";
+
+            arrowJoint.style.top = arrowHorizontal.offsetTop+"px";
+            arrowJoint.style.left = arrowVertical.offsetLeft+"px";
+
+            arrowHorizontal.style.width=-this.movableElem.offsetLeft+arrowJoint.offsetLeft+arrowJoint.offsetWidth/overlapdivider+this.movableElem.offsetWidth/overlapdivider+"px";
+
+            arrowVertical.style.height=-arrowHead.offsetTop+arrowJoint.offsetTop+arrowHead.offsetHeight/overlapdivider+arrowJoint.offsetHeight/overlapdivider+"px";
             
             this.turnMovableVisible();
-            this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
+            this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowHorizontalID,arrowJointID]);
             this.turnMovableHelperVisible();
 
             await sleepStaticAnimation();
@@ -479,7 +504,6 @@ export class Animator{
             await this.turnMovableHidden();
             return;
         }
-
     }
 
     async pushAufzulosendestoCurrentLine(i:number,line:string){
@@ -712,6 +736,7 @@ export class Animator{
         await this.turnMovableHidden();
         
     }
+
     async moveDetailToSpeicherabbild(line:string,id:number){
         if(aniControl.isAni3()) return;
         this.setMovableParameters(this.addresszaehlerElem.offsetTop,this.descriptionTableBox.offsetLeft);
@@ -929,13 +954,17 @@ export class Animator{
         await this.turnMovableHidden();
     }
 
-    async displayAddresserhoehung(id:number,i:number,hex:string){
+    async displayAddresserhoehung(id:number,i:string,pre:string,hex:string){
         if(aniControl.isAni3()) return;
         console.log(addressbyte+id);
         let targetelem = document.getElementById(addressbyte+id);
-        this.movableElem.innerHTML=this.formatLineString("h1","+"+i);
-        let endaddr:string = Manipulator.formatHextoDat16(String(Manipulator.hexToDec(hex)-i));
-        console.log(endaddr);
+        this.movableElem.innerHTML=this.formatLineString("h1",pre+i);
+        let endaddr:string = 
+            Manipulator.isHex(i)
+            ? Manipulator.formatHextoDat16(String(Manipulator.hexToDec(hex)-Manipulator.hexToDec(i)))
+            : Manipulator.formatHextoDat16(String(Manipulator.hexToDec(hex)-Number(i))); // DecOrHex
+        // let endaddr:string = String(Manipulator.hexToDec(hex)-i); // DecOrHex
+        // console.log(endaddr);
         if(targetelem != null){
             this.movableElem.style.top= targetelem.offsetTop-this.descriptionLineElem.scrollTop+targetelem.offsetHeight/2-this.movableElem.offsetHeight/2+"px";
             this.movableElem.style.left= targetelem.offsetLeft+targetelem.offsetWidth/2-this.movableElem.offsetWidth/2+"px";
@@ -977,7 +1006,7 @@ export class Animator{
 
             this.turnMovableHidden();
 
-            this.movableHelper.innerHTML=this.formatLineString("h1",hex);
+            this.movableHelper.innerHTML=this.formatLineString("h1",Manipulator.formatHextoDat16(hex));
             await sleepStopStartTime();
             await sleepStopStartTime();
 
@@ -1033,7 +1062,7 @@ export class Animator{
                 await this.moveSleepCheck(0,-this.getPixeljump());
             }
             this.turnMovableHelperHidden();
-            this.movableElem.innerHTML=this.formatLineString("h1",hex);
+            this.movableElem.innerHTML=this.formatLineString("h1",Manipulator.formatHextoDat16(hex));
             await sleepStopStartTime();
             await sleepStopStartTime();
             this.turnMovableHidden();

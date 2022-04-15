@@ -72,6 +72,15 @@ export const sleepStaticAnimation= async():Promise <any> =>{
         b=b-10;
     }
 }
+export const sleepStaticAnimationHalf= async():Promise <any> =>{
+    let b=aniControl.baseFrameTime;
+    let n=10*aniControl.speed;
+    while(b>0){
+        await sleepFor(n/(aniControl.speed));
+        await checkIfPaused();
+        b=b-10;
+    }
+}
 
 export const sleepStopStartTime= async():Promise <any> =>{
     let b=aniControl.baseFrameTime/2;

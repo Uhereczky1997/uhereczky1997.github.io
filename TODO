@@ -4,49 +4,26 @@
 
       dropdown biblothek im EingabeFenster
 
-      addresserhohung -> verschwindend hinter addresszähler
 
 
 !!!!!!!!
 
 
-% x      andere addresszähler erhöhung animation -> 
-% x                        Anzahl der Bytes: 2
-% x                  !!!!  Erhöhe adresszähler
-% x                  -->
-% x                  Danach wird der 2 hervorgehoben auf den adresszahler animiert: zuerst nach link und dann nach unten
-% x                  2-er verschmilzt mit dem der adresse -> wird erhöht
-% x                  machinenbefehl verschinden bei Erhöhung
-% x      SHR/SHL fehler -> falsche länge -> es könnte zu bugs kommen.
-% x      überall wo adressierungs art nicht eindeutig ist (IN,OUT,SHR,SHL) keine adressierungsart ausgeben
-
-% ~      smoothscroll verschindet wenn geschw zu hoch wird, keine zurücksetzung
-% ~      bessere Geschwindigkeiten für Animationen/Schritte 
-% ~      x y,"" -> too few commands instead of invalid command
-
-      % slidergröße von bildschrimauflösung abhängig machen ? NAH
-
-      % mehr detailierte Fehlerbeschreibung ->
-      %       xy ist keine dat_8    
-      %       xy ist keine Label
-      %       xy ist keine Konstante
-      %       xy ist nicht ...
-
-
-      % knopf positionierung anders gestalten -> <edit> -> .... -> <play,..> - <...> - <...> -> ... <hex> 
-      %             ?wohin vollbild, lichtmodus, credits?
-      % farbenzusammensetzung überprüfen lassen
-
-      % linkerauflösung bessere geschw. 
-      animationstyp 3 von geschw. slider abhängig -> bei maximalen nichts anzeigen bis auf speicherabbild
-                  vorschlag -> 1: wie jetzt /2
-                               2: wie jetzt
-                               3: keine currentLine nur abschnitte
-                               4: keine descriptionLine wie jetzt mit "Übersetze Zeile x/xy ... "
+      % Für 2. Phase Typ3 Animation auch anpassen.
       
+      % lookupSymboltableentry !!
+      %       1. Suche Label xy in  ..
+      %       - Animation zur suche in Symboltabelle -
+      %       2.a) Label xy in Symboltabelle gefunden <span id="p2LabelValuePlaceholder"><span>
+      %       - Animation zu Bewegung von gefundenen Wert zur Stelle von p2LabelValuePlaceholder -
+      %       2.b) Label xy in Symobltabelle gefunden, Wert: $dec$ ($hex$) 
+      %       3. Ersetzung ...
       
-      lookupSymboltableentry !!
+      % org je nach zahlenwert sollte es in der form mit =<Zahlenwert> die adresserhöhung stattfinden - 
       
+      % Im quelltext sollte sich Zahlenwerte garnicht ändern (dec bleibt dec, hex bleibt hex) // DecOrHex
+      % const equ nur am Anfang von Programm erlaubt (pure label def zählt nicht), nach ersten Mnemocode "Konstanten definition nicht mehr erlaubt" -> erwarte Labeldef. oder MnemoCode -Konstante
+
       css dynamic:
             Padding
             Border
