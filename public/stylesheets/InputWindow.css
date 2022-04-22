@@ -7,14 +7,9 @@ p{
     left: 0px;
     width: 100%;
     height: 100%;
-    /* grid-row: 1/13;
-    grid-column: 1/11; */
     z-index: 4;
     display:flex;
     flex-grow: 1;
-    /* -ms-flex: ; */
-    /* grid-template-columns: 1fr 70% 1fr;
-    grid-template-rows: 1fr 80% 1fr;*/
     background: rgba(0, 0, 0, 0.8); 
 }
 #OutputWindow{
@@ -24,17 +19,13 @@ p{
     width: 80%;
     height: 80%;
     display: flex;
-    /* display:grid;
-    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
-    grid-template-rows: 1fr 1fr 1fr 1fr 10%; */
 }
 #OutputWindow>textarea{
-    /* grid-column: 4/7;
-    grid-row:span 4; */
+
     position:absolute;
-    border: 2px solid;                      /* Border */
-    border-top-right-radius: 10px;              /* Borderradius */
-    border-bottom-right-radius: 10px;           /* Borderradius */
+    border: var(--var2px) solid; 
+    border-top-right-radius: var(--var10px); 
+    border-bottom-right-radius: var(--var10px); 
     top: 10%;
     left: 50%;
     width: 45%;
@@ -65,13 +56,13 @@ p{
 }
 #OutputWindowMachineCode{
     position:absolute;
-    border: 2px solid;  /* Border */
-    padding-top: 2px;   /* Padding */
+    border: var(--var2px) solid;  
+    padding-top: var(--var2px); 
     box-sizing: border-box; 
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
-    border-top-left-radius: 10px;       /* Borderradius */
-    border-bottom-left-radius: 10px;    /* Borderradius */
+    border-top-left-radius: var(--var10px);  
+    border-bottom-left-radius: var(--var10px); 
     top: 10%;
     left: 5%;
     width: 45%;
@@ -125,9 +116,8 @@ p{
 }
 #InputWindow>textarea{
     position:absolute;
-    border: 1px solid;  /* Border */
-
-    border-radius: 10px;
+    border: var(--var2px) solid;
+    border-radius: var(--var10px);
     top: 13%;
     left: 5%;
     width: 90%;
@@ -163,17 +153,12 @@ p{
 #inputButtonDiv>*{
     grid-column: span 1;
     border: none;
-    border-right:  1px solid;   /* Boder */
-    border-top: 1px solid;  /* Boder */
-    border-left: 1px solid; /* Boder */
+    border-right:  var(--var1px) solid;
+    border-top: var(--var1px) solid; 
+    border-left: var(--var1px) solid; 
     width: 100%;
     height: 100%;
 }
 #inputButtonDiv>button{
     cursor: pointer;
 }
-/* .inoutputbox{
-    grid-row: 2/3;
-    grid-column: 2/3;
-}
- */

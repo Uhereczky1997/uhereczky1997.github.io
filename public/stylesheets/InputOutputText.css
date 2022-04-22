@@ -7,15 +7,12 @@
     margin-top: 0;
     margin-bottom:0;
     padding: 0;
-    padding-left: 2%;       /* Padding */
-    padding-right: 3px;     /* Padding */
+    padding-left: var(--var8px);
+    padding-right: var(--var3px);
     line-height: 140%;
     display: block;
 
 }
-/* .displayText + .end>p{
-    text-align: end;
-} */
 .displayText + .start>p{
     text-align: start;
     font-weight: bold;
@@ -28,16 +25,13 @@
 #InputText{
     display:grid;
     grid-template-columns: 10% 90%;
-    /* scroll-behavior: auto!important; */
 }
 #OutputText{
     display: grid;
     grid-template-columns: 17.5% auto;
-    /* scroll-behavior: auto!important; */
-
 }
 .idSideBorder{
-    border-right: 1px solid black;  /* Border */
+    border-right: var(--var1px) solid black;
     text-align: center;
 }
 

@@ -1,5 +1,5 @@
 import { InputLines, OutputTextAreaElement, OutputWindowMachineCode, ProjectWindow } from "./ProjectWindow";
-import { addClassTo, createClickListener, getHtmlElement, getIDOfSelected, removeClassOfAll } from "./Tools";
+import { addClassTo, createClickListener, getHtmlElement, getIDOfSelected, removeClassOfAll, resizer } from "./Tools";
 import { aniControl, sleepFor } from "./AnimationUtil";
 import { inputText, outputText } from "./ProjectWindow";
 import { Manipulator } from "./Backend/Manipulator";
@@ -90,36 +90,9 @@ const switchToFullscreen=()=>{
             fullscreened=false;
         }
     }
-    /* 
-    function toggleFullScreen() {
-        var doc = window.document;
-        var docEl = doc.documentElement;
-
-        var requestFullScreen =
-            docEl.requestFullscreen ||
-            docEl.mozRequestFullScreen ||
-            docEl.webkitRequestFullScreen ||
-            docEl.msRequestFullscreen;
-        var cancelFullScreen =
-            doc.exitFullscreen ||
-            doc.mozCancelFullScreen ||
-            doc.webkitExitFullscreen ||
-            doc.msExitFullscreen;
-
-        if (
-            !doc.fullscreenElement &&
-            !doc.mozFullScreenElement &&
-            !doc.webkitFullscreenElement &&
-            !doc.msFullscreenElement
-        ) {
-            requestFullScreen.call(docEl);
-        } else {
-            cancelFullScreen.call(doc);
-        }
-    }
-    */
 }
 const consoleWindowsize=()=>{
+    let s:number = Number(rootVariables.getPropertyValue("--arrowBodyW").replace("px",""));
     console.log("Innerwidth: "+window.innerWidth);
     console.log("Innerheight: "+window.innerHeight);
 
@@ -195,6 +168,7 @@ window.addEventListener('DOMContentLoaded', async() =>{
     const root1 = document.querySelector(':root');
     root1!.setAttribute('color-scheme', `${preferedTheme}`);
     contentloaded=true;
+    resizer.initialResize();
     aniControl.setLoaded(true);
 })
 const testBinToHex=()=>{

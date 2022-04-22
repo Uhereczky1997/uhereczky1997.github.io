@@ -89,10 +89,9 @@
 .titel{
     color: var(--blue);
     font-family: Arial, Helvetica, sans-serif;
-
     text-align: center; 
     align-self: center; 
-    padding: 0.2em 0.2em;               /* Padding */
+    padding: 0.2em 0.2em ;
 }
 button:hover >.titel{
     color:var(--text);
@@ -105,23 +104,25 @@ button:hover >.titel{
     color:rgb(85, 151, 252);
 } */
 .customScrollbar::-webkit-scrollbar{
-    padding: 2px 2px;                               /* Padding */
-    width: 7px;
+    padding: var(--var2px) var(--var2px);                               
+    width:  var(--var8px);
 }
 .customScrollbar::-webkit-scrollbar-track{
-    box-shadow: inset 0 0 5px var(--bkg1);
-    border-radius: 5px;                             /* Borderradius */
+    box-shadow: inset 0 0 var(--var5px) var(--bkg1);
+    border-radius: var(--var5px);                             
 }
 .customScrollbar::-webkit-scrollbar-thumb{
     /* background:  var(--bkg1); */    
     background-color: var(--blue);
 
-    border-radius: 5px;                             /* Borderradius */
+    border-radius: var(--var5px);                          
 }
 .customScrollbar::-webkit-scrollbar-thumb:hover{
     background-color:rgb(16, 110, 252);
-
 }
+/* .customScrollbar::-webkit-scrollbar-track:hover{
+    background-color: var(--bkg2);
+} */
 .customScrollbar{
     background-image: none;
 }
@@ -201,7 +202,7 @@ body::after{
     display:grid;
     grid-template-columns: repeat(10,1fr);
     grid-template-rows: repeat(12,1fr);
-    grid-gap: 5px;                                  /* Gridgap */
+    grid-gap: var(--var5px);                                 
     margin: 0 auto;
 }
 .maxwidth{
@@ -229,7 +230,7 @@ body>* h1{
     display: grid;
     grid-template-columns: repeat(20,1fr);
     grid-template-rows: 1fr;
-    gap: 0 5px;                                 /* Gridgap */
+    gap: 0 var(--var5px);                                
     justify-items: center;
     /* background-color: var(--bkg2); */
 }
@@ -260,7 +261,7 @@ body>* h1{
 }
 
 #InputWindow>button, #OutputWindow>button{
-    border-radius: 10px;            /* Borderradius */
+    border-radius: var(--var10px);            
 }
 
 
@@ -268,7 +269,7 @@ body>* h1{
 #translatedinfo{
     display:grid;
     grid-template-columns: 15% 85%;
-    grid-template-rows: 35% 1px 1fr;    /* Border */
+    grid-template-rows: 35% var(--var1px) 1fr;   
 }
 /* Special divs */
 .testElemStyle{
@@ -278,23 +279,23 @@ body>* h1{
     width: fit-content;
     margin-top: 0;
     margin-bottom: 0;
-    border-radius: var(--hBorderRadius);
-    border: 0.12em solid var(--bkg2);
+    border-radius: var(--var5px);
+    border: var(--var1_5px) solid var(--bkg2);
 }
 .testElemStyle>*{
     background-color: var(--green)!important;
-    border-radius: var(--hBorderRadius);
+    border-radius: var(--var4px);
     font-family: 'Courier New', Courier, monospace;
 }
 .moveableText{
-    margin:0px 0px; 
-    padding: 5px 10px; 
+    margin:0 0; 
+    padding: var(--var5px) var(--var10px);
     font: bold;
     text-align: center;
 }
 .adresserhohung{
-    margin:0px 0px; 
-    padding: 10px 10px; 
+    margin:0 0; 
+    padding:var(--var10px) var(--var10px); 
     font: bold;
 }
 
@@ -322,8 +323,8 @@ body>* h1{
     justify-self: center;
     margin-top: 0;
     margin-bottom: 0;
-    padding: 0.4em 0.8em;
-    border-radius: var(--hBorderRadius);
+    padding: 0.4em 0.8em ;
+    border-radius: var(--var4px);
     border: 0.12em solid var(--bkg2);
 }
 #translatingContainer h3>span{
@@ -335,24 +336,24 @@ body>* h1{
 /* GRID CONFIG */
 
 .topDivider{
-    border-bottom: 2px solid;   /* Border */
+    border-bottom: var(--var2px) solid;   
 }
 .bottomDivider{
-    border-top: 1px solid;   /* Border */
+    border-top: var(--var1px) solid;  
 }
 .MiddleBoxAlt{
     display: grid;
-    grid-template-rows:minmax(min-content,max-content) minmax(min-content,max-content) 1px minmax(min-content,max-content) 1px 1fr  12%; /* Border */
+    grid-template-rows:minmax(min-content,max-content) minmax(min-content,max-content) var(--var1px) minmax(min-content,max-content) var(--var1px) 1fr  12%;
     grid-template-columns: 1fr;
 }
 .SideBox{
     display: grid;
-    grid-template-rows: minmax(min-content,max-content) 1fr  min-content    /* var(--bottomHeight) */;
+    grid-template-rows: minmax(min-content,max-content) 1fr  min-content;
     grid-template-columns: 1fr;
 }
 .dividerDiv{
     width: 100%; 
-    height: 1px;                            /* Border */
+    height: var(--var1px);        
     background-color: var(--bkg2);
 }
 .dividerdivSpan2{
@@ -365,8 +366,8 @@ body>* h1{
 }
 /* BUTTON CONFIG */
 .boxBorder{
-    border: 3px solid;              /* Border */
-    border-radius: 10px;
+    border: var(--var3px) solid;  
+    border-radius: var(--var10px);
 }
 button:hover{
     background-color: rgb(85, 151, 252);
@@ -379,11 +380,11 @@ button:hover{
 .button1{
     width: 100%;
     height: 100%;
-    padding: 5px 5px;   /* Padding */
-    border-left: 1px solid; /* Border */
+    padding: var(--var5px) var(--var5px);
+    border-left: var(--var1px) solid;
     border-top:none;
     border-bottom:none;
-    border-right:  1px solid;   /* Border */
+    border-right:  var(--var1px) solid; 
     cursor: pointer;
     -webkit-box-sizing: border-box;
     box-sizing: border-box;

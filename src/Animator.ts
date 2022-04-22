@@ -959,10 +959,15 @@ export class Animator{
         console.log(addressbyte+id);
         let targetelem = document.getElementById(addressbyte+id);
         this.movableElem.innerHTML=this.formatLineString("h1",pre+i);
-        let endaddr:string = 
-            Manipulator.isHex(i)
-            ? Manipulator.formatHextoDat16(String(Manipulator.hexToDec(hex)-Manipulator.hexToDec(i)))
-            : Manipulator.formatHextoDat16(String(Manipulator.hexToDec(hex)-Number(i))); // DecOrHex
+        let endaddr:string;
+        if(Manipulator.isBin(i)){
+            endaddr = Manipulator.formatHextoDat16(String(Manipulator.hexToDec(hex)-Manipulator.binToDec(i)));
+        }
+        else if(Manipulator.isHex(i)){
+            endaddr = Manipulator.formatHextoDat16(String(Manipulator.hexToDec(hex)-Manipulator.hexToDec(i)));
+        } 
+        else endaddr = Manipulator.formatHextoDat16(String(Manipulator.hexToDec(hex)-Number(i)))
+        
         // let endaddr:string = String(Manipulator.hexToDec(hex)-i); // DecOrHex
         // console.log(endaddr);
         if(targetelem != null){

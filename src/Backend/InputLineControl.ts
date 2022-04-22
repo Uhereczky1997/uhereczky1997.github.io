@@ -348,6 +348,17 @@ export class InputLineControl{
                     n=n-Manipulator.hexToDec(rest[1]);
                 }
             }
+            else if(Manipulator.isBin(e)){
+                e = Manipulator.binToHex(e);
+                if(Manipulator.isDat_8(e)){
+                    n=n-Manipulator.hexToDec(e);
+                }
+                else{
+                    rest=Manipulator.splitDat16InDat8(e);
+                    n=n-Manipulator.hexToDec(rest[0]);
+                    n=n-Manipulator.hexToDec(rest[1]);
+                }
+            }
             else{
                 n=n-Number(e);
             }

@@ -18,13 +18,12 @@
 }
 .scrollDisabled{
     overflow-y: hidden!important;
-    /* scroll-behavior: smooth; */
 }
 #descriptionLines{
     height: auto;
 }
 #descriptionLines>p{
-    margin: 2px;    /* Padding */
+    margin: var(--var3px);
 }
 #currentLine *>*{
     height: fit-content;
@@ -32,35 +31,40 @@
 #Addresszahler{
     align-self: center; 
     width: 100%; 
-    border-right: 1px solid;
+    border-right: var(--var1px) solid;
     font-family: 'Courier New', Courier, monospace;
 
 }
 #currentLineLine{
     height: fit-content;
-    margin:0px 0px; 
-    padding: 5px 10px; /* Padding */
+    margin:0 0; 
+    padding: var(--var5px) var(--var10px);
     font: bold;
     font-family: 'Courier New', Courier, monospace;
 }
 #currentLine>*>span{
-    padding: 0.1em 0.2em; /* Padding */
-    border: 0.03em solid var(--bkg1); /* Border */
+    padding: var(--var3px) var(--var6px) ; 
+    border: var(--var1px) solid var(--bkg1);
 }
+.crInvert{
+    background-color: var(--green);
+    border: var(--var1px) solid var(--bkg2)!important; 
+    border-radius: var(--var4px);
+  }
 #Machinenbefehl{
-    border-left: 1px solid; /* Border */
-    padding: 0.1em 0.2em;       /* Padding */
+    border-left: var(--var1px) solid;
+    padding: var(--var3px) var(--var6px) ; 
     font-family: 'Courier New', Courier, monospace;
 
 }
 
 
 #symbolTableLines{
-    padding: var(--hBorderRadius) var(--hBorderRadius);
+    padding: var(--var4px) var(--var4px);
     max-height: 90%;
 }
 #symbolTableLines>h4{
-    margin: 5px 0px;
+    margin: var(--var5px) 0;
     line-height: 120%;
     font-family: 'Courier New', Courier, monospace;
 }

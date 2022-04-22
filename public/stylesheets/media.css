@@ -55,15 +55,28 @@ p,p>span,textarea
     margin: calc(var(--fontsizeVar)*2/30);
     font-size: calc(var(--fontsizeVar)*20/30);
 }
-
-#body{
+body{
+    position: relative;
+    margin: 0 0;
+/*     width: 2000px;
+    height:1000px; */
+}
+/* #body{
     position: absolute;
     top: 2.5vh;
     left: 2.5vw;
-    /* left: 1vh; */
+
     max-width: 95vw;
     max-height: 95vh; 
 
     min-width: 95vw;
     min-height: 95vh;
+} */
+
+#body{
+    position: absolute;
+    top: 2.5%;
+    left: 2.5%;
+    width: 95%;
+    height: 95%;
 }

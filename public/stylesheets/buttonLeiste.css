@@ -24,13 +24,11 @@
     visibility: hidden;
     width: max-content;
     background-color: var(--green)!important;
-    /* color: var(--bkg2)!important; */
-    padding: 5px 0;                                     /* Padding */
-    border-radius: 10px;                                /* Borderradius */
+    padding: var(--var5px) 0;                                       
+    border-radius: var(--var10px);                 
     bottom: 105%;
     left: 50%;
     margin-left: -200%;
-    /* line-break: strict; */
     position: absolute;
     z-index: 1;
 }
@@ -41,46 +39,45 @@
 .tooltip .tooltiptext p{
     color: var(--text-light);
     white-space: pre-line;
-    /* font-weight: normal; */
 }
 .tooltip:hover >.tooltiptext {
     visibility: visible;
 }
 .tooltiptext>h3,.tooltiptext>p{
     text-align: start;
-    margin: 0 2;                                        /* Padding */
-    padding: 0.2em;                                     /* Padding */
+    margin: 0  var(--var2px);                                      
+    padding: var(--var5px);                                   
     background: transparent!important;
 }
 
 
 .leftBorderpRadius{
-    border-top-left-radius: 10px;
-    border-bottom-left-radius: 10px;
-    border-top:3px solid!important;                     /* Border */
-    border-bottom:3px solid!important;                  /* Border */
-    border-left: 3px solid!important;                   /* Border */
-    border-right: 1px solid;                            /* Border */    
+    border-top-left-radius: var(--var10px);
+    border-bottom-left-radius: var(--var10px);
+    border-top: var(--var3px) solid!important;                     
+    border-bottom: var(--var3px) solid!important;                  
+    border-left: var(--var3px) solid!important;                   
+    border-right: var(--var1px) solid;                                
 }
 .leftBorderRadius{
-    border-top-left-radius: 6px;    /* Borderradius */
-    border-bottom-left-radius: 8px; /* Borderradius */
+    border-top-left-radius: var(--var8px);    
+    border-bottom-left-radius: var(--var8px); 
 }
 .rightBorderRadius{
-    border-top-right-radius: 5px;   /* Borderradius */
-    border-bottom-right-radius: 5px;    /* Borderradius */
+    border-top-right-radius: var(--var8px);   
+    border-bottom-right-radius: var(--var8px);    
 }
 .rightBorderpRadius{
-    border-top-right-radius: 10px;  /* Borderradius */
-    border-bottom-right-radius: 10px;   /* Borderradius */
-    border-top:3px solid!important; /* Border */
-    border-bottom:3px solid!important;  /* Border */
-    border-right: 3px solid!important;  /* Border */
-    border-left: 1px solid; /* Border */
+    border-top-right-radius: var(--var10px);  
+    border-bottom-right-radius: var(--var10px);   
+    border-top: var(--var3px) solid!important; 
+    border-bottom: var(--var3px) solid!important;  
+    border-right: var(--var3px) solid!important;  
+    border-left: var(--var1px) solid; 
 }
 .middleBorder{
-    border-right: 1px solid!important;  /* Border */
-    border-left: 1px solid!important;   /* Border */
+    border-right: var(--var1px) solid!important;  
+    border-left: var(--var1px) solid!important;   
 }
 
 
@@ -91,15 +88,10 @@
     grid-row: span 1;
     grid-column: 7/15;
     display: flex;
-/*     display: grid;
-    grid-template-rows: 1fr;
-    grid-template-columns: repeat(11,1fr);
-    gap: 0 5px; */
     gap: 0 1%;
     background-color: transparent!important;
 }
 #playResetSingleStep, #animationTypHolder{
-    /* grid-column: ; */
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr;
@@ -146,23 +138,22 @@
     border-bottom: 0px solid!important;
 
     background-color: var(--bkg1)!important;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    border-top-left-radius: var(--var10px);
+    border-top-right-radius: var(--var10px);
     width:10%;
     height:0%;
     right:0;
     bottom:95%;
     overflow:hidden;
     transition: height var(--btnEXPspeed) linear,border 0.01s linear var(--btnEXPspeed);
-    /* transition: border 0.5s linear; */
 }
 #settingsButtonContainer>:first-child{
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    border-bottom: 1px solid; /* Border */
+    border-top-left-radius: var(--var8px);
+    border-top-right-radius: var(--var8px);
+    border-bottom: var(--var1px) solid;
 }
 #settingsButtonContainer>:last-child{
-    border-top: 1px solid;  /* Border */
+    border-top: var(--var1px) solid;
 }
 #settingsButtonContainer:hover{
     overflow:visible;
@@ -174,7 +165,6 @@
     top: 0%;
     left: 205%;
     height: fit-content;
-    /* margin-left: -200%; */
 }
 div[expand="on"]#settingsButtonContainer>button{
     visibility: visible;
@@ -182,12 +172,12 @@ div[expand="on"]#settingsButtonContainer>button{
 }
 
 div[expand="on"]#settingsButtonContainer{
-    border-top: 3px solid!important;
-    border-left: 3px solid!important;
-    border-right: 3px solid!important;
-    border-bottom: 3px solid!important;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    border-top: var(--var3px) solid!important;
+    border-left: var(--var3px) solid!important;
+    border-right: var(--var3px) solid!important;
+    border-bottom: var(--var3px) solid!important;
+    border-top-left-radius: var(--var10px);
+    border-top-right-radius: var(--var10px);
     height: 300%;
 
     transition: height var(--btnEXPspeed) linear,border 0.01s linear;
@@ -198,14 +188,14 @@ button#settings{
     top:0;
     box-sizing: border-box;
     width: 10%!important;
-    border-bottom: 3px solid!important;
-    border-left: 3px solid!important;
-    border-right: 3px solid!important;
-    border-top:3px solid!important;
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
+    border-bottom: var(--var3px) solid!important;
+    border-left: var(--var3px) solid!important;
+    border-right: var(--var3px) solid!important;
+    border-top: var(--var3px) solid!important;
+    border-bottom-left-radius: var(--var10px);
+    border-bottom-right-radius: var(--var10px);
+    border-top-left-radius: var(--var10px);
+    border-top-right-radius: var(--var10px);
     transition: border-top-left-radius 0.01s linear var(--btnEXPspeed),
     border-top-right-radius 0.01s linear var(--btnEXPspeed);
 }

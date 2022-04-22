@@ -1,5 +1,5 @@
 :root{
-    --maxheight1680: 1680px;
+/*     --maxheight1680: 1680px;
     --maxwidth920: 920px;
     --maxfontsize32:32px;
     --maxfontsize30:30px;
@@ -11,10 +11,20 @@
     --maxfontsize18:18px;
     --maxfontsize16:16px;
     --maxfontsize14:14px;
-
+ */
     --bottomHeight: calc(70/894*100%);
-    --hBorderRadius: 0.2em;
+    --hBorderRadius: 4px;
     --btnEXPspeed: 0.2s;
+    --var10px: 10px;
+    --var8px: 8px;
+    --var6px: 6px;
+    --var5px: 5px;
+    --var4px: 4px;
+    --var3px: 3px;
+    --var2px: 2px;
+    --var1_5px: 1.5px;
+    --var1px: 1px;
+
     /* COLOR CONFIG (LIGHT & DARK) */
     --green-light: #bbf125;
     --green-dark: #8fc400;
@@ -26,7 +36,6 @@
     
     
     --blue-light: #00b2ee;
-    /* --blue-light: rgb(85, 151, 252); */
     --blue-dark: #009bcf;
     
     --yellow-light:#ffff00ec;

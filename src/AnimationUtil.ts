@@ -187,7 +187,6 @@ export class AnimationControl{
         this.setSmoothIfNecessery();
         
         try{
-            descriptionLines.classList.add("scrollSmooth");
             animationTyp1BTN.classList.add("selected");
             animationTyp2BTN.classList.remove("selected");
             animationTyp3BTN.classList.remove("selected");
@@ -206,7 +205,6 @@ export class AnimationControl{
         this.setSmoothIfNecessery();
 
         try{
-            descriptionLines.classList.add("scrollSmooth");
             animationTyp1BTN.classList.remove("selected");
             animationTyp2BTN.classList.add("selected");
             animationTyp3BTN.classList.remove("selected");
@@ -274,7 +272,15 @@ export class AnimationControl{
         if(this.play && this.animationType!=AnimationsTyp.Typ3 && this.speed<3){
             inputText.classList.add("scrollSmooth");
             outputText.classList.add("scrollSmooth");
+            descriptionLines.classList.add("scrollSmooth");
         }
+        if(this.play && this.animationType!=AnimationsTyp.Typ3 && this.speed==4){
+            descriptionLines.classList.remove("scrollSmooth");
+        }
+        else{
+            descriptionLines.classList.add("scrollSmooth");
+        }
+
     }
     removeSmoothScroll(){
         inputText.classList.remove("scrollSmooth");
@@ -322,7 +328,13 @@ export class AnimationControl{
                 inputText.classList.add("scrollSmooth");
                 outputText.classList.add("scrollSmooth");
                 descriptionLines.classList.add("scrollSmooth");
-            }   
+            }  
+            if(this.speed==4){
+                descriptionLines.classList.remove("scrollSmooth");
+            }
+            else{
+                descriptionLines.classList.add("scrollSmooth");
+            }
             if(this.isAni3()) descriptionLines.classList.remove("scrollSmooth");
 
             elem.classList.add("pausedBKG");
@@ -332,7 +344,7 @@ export class AnimationControl{
     }
     setSpeed=(n:number)=>{
         this.speed=n;
-        this.baseFrameTime=1000-this.speed*220;
+        this.baseFrameTime=1000-this.speed*240;
         if(!this.loaded) return;
         this.setSmoothIfNecessery();
         if(n>=3){

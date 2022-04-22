@@ -64,6 +64,9 @@ export class InputLine{
         if(Manipulator.isHex(String(n))){
             this.length=Manipulator.hexToDec(String(n));
         }
+        else if(Manipulator.isBin(String(n))){
+            this.length =Manipulator.binToDec(String(n));
+        }
         else this.length = Number(n);
     }
     setHCode(s:string){

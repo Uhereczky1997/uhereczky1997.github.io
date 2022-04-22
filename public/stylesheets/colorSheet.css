@@ -11,16 +11,12 @@
 }
 .eingeruckt{
   margin: 0 0;
-  padding-left: 1em; /* Padding */
+  padding-left: 1em ;
 }
 .highlighted{
   background-color: var(--green)!important;
 }
-.crInvert{
-  background-color: var(--green);
-  border: 0.05em solid var(--bkg2)!important; /* Border */
-  border-radius: var(--hBorderRadius);
-}
+
 .warning{
   color: var(--warning)!important;
 }

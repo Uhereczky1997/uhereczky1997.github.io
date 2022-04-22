@@ -6,14 +6,19 @@ export const speicherabbildL:number = 16;
 export class Manipulator {
     constructor(){}
     static binToHex = (addr:string):string  =>{
+        addr=addr.replace(/b$/g,"");
         return parseInt(addr,2).toString(16).toUpperCase()+"h";
     }
     static decToHex= (addr:string):string =>{
-            return parseInt(addr,10).toString(16).toUpperCase()+"h";
+        return parseInt(addr,10).toString(16).toUpperCase()+"h";
+    }
+    static binToDec=(addr:string):number=>{
+        addr=addr.replace(/b$/g,"");
+        return Number(parseInt(addr,2).toString(10));
     }
     static hexToDec=(addr:string):number =>{
-            addr=addr.replace(/h$/g,"");
-            return Number(parseInt(addr,16).toString(10));
+        addr=addr.replace(/h$/g,"");
+        return Number(parseInt(addr,16).toString(10));
     }
     static sliceString(s1:string,s2:string):string[]{
         let n:number,p:number;
@@ -44,6 +49,20 @@ export class Manipulator {
         else reString[0]=s;
         return reString;
     }
+    static isBin(s:string){
+        if(s.endsWith("b")||s.endsWith("B")){
+            s=s.replace(/b$/i,"");
+            // addr =addr.replace(/^0{1,}/,'0');
+            if(s==""){
+                return false;
+            }
+            if(!/[^0-1]/.test(s)){
+                return true;
+            }
+            else return false;
+        }
+        else return false;
+    }
     static isHex(addr:string):boolean{    
         if(addr.endsWith("h")||addr.endsWith("H")){
             addr=addr.replace(/h$/i,"");
@@ -73,7 +92,13 @@ export class Manipulator {
         if(addr==""){
             return false;
         }
-        if(this.isDec(addr)){
+        if(this.isBin(addr)){
+            if(this.binToHex(addr).length<=3){
+                return true;
+            }
+            else return false;
+        }
+        else if(this.isDec(addr)){
             if(this.decToHex(addr).length<=3){
                 return true;
             }
@@ -95,6 +120,12 @@ export class Manipulator {
         if(addr==""){
             return false;
         }
+        if(this.isBin(addr)){
+            if(this.binToHex(addr).length<=5){
+                return true;
+            }
+            else return false;
+        }
         if(this.isDec(addr)){
             if(this.decToHex(addr).length<=5){
                 return true;
@@ -115,9 +146,12 @@ export class Manipulator {
     static formatHextoDat8(addr:string):string{
         addr=addr.replace(/^0{1,}/,'0');
 
-        if(Manipulator.isDat_8(addr)){
-            if(this.isDec(addr)){
-                addr=Manipulator.decToHex(addr);
+        if(this.isDat_8(addr)){
+            if(this.isBin(addr)){
+                addr=this.binToHex(addr)
+            }
+            else if(this.isDec(addr)){
+                addr=this.decToHex(addr);
             }
             while(addr.startsWith('0') && addr.length>3){
                 addr= addr.replace(/^0/,'')
@@ -134,9 +168,12 @@ export class Manipulator {
     static formatHextoDat8WithoutH(addr:string):string{
         addr=addr.replace(/^0{1,}/,'0');
 
-        if(Manipulator.isDat_8(addr)){
-            if(this.isDec(addr)){
-                addr=Manipulator.decToHex(addr);
+        if(this.isDat_8(addr)){
+            if(this.isBin(addr)){
+                addr=this.binToHex(addr)
+            }
+            else if(this.isDec(addr)){
+                addr=this.decToHex(addr);
             }
             while(addr.startsWith('0') && addr.length>3){
                 addr= addr.replace(/^0/,'')
@@ -154,7 +191,10 @@ export class Manipulator {
         addr=addr.replace(/^0{1,}/,'0');
 
         if(this.isDat_16(addr)){
-            if(this.isDec(addr)){
+            if(this.isBin(addr)){
+                addr=this.binToHex(addr)
+            }
+            else if(this.isDec(addr)){
                 addr=this.decToHex(addr);
             }
             while(addr.startsWith('0') && addr.length>5){
@@ -181,7 +221,10 @@ export class Manipulator {
         addr=addr.replace(/^0{1,}/,'0');
 
         if(this.isDat_16(addr)){
-            if(this.isDec(addr)){
+            if(this.isBin(addr)){
+                addr=this.binToHex(addr)
+            }
+            else if(this.isDec(addr)){
                 addr=this.decToHex(addr);
             }
             while(addr.startsWith('0') && addr.length>5){
