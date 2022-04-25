@@ -57,11 +57,26 @@ export class InputWindow{
     }
     private switchInputContent=()=>{
         let s:string = inputSelect.value;
-        if(s=="0"){
+        if(this.previousP=="0"){
             bsp0 =this.InputTextAreaElement.value.split("\n");
+            if(bsp0[bsp0.length-1]==""){
+                bsp0.pop();
+            }
         }
-        console.log(bsp0);
-        console.log(s);
+        switch(s){
+            case "0":
+                this.addLinetoTextArea(bsp0);
+                break;
+            case "1":
+                this.addLinetoTextArea(bsp1);
+                break;
+            case "2":
+                this.addLinetoTextArea(bsp2);
+                break;
+            case "3":
+                this.addLinetoTextArea(bsp3);
+                break;
+        }
         this.previousP=s;
         // this.addLinetoTextArea()
     }
@@ -117,13 +132,40 @@ const bsp1:string[]=[
     "Mov Label1,A","Mov Label1,HL","Mov Label1,IX","MOV A,[HL]","MOV [HL],A","PUSH","POP","IN A, 67h",
     "OUT 46, A","INC A","DEC A","ADD A","SUB A","AND A","OR A","XOR A","SHL","SHR","RCL","ROL","RCR",
     "ROR","CP A","JP Label1","CALL Label1","RET","HALT","NOP","DB 45h","DW 45h","RS 3","ORG 2323h",
-    "const1 EQU 3434h",
+    "const1 EQU 3434h"
 ]
 const bsp2:string[]=[
-    "Label1:Mov A,95h","Mov B,95h","Mov C,95h","Mov IX,1295h","Mov HL,1095h","Mov SP,2395h","Mov A,B",
-    "Mov A,C","Mov B,A","Mov B,C","Mov C,A","Mov C,B","Mov A,Label1","Mov HL,Label1","Mov IX,Label1",
-    "Mov Label1,A","Mov Label1,HL","Mov Label1,IX","MOV A,[HL]","MOV [HL],A","PUSH","POP","IN A, 67h",
-    "OUT 46, A","INC A","DEC A","ADD A","SUB A","AND A","OR A","XOR A","SHL","SHR","RCL","ROL","RCR",
-    "ROR","CP A","JP Label1","CALL Label1","RET","HALT","NOP","DB 45h","DW 45h","RS 3","ORG 2323h",
-    "const1 EQU 3434h",
+    "mov hl, 0"
+    ,"mov hl, 00h"
+    ,"mov hl, 000000000000000000000000h"
+    ,"mov hl, 000000000000000000000000"
+    ,"dw 0"
+    ,"dw 00"
+    ,"dw 000"
+    ,"dw 0000"
+    ,"dw 000000000"
+    ,"org 0000"
+    ,"org 0"
+    ,"const equ 0000h"
+    ,"const2 equ 00h"
+    ,"const3 equ 0"
+    ,";org h"
+]
+const bsp3:string[]=[
+    "label1:"
+    ,"label2:"
+    ,"label3:"
+    ,"label4:"
+    ,"label5:"
+    ,"label6:"
+    ,"label7:"
+    ,"label8:"
+    ,"label9:"
+    ,"label10:"
+    ,""
+    ,"label:jp label"
+    ,"jp label1"
+    ,"jp label4"
+    ,"jp label5"
+    ,"jp label4"
 ]

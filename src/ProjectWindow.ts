@@ -532,7 +532,7 @@ export class ProjectWindow{
             this.linkerAuflosungB=this.aufzulosendeLabel();
             await this.linkerAuflosung();
             await updateScroll(descriptionLines.id);
-            aniControl.setEnd();
+            // aniControl.setEnd();
         }
     }
 
@@ -805,7 +805,7 @@ export class ProjectWindow{
         currentLineLine.innerHTML="&nbsp;";
     }
     public startPlaying=async()=>{
-        if(aniControl.stop || aniControl.reset || aniControl.end) throw new Error("Reset was presser recently!");
+        if(aniControl.stop || aniControl.reset || aniControl.end) throw new Error("Reset was pressed recently!");
         if(this.inputstrings.length>0){
             let date = Date.now();
             await this.pushLines(false);

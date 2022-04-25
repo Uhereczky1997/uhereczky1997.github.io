@@ -3,25 +3,62 @@
     top: 8%;
     right: 26%;
     width: 20%;
-    height: 5%;
+    height: 3.9vh;
     resize: none;
 /*     font-weight: bold;
     font-family: 'Courier New', Courier, monospace; */
 }
 
-#bsppSelect2{
+#filterDiv{
     position:absolute;
-    top: 87.5%;
-    left: 20%;
-    width: 20%;
-    height: 5%;
-    /* resize: none; */
-/*     font-weight: bold;
-    font-family: 'Courier New', Courier, monospace; */
+    top: 8%;
+    right: 5%;
+    width: 21%;
+    display: flex;
+    flex-direction: column;
+    height: max-content;
+    max-height: 9.9vh;
+
+}
+#filterOutput{
+    display: none;
+    width: 100%;
+    height: max-content;
+    overflow-y: auto;
+}
+#filterOutput div{
+    width: 100%;
+    height: 1vh;
+}
+#filterDiv input[type="text"]{
+    width:100%;
+    height: 3.9vh;
+    padding: var(--var2px);
+    padding-left: var(--var4px);
+    border: var(--var1px) solid;
+    color: var(--text)!important;
+    background-color: var(--bkg1)!important;
+    font-size: calc(var(--fontsizeVar)*20/30);
+}
+#filterInput{
+    color: var(--text)!important;
+    background-color: var(--bkg1)!important;
+}
+#filterDiv input[type="text"]:focus{
+    outline: none;
+    border: var(--var2px) solid var(--green);
+    padding: var(--var1px);
+    padding-left: var(--var3px);
 }
 #bspp select{
     width:100%;
     height: 100%;
+    border: var(--var1px) solid;
+    font-size: calc(var(--fontsizeVar)*18/30);
+}
+#bspp select:focus{
+    outline: none;
+    border: var(--var2px) solid var(--green);
 }
 #bspp select option{
     border-bottom:var(--var1px) solid #ddd; 

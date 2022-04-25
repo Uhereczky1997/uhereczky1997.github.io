@@ -228,7 +228,7 @@ export class AnimationControl{
     }
 
     setPlaying=()=>{
-        if(this.start && !this.stop){
+        if(this.start && !this.stop && !this.end){
             this.play   = true;
             this.pause  = false;
             this.end    = false;
@@ -262,6 +262,7 @@ export class AnimationControl{
     }
 
     setEnd=()=>{
+        // console.log(" END ");
         this.start  = true;
         this.play   = false;
         this.pause  = false;

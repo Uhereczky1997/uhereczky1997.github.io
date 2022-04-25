@@ -92,20 +92,19 @@ class Resizer{
     private var1_5px:number     = 1.5;
     private var1px:number       = 1;
 
-
     constructor(){}
     private getInitialValues =()=>{
-        this.var1px =   Number(rootVariables.getPropertyValue("--var1px").replace("px",""));
-        this.var1_5px = Number(rootVariables.getPropertyValue("--var1_5px").replace("px",""));
-        this.var2px =   Number(rootVariables.getPropertyValue("--var2px").replace("px",""));
-        this.var3px =   Number(rootVariables.getPropertyValue("--var3px").replace("px",""));
-        this.var4px =   Number(rootVariables.getPropertyValue("--var4px").replace("px",""));
-        this.var5px =   Number(rootVariables.getPropertyValue("--var5px").replace("px",""));
-        this.var6px =   Number(rootVariables.getPropertyValue("--var6px").replace("px",""));
-        this.var8px =   Number(rootVariables.getPropertyValue("--var8px").replace("px",""));
-        this.var10px =  Number(rootVariables.getPropertyValue("--var10px").replace("px",""));
-        this.arrowHead =Number(rootVariables.getPropertyValue("--arrowHeadlrW").replace("px",""));
-        this.arrowBody =Number(rootVariables.getPropertyValue("--arrowBodyW").replace("px",""));
+        this.var1px     =   Number(rootVariables.getPropertyValue("--var1px").replace("px",""));
+        this.var1_5px   =   Number(rootVariables.getPropertyValue("--var1_5px").replace("px",""));
+        this.var2px     =   Number(rootVariables.getPropertyValue("--var2px").replace("px",""));
+        this.var3px     =   Number(rootVariables.getPropertyValue("--var3px").replace("px",""));
+        this.var4px     =   Number(rootVariables.getPropertyValue("--var4px").replace("px",""));
+        this.var5px     =   Number(rootVariables.getPropertyValue("--var5px").replace("px",""));
+        this.var6px     =   Number(rootVariables.getPropertyValue("--var6px").replace("px",""));
+        this.var8px     =   Number(rootVariables.getPropertyValue("--var8px").replace("px",""));
+        this.var10px    =   Number(rootVariables.getPropertyValue("--var10px").replace("px",""));
+        this.arrowHead  =   Number(rootVariables.getPropertyValue("--arrowHeadlrW").replace("px",""));
+        this.arrowBody  =   Number(rootVariables.getPropertyValue("--arrowBodyW").replace("px",""));
 
     }
     private getWidthAndHeightOfWindow = () =>{
@@ -141,19 +140,8 @@ class Resizer{
         root.style.setProperty("--arrowHeadlrW",`${this.arrowHead}vmax`);
         root.style.setProperty("--arrowHeadlrH",`${this.arrowHead}vmax`);
     }
-    private recalculatValues=()=>{
-        
-        if(this.outerWidth>this.outerHeight){
-            
-        }
-        else{
-
-        }
-    }
-    
     public resizeWindow = () =>{
         this.getWidthAndHeightOfWindow();
-
     }
 }
 export const resizer = new Resizer();

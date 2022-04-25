@@ -252,17 +252,6 @@ body>* h1{
     grid-row: 8/12;
 }
 
-#InputWindow>button, #OutputWindow>button {
-    padding: 0!important;
-    margin: 0 0;
-    cursor: pointer;
-    -webkit-box-sizing: border-box;
-    box-sizing: border-box;
-}
-
-#InputWindow>button, #OutputWindow>button{
-    border-radius: var(--var10px);            
-}
 
 
 

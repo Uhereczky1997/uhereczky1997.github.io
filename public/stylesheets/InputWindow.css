@@ -20,6 +20,20 @@ p{
     height: 80%;
     display: flex;
 }
+#InputWindow>button, #OutputWindow>button {
+    padding: 0!important;
+    margin: 0 0;
+    cursor: pointer;
+    border: var(--var2px) solid;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+#InputWindow>button, #OutputWindow>button{
+    border-radius: var(--var10px);            
+}
+
+
 #OutputWindow>textarea{
 
     position:absolute;
@@ -35,6 +49,16 @@ p{
     font-weight: bold;
     font-family: 'Courier New', Courier, monospace;
 }
+#Outputwindow>textarea, #InputWindow>textarea{
+    box-sizing: border-box;
+    padding: var(--var5px);
+}
+#Outputwindow>textarea:focus, #InputWindow>textarea:focus{
+    outline: none;
+    border: var(--var4px) solid var(--green);
+    padding: var(--var3px);
+}
+
 #titleHextextareaOutput{
     position: absolute;
     top: 2%;
@@ -57,7 +81,7 @@ p{
 #OutputWindowMachineCode{
     position:absolute;
     border: var(--var2px) solid;  
-    padding-top: var(--var2px); 
+    padding-top: var(--var5px); 
     box-sizing: border-box; 
     -moz-box-sizing: border-box;
     -webkit-box-sizing: border-box;
@@ -141,24 +165,4 @@ p{
 #InputTextAreaEnumerationDiv{
     width: 0px;
     height: 100%;
-}
-#inputButtonDiv{
-    display: grid;
-    grid-template-columns: repeat(5,1fr);
-    grid-template-rows: 1fr;
-    grid-row: 5/6;
-    grid-column: 1/6;
-    overflow: hidden;
-}
-#inputButtonDiv>*{
-    grid-column: span 1;
-    border: none;
-    border-right:  var(--var1px) solid;
-    border-top: var(--var1px) solid; 
-    border-left: var(--var1px) solid; 
-    width: 100%;
-    height: 100%;
-}
-#inputButtonDiv>button{
-    cursor: pointer;
 }
