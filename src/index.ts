@@ -44,9 +44,11 @@ export const onscrollIn_Out = () =>{
         console.log(e);
     }
 }
+
 export const root = document.documentElement;
 export const rootVariables = getComputedStyle(root);
 export let contentloaded:boolean= false;
+
 declare global {
     interface Document {
       mozCancelFullScreen?: () => Promise<void>;
@@ -63,6 +65,7 @@ declare global {
       webkitRequestFullscreen?: () => Promise<void>;
     }
 }
+
 const switchToFullscreen=()=>{
     var elem = document.documentElement;
     const elem2 = document.getElementById("vollbild");
@@ -91,6 +94,7 @@ const switchToFullscreen=()=>{
         }
     }
 }
+
 const consoleWindowsize=()=>{
     let s:number = Number(rootVariables.getPropertyValue("--arrowBodyW").replace("px",""));
     console.log("Innerwidth: "+window.innerWidth);
@@ -100,12 +104,14 @@ const consoleWindowsize=()=>{
     console.log("Outerheight: "+window.outerHeight);
 
 }
+
 const outputClip = () =>{
     var copyText = document.getElementById("OutputTextArea") as HTMLTextAreaElement;
     if(copyText!=null){
         navigator.clipboard.writeText(copyText.value);
     }
 }
+
 const syncScroll_MachineCode_Hexadecimal = () =>{
     var ignoreScrollEvents2 = false;
     // console.log(OutputWindowMachineCode.scrollTop);
@@ -136,6 +142,7 @@ const syncScroll_MachineCode_Hexadecimal = () =>{
         console.log(e);
     }
 }
+
 export const setCurrentlyHovered = async (e: any) =>{ //Eventbubbling is f-ing sick!
     let id:string;
     if(e.target instanceof HTMLElement){
@@ -156,8 +163,8 @@ const changeTheme = () =>{
     preferedTheme = theme;
     const root = document.querySelector(':root');
     root!.setAttribute('color-scheme', `${theme}`);
-    
 }
+
 
 let preferedTheme = "light";
 let fullscreened:boolean = false;

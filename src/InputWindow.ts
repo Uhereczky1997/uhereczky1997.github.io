@@ -4,6 +4,7 @@ import { ProjectWindow } from "./ProjectWindow";
 import { InputLine } from "./Backend/InputLine";
 import { getHtmlElement, createClickListener, updateScroll } from "./Tools";
 import { aniControl, sleepFor, sleepUntilNextStep } from "./AnimationUtil";
+import { contentloaded } from "./index";
 
 
 const errorDescriptionDiv:HTMLElement = getHtmlElement('ErrorDescription');
@@ -13,15 +14,21 @@ const inputWindowContainer:HTMLElement = getHtmlElement('InputWindowContainter')
 export const inputSelect:HTMLInputElement = getHtmlElement("bsppSelect") as HTMLInputElement;
 
 export class InputWindow{
+
     private previousP:string="0";
     private inputcontrol:InputLineControl=InputLineControl.getInstance();
     private InputTextAreaElement:HTMLTextAreaElement;
     private pWindow:ProjectWindow;
+    private filterOutput:HTMLElement;
+    private filterInput:HTMLInputElement;
 
     constructor(p:ProjectWindow){
         this.InputTextAreaElement=getHtmlElement('InputTextArea')as HTMLTextAreaElement;
         this.pWindow=p;
+        this.filterInput = getHtmlElement("filterInput") as HTMLInputElement;
+        this.filterOutput = getHtmlElement("filterOutput");
     }
+
     public translate = ():void=>{
         try{
             let s:string[]=this.InputTextAreaElement.value.split("\n");
@@ -36,6 +43,7 @@ export class InputWindow{
             console.log(e);
         }
     }
+
     private addLinetoTextArea=(s:string[])=>{
         this.InputTextAreaElement.value="";
         s.forEach(e => {
@@ -48,6 +56,7 @@ export class InputWindow{
         await this.pushInputLines();
         await this.openEditWindow();        
     }
+
     public pushInputLines=async()=>{
         if(this.pWindow){
             await this.pWindow.reset()
@@ -55,6 +64,7 @@ export class InputWindow{
             await this.pWindow.displayInputLines();
         }
     }
+
     private switchInputContent=()=>{
         let s:string = inputSelect.value;
         if(this.previousP=="0"){
@@ -80,6 +90,7 @@ export class InputWindow{
         this.previousP=s;
         // this.addLinetoTextArea()
     }
+
     /* private getBsp=(s:string):string[]=>{
         Object.keys
     } */
@@ -97,6 +108,61 @@ export class InputWindow{
             console.log(e);
         }
     }
+
+    public createFilterable = () =>{
+        let filterables:string[] = this.inputcontrol.filterables();
+        let elem:HTMLElement;
+        let type:string=""
+        if(this.filterOutput != null){
+            filterables.forEach(e=>{
+                if(e=="Mnemocodes" || e=="PSEUDO-Mnemocodes"){
+                    if(e=="Mnemocodes"){
+                        type = "Mnemo";
+                    }
+                    else{
+                        type = "pseudoMnemo";
+                    }
+                    elem = document.createElement("h3");
+                    elem.innerHTML = e;
+                    elem.id="filterable"+filterables.indexOf(e);
+                    
+                    this.filterOutput.appendChild(elem);
+                }
+                else{
+                    elem = document.createElement("p");
+                    elem.innerHTML = e;
+                    elem.id="filterable"+filterables.indexOf(e);
+                    elem.setAttribute("type",type);
+                    this.filterOutput.appendChild(elem);
+                }
+            });
+        }
+    }
+    public filterOutputDiv=()=>{
+        let s = this.filterInput.value;
+        let tempElem:HTMLElement|null;
+        let i= 0;
+        s = s.replace(/\s{1,}/g," ");
+        
+        tempElem = document.getElementById("filterable"+i);
+        while(tempElem!=null){
+            i++;
+            if(tempElem.getAttribute("type")=="Mnemo" || tempElem.getAttribute("type")=="pseudoMnemo"){
+                if(tempElem.innerHTML.toLowerCase().startsWith(s.toLowerCase()) || s==" " || s==""){
+                    tempElem.classList.add("filterableShown");
+                    tempElem.classList.remove("filterableNotShown");
+                }
+                else{
+                    tempElem.classList.remove("filterableShown");
+                    tempElem.classList.add("filterableNotShown");
+
+                }
+            }
+            tempElem = document.getElementById("filterable"+i);
+        }        
+        console.log(s);
+    }
+    
     
     public createEventListeners=()=>{
         try{
@@ -120,6 +186,31 @@ export class InputWindow{
         createClickListener('GenerateDummy',this.generateDummy);
         createClickListener('CloseInputWindow',this.openEditWindow);
         inputSelect.addEventListener("change",this.switchInputContent);
+        this.createFilterable();
+        document.getElementById("filterDiv")!.addEventListener("mouseenter",function(){
+            document.getElementById("filterOutput")!.setAttribute("filtering","true");
+        })
+        document.getElementById("filterDiv")!.addEventListener("mouseleave",function(){
+            document.getElementById("filterOutput")!.setAttribute("filtering","false");
+        });
+        document.getElementById("filterDiv")!.addEventListener("touchstart",function(){
+            document.getElementById("filterOutput")!.setAttribute("filtering","true");
+        })
+        document.getElementById("filterDiv")!.addEventListener("touchcancel",function(){
+            document.getElementById("filterOutput")!.setAttribute("filtering","false");
+        });
+        this.filterInput.addEventListener("input",this.filterOutputDiv);
+        this.filterOutput.addEventListener("click",(e)=>{
+            let targetElem;
+            console.log(e.target);
+            if(e.target instanceof HTMLElement){
+                targetElem = document.getElementById("filterInput") as HTMLInputElement
+                if(targetElem != null){
+                    console.log(e.target.innerHTML)
+                    // targetElem.value = e.target.innerHTML;
+                }
+            }
+        })
     }
     public generateDummy = ():void=>{
         this.addLinetoTextArea(bsp1);

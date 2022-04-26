@@ -122,16 +122,6 @@ export class Animator{
             await this.turnMovableHidden();
         }
     }
-
-    getStaticBodyWidth(){
-        // console.log("Arrowbody width: "+rootVariables.getPropertyValue("--arrowBodyW"));
-        // console.log("Arrowhead width: "+rootVariables.getPropertyValue("--arrowHeadlrW"));
-        // console.log("Arrowhead height: "+rootVariables.getPropertyValue('--arrowHeadlrH'));
-        let s:number = Number(rootVariables.getPropertyValue("--arrowBodyW").replace("px",""));
-        // console.log(s);
-        return s;
-
-    }
     
     async moveLabeltoSymboltableALTMoveableHelper(hex:string){
         if(aniControl.isAni3()) return;
@@ -391,8 +381,6 @@ export class Animator{
         }
 
         this.turnMovableVisible();
-        // this.turnMovableHelperVisible();
-        // await sleepStaticAnimation();
 
         if(idToFind>=0 && this.symbolTableElem.childElementCount-2>=idToFind){
             isSuccessful=true;

@@ -41,4 +41,7 @@ export class MnemoCommand {
     getSize():number{
         return this.size;
     }
+    toFilterableString():string{
+        return `${this.mCode}${this.destination==""?"":" "+this.destination}${this.source==""?"":","+this.source}`;
+    }
 }

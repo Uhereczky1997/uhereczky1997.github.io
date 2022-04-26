@@ -52,6 +52,7 @@ export const  setTranslatingDivVisible=()=>{
 }
 
 export class ProjectWindow{
+
     private inputLineControl:InputLineControl=InputLineControl.getInstance();
     private symbolList=SymbolList.getInstance();
     private iWindow:InputWindow = new InputWindow(this);
@@ -61,11 +62,10 @@ export class ProjectWindow{
     private inputLines:InputLine[]=[];
     private inputstrings:string[] =[];
     private symbols:Array<Label|Constant>=[]
+
     constructor(){
         this.anim = new Animator();
     }
-
-    
     
     public partialReset =async () =>{
         this.inputLines=[];
@@ -236,6 +236,7 @@ export class ProjectWindow{
         }
         updateScroll("symbolTableLines");
     }
+
     public repushTranslations=async()=>{
         OutputTextAreaElement.innerHTML="";
         windowOutputLines.innerHTML="";
@@ -727,6 +728,7 @@ export class ProjectWindow{
         }
         return "";
     }
+
     private aufzulosendeLabel=():boolean=>{
         let b=false;
         this.inputLines.forEach(e=>{
@@ -747,6 +749,7 @@ export class ProjectWindow{
         }
         return false;
     }
+
     public nextInverted=async (n:number[])=>{
         if(this.checkForNoAniStep()){
             await sleepFor(30);
@@ -789,11 +792,13 @@ export class ProjectWindow{
                 break;
         }
     }
+
     checkForSkip():boolean{
         if(skipped)return false;
         
         return !(aniControl.speed==4 && aniControl.isAni3())
     }
+
     checkForNoAniStep():boolean{
         if(skipped)return false;
         
@@ -804,6 +809,7 @@ export class ProjectWindow{
         machinenbefehl.innerHTML="&nbsp;";
         currentLineLine.innerHTML="&nbsp;";
     }
+
     public startPlaying=async()=>{
         if(aniControl.stop || aniControl.reset || aniControl.end) throw new Error("Reset was pressed recently!");
         if(this.inputstrings.length>0){
@@ -817,6 +823,7 @@ export class ProjectWindow{
             console.log("no Input");
         }
     }
+
     public toggleStop=async()=>{
         if(this.inputstrings.length>0){
             
@@ -847,10 +854,6 @@ export class ProjectWindow{
 
     public pause=()=>{
         aniControl.setPaused();
-    }
-
-    public speed=()=>{
-        this.anim.getStaticBodyWidth();
     }
 
     public reset=async()=>{
@@ -891,22 +894,17 @@ export class ProjectWindow{
             console.log(e);
         }
     }
+
     public createListeners=()=>{
         try{
             this.iWindow.createEventListeners();
-            // createClickListener('testButton',this.testCycling);
             createClickListener('CloseOutputWindow',this.openOutputWindow);
             createClickListener('TranslateWindow',this.openOutputWindow);
             createClickListener('play',this.toggleStop);
-            // createClickListener('stop',this.pause);
-            createClickListener('speed',setTranslatingDivVisible);
-            // createClickListener('skip',this.skipToFinish);
             createClickListener('reset',this.reset);
             aniControl.createEventListeners();
-            // createClickListener(InputID.id,setScrollbarOfDescriptionLine);
         }catch(e){
             console.log(e);
         }
-    } 
-
+    }
 }

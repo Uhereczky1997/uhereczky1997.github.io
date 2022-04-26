@@ -24,6 +24,11 @@ export class InputLineControl{
         }
         return InputLineControl.instance;
     }
+
+    public filterables =():string[]=>{
+        return this.map.filterableString();
+    }
+
     hasInvalid=():boolean=>{
         if(this.invalidIDs.length==0){
             return false;

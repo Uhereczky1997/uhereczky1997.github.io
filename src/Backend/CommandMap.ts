@@ -178,6 +178,7 @@ export class CommandMap{
         //Haltbefehl
         new MnemoCommand("HALT","","","01 110 110",1),
     ];
+
     private symbollist:SymbolList=SymbolList.getInstance();
     
     public mCodes:string[]=["MOV", "PUSH", "POP", "IN", "OUT", "INC", "DEC", "ADD", "SUB", "AND", "OR", "XOR", "SHL", "SHR", "RCL", "ROL", "RCR", "ROR", "CP", "JPNZ", "JPZ", "JPNC", "JPC", "JPNO", "JPO", "JPNS", "JPS", "JP", "CALL", "RET", "NOP", "HALT"];
@@ -190,11 +191,27 @@ export class CommandMap{
 
     private constructor(){
     }
+
     public static getInstance(){
         if(!CommandMap.instance){
             CommandMap.instance= new CommandMap();
         }
         return CommandMap.instance;
+    }
+
+    public filterableString=():string[]=>{
+        let toReturn:string[]=[];
+        toReturn.push("Mnemocodes");
+        this.mnemoCommands.forEach(e=>{
+            toReturn.push(e.toFilterableString());
+        });
+        toReturn.push("PSEUDO-Mnemocodes");
+        toReturn.push("ORG dat_16");
+        toReturn.push("DW dat_16");
+        toReturn.push("DB dat_8");
+        toReturn.push("RS dat_8");
+        toReturn.push("const EQU dat_16");
+        return toReturn;
     }
 
     formatGefunden(s1:string,s2:string):string{
@@ -1644,6 +1661,7 @@ export class CommandMap{
         }
         else return DataType.NONE;
     }
+
     saveExtraInfo(i:InputLine,consoleString:string,s:string){
         let typeData= this.getDataType(s);
         if(this.Regs.includes(s) || this.mCodes.includes(s) || this.pseudoMCodes.includes(s)){
