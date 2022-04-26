@@ -35,6 +35,7 @@
     background-repeat: repeat-x;
     background-size: auto 100%;
 }
+
 [color-scheme="dark"] .jointBody{
     width: var(--arrowWidth);
     height: var(--arrowHeight);
@@ -131,10 +132,15 @@
 }
 [color-scheme="dark"] #speedIncrease{
     background-position: center center;
-    /* background-size: contain; */
     background-repeat: no-repeat;
     background-size: 50% auto;
     background-image: url(../images/buttonSVGs/increaseWhite_button.svg);
+}
+[color-scheme="dark"] .paperclip{
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 50% auto;
+    background-image: url(../images/buttonSVGs/paper_clip_White.svg);
 }
 
 .arrowU{
@@ -307,4 +313,10 @@ button[fullscreen="on"].fullscreenBKG{
     background-repeat: no-repeat;
     background-size: 50% auto;
     background-image: url(../images/buttonSVGs/increase_button.svg);
+}
+.paperclip{
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: 50% auto;
+    background-image: url(../images/buttonSVGs/paper_clip.svg);
 }

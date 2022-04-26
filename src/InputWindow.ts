@@ -86,6 +86,9 @@ export class InputWindow{
             case "3":
                 this.addLinetoTextArea(bsp3);
                 break;
+            case "4":
+                this.addLinetoTextArea(bsp4);
+                break;
         }
         this.previousP=s;
         // this.addLinetoTextArea()
@@ -125,7 +128,7 @@ export class InputWindow{
                     elem = document.createElement("h3");
                     elem.innerHTML = e;
                     elem.id="filterable"+filterables.indexOf(e);
-                    
+                    elem.setAttribute("type","title");
                     this.filterOutput.appendChild(elem);
                 }
                 else{
@@ -206,9 +209,17 @@ export class InputWindow{
             if(e.target instanceof HTMLElement){
                 targetElem = document.getElementById("filterInput") as HTMLInputElement
                 if(targetElem != null){
-                    console.log(e.target.innerHTML)
-                    // targetElem.value = e.target.innerHTML;
+                    // console.log(e.target.innerHTML)
+                    if(e.target.getAttribute("type")!="title"){
+                        targetElem.value = e.target.innerHTML;
+                    }
                 }
+            }
+        });
+        document.getElementById("copyInputValue")!.addEventListener("click",function(){
+            var copyText = document.getElementById("filterInput") as HTMLInputElement;
+            if(copyText!=null){
+                navigator.clipboard.writeText(copyText.value);
             }
         })
     }
@@ -218,12 +229,11 @@ export class InputWindow{
 } 
 let bsp0:string[]=[]
 const bsp1:string[]=[
-    "Label1:Mov A,95h","Mov B,95h","Mov C,95h","Mov IX,1295h","Mov HL,1095h","Mov SP,2395h","Mov A,B",
+    "const1 EQU 3434h","Label1:Mov A,95h","Mov B,95h","Mov C,95h","Mov IX,1295h","Mov HL,1095h","Mov SP,2395h","Mov A,B",
     "Mov A,C","Mov B,A","Mov B,C","Mov C,A","Mov C,B","Mov A,Label1","Mov HL,Label1","Mov IX,Label1",
     "Mov Label1,A","Mov Label1,HL","Mov Label1,IX","MOV A,[HL]","MOV [HL],A","PUSH","POP","IN A, 67h",
     "OUT 46, A","INC A","DEC A","ADD A","SUB A","AND A","OR A","XOR A","SHL","SHR","RCL","ROL","RCR",
     "ROR","CP A","JP Label1","CALL Label1","RET","HALT","NOP","DB 45h","DW 45h","RS 3","ORG 2323h",
-    "const1 EQU 3434h"
 ]
 const bsp2:string[]=[
     "mov hl, 0"
@@ -259,4 +269,9 @@ const bsp3:string[]=[
     ,"jp label4"
     ,"jp label5"
     ,"jp label4"
+]
+const bsp4:string[]=[
+    "org 10101b",
+    "org 12",
+    "org ffh"
 ]

@@ -1,8 +1,8 @@
 ??
 
-      dropdown für bsp programme im EingabeFenster
+      % dropdown für bsp programme im EingabeFenster
 
-      dropdown biblothek im EingabeFenster
+      % dropdown biblothek im EingabeFenster
 
 
 
@@ -24,36 +24,30 @@
       % Im quelltext sollte sich Zahlenwerte garnicht ändern (dec bleibt dec, hex bleibt hex) // DecOrHex
       % const equ nur am Anfang von Programm erlaubt (pure label def zählt nicht), nach ersten Mnemocode "Konstanten definition nicht mehr erlaubt" -> erwarte Labeldef. oder MnemoCode -Konstante
 
-      css dynamic:
-            Padding
-            Border
-            Borderradius
-            Gridgap
-
-      %''''''''''''' dynamische Bildeinteilung? mittels relative position  - NOPE
-      %'''''''''''''hauptbestandteile auf flex umstellen
       
       
       % bewegteText maximal länge festlegen
       % binare nummer akzeptiert
-
+      
       ??          ->    // ??
-                        // need?
-
+      // need?
+      
       Alle Texts zusammenschreiben (und in KonstantenSpeichern ((zum Wiederverwendung)))
-            damit Prof einmal darüberschauen kann.
+      damit Prof einmal darüberschauen kann.
       % //Wenn zu Wenige Operand -> Erroranzeige ändern NICHT AN AKZEPTIERTEN STOPPEN -> i.setError("");
-
+      
       Ausführliches testen von randfällen
-
+      
       dokumentation:
-            ~ 40 Seiten - 
-            Titel : 
-            Anfang: kurzfassung 3/4
-
-            Inhaltsverzeichnis: 
-                  Einleitung:
-                  Anforderungen:
-
-
-
+      ~ 40 Seiten - 
+      Titel : 
+      Anfang: kurzfassung 3/4
+      
+      Inhaltsverzeichnis: 
+      Einleitung:
+      Anforderungen:
+      
+      
+      
+      %'''''''''''''hauptbestandteile auf flex umstellen
+      %''''''''''''' dynamische Bildeinteilung? mittels relative position  - NOPE
