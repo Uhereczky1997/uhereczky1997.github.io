@@ -320,3 +320,46 @@ button[fullscreen="on"].fullscreenBKG{
     background-size: 50% auto;
     background-image: url(../images/buttonSVGs/paper_clip.svg);
 }
+[color-scheme="dark"] #warningSign{
+    justify-self: center;
+    width: calc(var(--fontsizeVar)*26/30*1.5);
+    height: calc(var(--fontsizeVar)*26/30*1.5);
+    background-position: center center;
+    background-size: contain;
+
+    background-repeat: no-repeat;
+    background-size: 85% auto;
+    background-image: url(../images/buttonSVGs/warnung_White.svg);
+}
+[color-scheme="dark"] #warningSign[selected="true"]{
+    justify-self: center;
+    width: calc(var(--fontsizeVar)*26/30*1.5);
+    height: calc(var(--fontsizeVar)*26/30*1.5);
+    background-position: center center;
+    background-size: contain;
+
+    background-repeat: no-repeat;
+    background-size: 85% auto;
+    background-image: url(../images/buttonSVGs/warnung_Selected_White.svg);
+}
+#warningSign{
+    justify-self: center;
+    width: calc(var(--fontsizeVar)*26/30*1.5);
+    height: calc(var(--fontsizeVar)*26/30*1.5);
+    background-position: center center;
+    background-size: contain;
+
+    background-repeat: no-repeat;
+    background-size: 85% auto;
+    background-image: url(../images/buttonSVGs/warnung.svg);
+}
+#warningSign[selected="true"]{
+    justify-self: center;
+    width: calc(var(--fontsizeVar)*26/30*1.5);
+    height: calc(var(--fontsizeVar)*26/30*1.5);
+    background-position: center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-size: 85% auto;
+    background-image: url(../images/buttonSVGs/warnung_Selected.svg);
+}

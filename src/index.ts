@@ -166,7 +166,7 @@ const changeTheme = () =>{
 }
 
 
-let preferedTheme = "light";
+let preferedTheme = "dark";
 let fullscreened:boolean = false;
 
 let p = new ProjectWindow();

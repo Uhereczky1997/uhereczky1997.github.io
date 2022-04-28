@@ -9,6 +9,10 @@
 .labelBlue{
   color:var(--blue)!important;
 }
+.purple{
+  color:var(--purple);
+  background-color: transparent;
+}
 .eingeruckt{
   margin: 0 0;
   padding-left: 1em ;

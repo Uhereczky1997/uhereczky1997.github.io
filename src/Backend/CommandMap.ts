@@ -278,6 +278,9 @@ export class CommandMap{
                 if(strings[0].length>erlaubteLängeL_C){
                     i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[0]));
                 }
+                else if(strings[0].match(/^[A-Fa-f0-9]{1,4}h$/)!=null){
+                    i.saveDescriptionLine(StringConstructor.warLabelND(strings[0]));
+                }
                 this.symbollist.setLabelWithoutPosition(strings[0]);
                 saveInput(i,2);
                 i.saveDescriptionLine(this.formatErwartet("(Pseudo-)Mnemocode"));
@@ -299,13 +302,10 @@ export class CommandMap{
 
             return this.parseToMnemoCode(i,strings);
         }//erster Term PseudoMnemoCode - mögliche ConstantenName
-        else if(this.pseudoMCodes.includes(strings[0].toUpperCase()) || this.symbollist.isEligible(strings[0])){
+        else if(this.pseudoMCodes.includes(strings[0].toUpperCase()) || this.symbollist.isEligible_Const(strings[0])){
             return this.parsetoPseudoMnemoCode(i,strings);
         }
         else {
-            //wenn nicht gültig
-            // ??
-            // i.saveDescriptionLine(this.formatErrorMassage(`${strings[0]} ist kein gültiger (Pseudo-)Mnemocode oder Label/Konstante`));
             i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
@@ -1541,7 +1541,7 @@ export class CommandMap{
             i.setError(strings[0]);
             return false;
         }
-        else if(this.symbollist.isEligible(strings[0])&&!this.symbollist.isConst(strings[0])&&!this.symbollist.isLabel(strings[0]) && i.getLabel() =="" ){
+        else if(this.symbollist.isEligible_Const(strings[0])&&!this.symbollist.isConst(strings[0])&&!this.symbollist.isLabel(strings[0]) && i.getLabel() =="" ){
             i.saveDescriptionLine(this.formatGefunden(`Konstante ${strings[0]}`,strings[0]+" ..."));
             save2(i);
             i.saveDescriptionLine(this.formatErwartet(`EQU`));
@@ -1562,8 +1562,7 @@ export class CommandMap{
                 i.setSecondPart(new_commands[0]);
 
                 if(new_commands.length>1){
-                    let type=this.getDataType(new_commands[1]);
-                    if(type ==DataType.dat_8){
+                    if(Manipulator.isDat_8(new_commands[1])){
                         i.saveDescriptionLine(this.formatGefunden(`8-bit Wert ${new_commands[1]}`,i.getFirstPart()+" "+new_commands[0]+" "+new_commands[1])); // DecOrHex
                         // i.saveDescriptionLine(this.formatGefunden(`8-bit Wert ${Manipulator.formatHextoDat8(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat8(new_commands[1]))); 
                         i.setThirdPart((new_commands[1]));
@@ -1571,7 +1570,7 @@ export class CommandMap{
                         this.symbollist.setConst(strings[0],new_commands[1]);
                         return true;
                     }
-                    else if(type ==DataType.dat_16){
+                    else if(Manipulator.isDat_16(new_commands[1])){
                         // i.saveDescriptionLine(this.formatGefunden(`16-bit Wert ${Manipulator.formatHextoDat16(new_commands[1])}`,i.getFirstPart()+" "+new_commands[0]+" "+Manipulator.formatHextoDat16(new_commands[1])));
                         i.saveDescriptionLine(this.formatGefunden(`16-bit Wert ${new_commands[1]}`,i.getFirstPart()+" "+new_commands[0]+" "+new_commands[1])); // DecOrHex
                         i.setThirdPart((new_commands[1]));
@@ -1580,7 +1579,7 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(StringConstructor.expectedDat16Plus(new_commands[1]));
+                        i.saveDescriptionLine(StringConstructor.invalidCmd(new_commands[1]));
                         i.setError(new_commands[1]);
                         return false;
                     }
@@ -1606,6 +1605,11 @@ export class CommandMap{
             return false;
         }
         else if(this.symbollist.isLabel(strings[0])){
+            if((this.symbollist.getPositionOfSpecificLabel(strings[0])=="????")){
+                i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
+                i.setError(strings[0]);
+                return false;
+            }
             i.saveDescriptionLine(StringConstructor.nameTakenForLabel(strings[0]));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
@@ -1613,7 +1617,7 @@ export class CommandMap{
             }
             return false;
         }
-        else if(!this.symbollist.isEligible(strings[0])){
+        else if(!this.symbollist.isEligible_Const(strings[0])){
             i.saveDescriptionLine(StringConstructor.noValidConstOrOperand(strings[0]));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
@@ -1630,7 +1634,7 @@ export class CommandMap{
             return false;
         }
         else{
-            i.saveDescriptionLine(this.formatErrorMassage(`unkown error`));
+            i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
             i.setError(strings[0]);
             return false;
         }
@@ -1672,7 +1676,6 @@ export class CommandMap{
                     i.saveDescriptionLine(StringConstructor.infoIsDat8());
                     return;
                 
-
                 case DataType.CONSTANT:
                     if(Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(s)!.getValue())){
                         i.saveDescriptionLine(StringConstructor.infoNotDat8());
@@ -1687,7 +1690,10 @@ export class CommandMap{
                 case DataType.LABEL:
                 case DataType.ELLIGIBLE:
                     i.saveDescriptionLine(StringConstructor.infoNotDat8());
-                    i.saveDescriptionLine(StringConstructor.infoNotDat8Const(s));
+                    if(this.symbollist.isEligible_Const(s)){
+                        i.saveDescriptionLine(StringConstructor.infoNotDat8Const(s));
+                    }
+                    else i.saveDescriptionLine(StringConstructor.infoInvalidConst(s));
                     break;
                 default:
                     i.saveDescriptionLine(StringConstructor.infoNotDat8());
@@ -1712,7 +1718,10 @@ export class CommandMap{
                 case DataType.LABEL:
                 case DataType.ELLIGIBLE:
                     i.saveDescriptionLine(StringConstructor.infoNotDat16());
-                    i.saveDescriptionLine(StringConstructor.infoNotDat16Const(s));
+                    if(this.symbollist.isEligible_Const(s)){
+                        i.saveDescriptionLine(StringConstructor.infoNotDat16Const(s));
+                    }
+                    else i.saveDescriptionLine(StringConstructor.infoInvalidConst(s));
                     break;
                 default:
                     i.saveDescriptionLine(StringConstructor.infoNotDat16());

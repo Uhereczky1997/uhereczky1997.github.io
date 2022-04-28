@@ -11,6 +11,7 @@ import { InputWindow } from "./InputWindow";
 import { getHtmlElement, createClickListener, updateScroll, updateScrollOfIn_Out, removeClassOfAll, addClassTo, updateScrollOfDescriptionLines } from "./Tools";
 import { aniControl, AnimationsTyp, checkIfPaused, playButton, resetButton, sleepFor, sleepStaticAnimation, sleepUntilNextStep } from "./AnimationUtil";
 import { Animator } from "./Animator";
+import { StringConstructor } from "./Backend/StringConstructor";
 
 
 
@@ -50,6 +51,9 @@ export const  setTranslatingDivVisible=()=>{
         translating.style.visibility="visible";
     }
 }
+export const setWarningSign=(b:boolean)=>{
+    document.getElementById("warningSign")!.setAttribute("selected",b.toString());
+}
 
 export class ProjectWindow{
 
@@ -61,7 +65,8 @@ export class ProjectWindow{
     private nextParseID:number=0;
     private inputLines:InputLine[]=[];
     private inputstrings:string[] =[];
-    private symbols:Array<Label|Constant>=[]
+    private potentialConsts:string[] = [];
+    private symbols:Array<Label|Constant>=[];
 
     constructor(){
         this.anim = new Animator();
@@ -84,6 +89,10 @@ export class ProjectWindow{
         await this.anim.reset();
         await aniControl.resetFlags();
         getHtmlElement("InputText").scrollTop=0;
+        setWarningSign(false);
+    }
+    public setPotentialConsts(s:string[]){
+        this.potentialConsts = s;
     }
 
     public refreshInputListItems=()=>{
@@ -93,6 +102,7 @@ export class ProjectWindow{
         OutputLines.innerHTML="";
         let ss:string[]=[];
         let e:InputLine;
+        var inputstring:string;
         for(let i=0;i<this.inputstrings.length;i++){
             e=this.inputLines[i];
             if(e !=null){
@@ -107,8 +117,26 @@ export class ProjectWindow{
                 OutputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}outputP" class="overflowElipsis">&nbsp;</p>`;
             }
             else{
+                inputstring = this.inputstrings[i];
+                
+                this.potentialConsts.forEach(e=>{
+                    // var var1:RegExp = new RegExp('.*,(\s*|\s+)'+e+'.*');
+                    var var1:RegExp = new RegExp("\\s*"+e+"\\s*,","i");
+                    var var2:RegExp = new RegExp(",\\s*"+e+"\\s*","i");
+                    var var3:RegExp = new RegExp("(\\s+|^\\s*)"+e+"\\s+","i");
+                    if(inputstring.match(var1)!=null){
+                        inputstring = inputstring.replace(e,`<span class="purple">${e}</span>`);
+                    }
+                    else if(inputstring.match(var2)!=null){
+                        inputstring = inputstring.replace(e,`<span class="purple">${e}</span>`);
+                    }
+                    else if(inputstring.match(var3)!=null){
+                        inputstring = inputstring.replace(e,`<span class="purple">${e}</span>`);
+                    }
+                })
+               
                 InputID.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputLineId" class="gray">${(i+1)<10?"0"+(i+1):(i+1)}:</p>`;
-                InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP"  class="overflowElipsis">${this.inputstrings[i]}&nbsp;</p>`;
+                InputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}inputP"  class="overflowElipsis">${inputstring} &nbsp;</p>`;
                 OutputAddresses.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}oAddress" class="gray">&nbsp;</p>`;
                 OutputLines.innerHTML+=`<p id="${(i+1)<10?"0"+(i+1):(i+1)}outputP" class="overflowElipsis">&nbsp;</p>`;
             }
@@ -615,10 +643,15 @@ export class ProjectWindow{
                     }
                     else if(l.getEndAddr()!=""){
                         // machinenbefehl.innerHTML= `${this.inputLineControl.getDisplayableSpeicherabbild(l,false)}`;
-                        machinenbefehl.innerHTML= `
-                            ${Manipulator.formatSpeicherabbildandLabel(this.inputLineControl.getDisplayableSpeicherabbild(l,false),this.getLabelIfUnknown(l.getId(),false))}
-                            `;
-                        
+                        machinenbefehl.innerHTML= `${Manipulator.formatSpeicherabbildandLabel(this.inputLineControl.getDisplayableSpeicherabbild(l,false),this.getLabelIfUnknown(l.getId(),false))}`;
+                        console.log(this.inputLineControl.isFreeAddr(l.getStartingAddr(),l.getEndAddr()));
+                        if(!this.inputLineControl.isFreeAddr(l.getStartingAddr(),l.getEndAddr())){
+                            lineBuffer.push(`<p>${StringConstructor.warAddrOverwriten()}</p>`);
+
+                            if(blockAnimation){
+                                newElem.innerHTML += `<p>${StringConstructor.warAddrOverwriten()}</p>`;
+                            }
+                        }
                         if(blockAnimation){
                             await sleepUntilNextStep();
                             await this.anim.moveDetailToSpeicherabbild(this.getLinkerAufloesungLine(i,false),i);
@@ -668,7 +701,9 @@ export class ProjectWindow{
         if(blockAnimation){
             await sleepUntilNextStep();
         }
-
+        if(newElem.innerHTML.includes("Achtung")){
+            setWarningSign(true);
+        }
         removeClassOfAll("crInvert");
 
         l.formatInputToDisplay();
@@ -741,7 +776,7 @@ export class ProjectWindow{
         });
         return b;
     }
-    
+
     private translateInputStringOfId=(n:number):boolean=>{
         if(n<this.inputstrings.length){
             this.inputLineControl.addInputLine(this.inputstrings[n]);

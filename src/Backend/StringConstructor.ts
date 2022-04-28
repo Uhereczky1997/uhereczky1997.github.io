@@ -12,7 +12,7 @@ export class StringConstructor{
     static info(s:string):string{
         return `<span class="eingeruckt">${s}<span>`;
     }
-    static achtung(s:string):string{
+    static warning(s:string):string{
         return `<span class="${warningClass} eingeruckt">Achtung : ${s}<span>`;
     }
     static error(s:string):string{
@@ -22,10 +22,16 @@ export class StringConstructor{
         return `<span class="pluserrRed eingeruckt">${s}</span>`;
     }
     static warLabelZuLang(s:string):string{
-        return this.achtung(`Label '<span class="${labelClass}">${s}</span>' >${erlaubteLängeL_C} Zeichen`);
+        return this.warning(`Label '<span class="${labelClass}">${s}</span>' >${erlaubteLängeL_C} Zeichen`);
     }
     static warConstZuLang(s:string):string{
-        return this.achtung(`Konstante ${s} >${erlaubteLängeL_C} Zeichen`);
+        return this.warning(`Konstante ${s} >${erlaubteLängeL_C} Zeichen`);
+    }
+    static warLabelND(s:string):string{
+        return this.warning(`Label '<span class="${labelClass}">${s}</span>' mit Hex-Zahl verwechselbar`);
+    }
+    static warAddrOverwriten():string{
+        return this.warning(`Adresse von aufgelösten Befehl ist bereits besetzt!`);
     }
 
     static errLabelDef(s:string):string{
@@ -141,7 +147,7 @@ export class DescriptionLoader{
     private mov_a_b =  () =>{
         filterableDescription.innerHTML = 
         `
-        <h2>big gay</h2>
+        <h2>MOV A,B:</h2>
         <p>some text<p>
         `;
     }

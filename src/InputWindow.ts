@@ -33,6 +33,7 @@ export class InputWindow{
             let s:string[]=this.InputTextAreaElement.value.split("\n");
             if(!(s.length<1)){
                 this.pWindow.refreshInputStrings(s);
+                this.pWindow.setPotentialConsts(this.preTranslateDefConst(s));
                 this.inputcontrol.addInputLines(s);
             }
             else{
@@ -65,32 +66,19 @@ export class InputWindow{
         }
     }
 
-    public preTranslateDefConst = (ss:string[]) =>{
+    public preTranslateDefConst = (ss:string[]):string[] =>{
         let potentialConsts:string[]=[];
 
         let s;
         ss.forEach(e =>{
            
-            s = e.match(/^_\w+(?=\s+EQU\s+([0-9]+|[A-Fa-f0-9]+h|[01]+b)\s*$)/i)
+            s = e.match(/(\s*_|^_)\w+(?=\s+EQU\s+([0-9]+|[A-Fa-f0-9]+h|[01]+b)\s*$)/i)
             if(s!=null){
-                potentialConsts.push(s[0])
+                potentialConsts.push(s[0].trim())
             }
         });
-        console.log(potentialConsts);
-        potentialConsts.forEach(e=>{
-            // var var1:RegExp = new RegExp('.*,(\s*|\s+)'+e+'.*');
-            var var1:RegExp = new RegExp("\\s*"+e+"\\s*,","i");
-            var var2:RegExp = new RegExp(",\\s*"+e+"\\s*","i");
-            ss.forEach(d=>{
-                if(d.match(var1)!=null){
-                    console.log(d.replace(e,`<span class"purple">${e}</span>`));
-                }
-                else if(d.match(var2)!=null){
-                    console.log(d.replace(e,`<span class"purple">${e}</span>`));
-                }
-                
-            })
-        })
+        // console.log(potentialConsts);
+        return potentialConsts;
     }
 
     private switchInputContent=()=>{
@@ -230,7 +218,6 @@ export class InputWindow{
                     if(!e.target.id.startsWith("filter")){
                         document.getElementById("filterOutput")!.setAttribute("filtering","false");
                     }
-                    console.log(e.target);
                 }
             }
         });
@@ -292,7 +279,7 @@ export class InputWindow{
 } 
 let bsp0:string[]=[]
 const bsp1:string[]=[
-    "const1 EQU 3434h","Label1:Mov A,95h","Mov B,95h","Mov C,95h","Mov IX,1295h","Mov HL,1095h","Mov SP,2395h","Mov A,B",
+    "_const1 EQU 3434h","Label1:Mov A,95h","Mov B,95h","Mov C,95h","Mov IX,1295h","Mov HL,1095h","Mov SP,2395h","Mov A,B",
     "Mov A,C","Mov B,A","Mov B,C","Mov C,A","Mov C,B","Mov A,Label1","Mov HL,Label1","Mov IX,Label1",
     "Mov Label1,A","Mov Label1,HL","Mov Label1,IX","MOV A,[HL]","MOV [HL],A","PUSH","POP","IN A, 67h",
     "OUT 46, A","INC A","DEC A","ADD A","SUB A","AND A","OR A","XOR A","SHL","SHR","RCL","ROL","RCR",
@@ -335,8 +322,10 @@ const bsp3:string[]=[
 ]
 const bsp4:string[]=[
     "_const equ 1343h",
-    "_var equ 1223",
+    "_var equ 12",
     "",
     "mov a, _var",
-    "in _const , a",
+    "in a,_var",
+    "in a,_const",
+    "label: mov hl,_var",
 ]

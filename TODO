@@ -4,7 +4,11 @@
 
       % dropdown biblothek im EingabeFenster
 
-
+      mov a,b
+      org 2
+      mov a,b
+      org 2
+      mov a,b
 
 !!!!!!!!
 
@@ -25,10 +29,10 @@
       % const equ nur am Anfang von Programm erlaubt (pure label def zählt nicht), nach ersten Mnemocode "Konstanten definition nicht mehr erlaubt" -> erwarte Labeldef. oder MnemoCode -Konstante
 
       Warnzeichen wenn addresszählerposition überschrieben wird oder andere Warnung
-      const beginnt mit _
-      wenn labelname gleich hex wert ist 
-      precompiler const def mit färbung/kursiv
-      tooltip für filterable
+      % const beginnt mit _
+      % wenn labelname gleich hex wert ist 
+      precompiler const def mit färbung/kursiv -> einfärbung/kursiv in CurrentLine
+      ~ tooltip für filterable
       alphabetische ordnung dieser
       
       % bewegteText maximal länge festlegen

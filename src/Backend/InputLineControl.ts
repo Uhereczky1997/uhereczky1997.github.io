@@ -16,6 +16,7 @@ export class InputLineControl{
     private translatedIDs:number[]=[];
     private invalidIDs:number[]=[];
     private startingAddrOfTranslated:number=0;
+    private addressTable:number[]=[];
     private constructor(){}
 
     public static getInstance(){
@@ -58,6 +59,7 @@ export class InputLineControl{
         this.invalidIDs=[];
         this.symbolliste.empty();
         this.map.resetConstDefFlag();
+        this.addressTable=[];
     }
 
     setInputStrings(s:string[]){
@@ -74,6 +76,30 @@ export class InputLineControl{
             this.addInputLine(e);
         });
     }
+    public isFreeAddr=(s:string,n:string):boolean=>{
+        let start:number = Manipulator.hexToDec(s);
+        let end: number = Number(n);
+        let i = 0;
+        let addrEnd:number;
+        let addrStart:number;
+        if(start == end){
+            return true;
+        }
+        for(let i = 0;i<this.addressTable.length-2;i++){
+            if(((i+1) % 2)==0){
+                addrStart = this.addressTable[i-1];
+                addrEnd = this.addressTable[i];
+                console.log(addrStart+"|"+start+" <-> "+addrEnd+"|"+end)
+                if(addrStart==addrEnd){
+                    continue;
+                }
+                if((addrStart<=start && addrEnd>start )||(addrStart<=end && addrEnd>end)){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 
     addInputLine=(inputString:string):void=>{
         let i:InputLine= new InputLine(inputString,this.IDcounter);
@@ -86,14 +112,7 @@ export class InputLineControl{
             this.map.mapInputLineByCase(i);
             this.inputlines.push(i);
             if(i.getValid()){ // UPDATE FOR ORG?????
-                // console.log(this.fHD16(String(this.startingAddrOfTranslated)));
                 i.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
-                /* if(this.startingAddrOfTranslated==0){
-                    i.setStartingAddr('0000h');
-                }
-                else{
-                } */
-                // i.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
                 this.symbolliste.updateLabel(i.getLabel(),i.getStartingAddr());
             }
             else{
@@ -107,7 +126,6 @@ export class InputLineControl{
         }
         this.map.mapInputLineByCase(i);
         this.inputlines.push(i);
-        // console.log(i);
         if(i.getValid()){
             this.createSummary(i);
             this.calculateStartingAddr(i);
@@ -117,9 +135,6 @@ export class InputLineControl{
             }
         }
         else{
-            /* if(i.getLabel()!=""){
-                this.symbolliste.removeLabel(i.getLabel());
-            } */
             this.calculateStartingAddr(i);
             if(i.hasLabel()){
                 this.symbolliste.updateLabel(i.getLabel(),i.getStartingAddr());
@@ -323,14 +338,17 @@ export class InputLineControl{
         
         if(e.getType()==InputLineType.TRANSLATED){  
             e.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
-            
+            this.addressTable.push(this.startingAddrOfTranslated);
             this.translatedIDs.push(this.IDcounter);
             this.startingAddrOfTranslated= this.startingAddrOfTranslated+e.getLength();
+            this.addressTable.push(this.startingAddrOfTranslated);
             return;
         }
         if(e.getFirstPart().toUpperCase()=='ORG'){
             e.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
             this.startingAddrOfTranslated=e.getLength();
+            this.addressTable.push(this.startingAddrOfTranslated);
+            this.addressTable.push(this.startingAddrOfTranslated);
             return;
         }
        

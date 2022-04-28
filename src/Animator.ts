@@ -1276,8 +1276,6 @@ export class Animator{
         let childElem=document.getElementById(`${(id+1)<10?"0"+(id+1):(id+1)}inputP`);
         if(childElem!=null){
             let n= updateScrollOfIn_Out(this.outPutText.id,childElem.id);
-            console.log(n);
-
             this.movableElem.style.top = childElem.offsetTop-n-1/2*this.movableElem.offsetHeight+1/2*childElem.offsetHeight+"px";
             if(this.movableElem.offsetTop<this.inputText.offsetTop){
                 this.movableElem.style.top=this.inputText.offsetTop+"px";

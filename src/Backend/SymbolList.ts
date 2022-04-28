@@ -38,18 +38,16 @@ export class SymbolList{
         if(/^\d/.test(addr)){
             return false;
         }
-        if(/^\s+/g.test(addr)){
-            return false;
-        }
-        if(!/^[a-zA-Z0-9_]*$/.test(addr)){
-            return false;
-        }
-        if(!/^[\W_]/.test(addr)){
+        if(/[\w]/.test(addr)){
             return true;
         }
         else return false;
-
-
+    }
+    isEligible_Const(addr:string):boolean{
+        if(this.isEligible(addr) && /^_/.test(addr)){
+            return true;
+        }
+        return false;
     }
     updateLabel(s:string,addr:string):boolean{
         let l:Label|undefined = this.getSpecificLabelByName(s);
