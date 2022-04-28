@@ -741,6 +741,7 @@ export class ProjectWindow{
         });
         return b;
     }
+    
     private translateInputStringOfId=(n:number):boolean=>{
         if(n<this.inputstrings.length){
             this.inputLineControl.addInputLine(this.inputstrings[n]);
@@ -876,6 +877,7 @@ export class ProjectWindow{
     refreshInputStrings=(s:string[])=>{
         this.inputstrings=s;
     }
+
     public refreshInputLines=()=>{
         this.inputLines=this.inputLineControl.getInputLines();
     }

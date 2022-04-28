@@ -58,6 +58,8 @@ p,p>span,textarea
 body{
     position: relative;
     margin: 0 0;
+    width: 100%;
+    height:100%;
 /*     width: 2000px;
     height:1000px; */
 }
@@ -78,5 +80,7 @@ body{
     top: 2.5%;
     left: 2.5%;
     width: 95%;
-    height: 95%;
+    height: 95%; 
+    /* width: var(--bodyWidth);
+    height: var(--bodyHeight); */
 }

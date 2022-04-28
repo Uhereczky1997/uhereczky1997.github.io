@@ -6,7 +6,7 @@
     height: 3.9vh;
     resize: none;
 }
-#copyInputValue{
+#filtercopyInputValue{
     position:absolute;
     top: 8.5%;
     right: 5.1%;
@@ -60,6 +60,24 @@
 #filterOutput p:hover{
     background-color: var(--yellow);
     font-weight: bold;
+}
+#filterableDescription{
+    position: absolute;
+    display: block;
+    width: 88%;
+    height: fit-content;
+    bottom: 18%;
+    left: 6%;
+    visibility: hidden;
+    overflow: hidden;
+}
+#filterableDescription *{
+    margin: 0 0;
+    padding-left: var(--var8px); 
+}
+#filterableDescription{
+    border: var(--var1px) solid;
+    border-radius: var(--var5px);
 }
 #filterDiv input[type="text"]{
     width:100%;

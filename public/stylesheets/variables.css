@@ -24,6 +24,8 @@
     --var2px: 2px;
     --var1_5px: 1.5px;
     --var1px: 1px;
+    --bodyWidth:1920px;
+    --bodyHeight:1080px;
 
     /* COLOR CONFIG (LIGHT & DARK) */
     --green-light: #bbf125;

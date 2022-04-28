@@ -1,18 +1,17 @@
 import { InputLineControl } from "./Backend/InputLineControl";
-import { erlaubteLängeL_C, Manipulator } from "./Backend/Manipulator";
 import { ProjectWindow } from "./ProjectWindow";
-import { InputLine } from "./Backend/InputLine";
-import { getHtmlElement, createClickListener, updateScroll } from "./Tools";
-import { aniControl, sleepFor, sleepUntilNextStep } from "./AnimationUtil";
-import { contentloaded } from "./index";
+import { getHtmlElement, createClickListener  } from "./Tools";
+import { aniControl} from "./AnimationUtil";
+
+import { descriptionLoader } from "./Backend/StringConstructor";
 
 
 const errorDescriptionDiv:HTMLElement = getHtmlElement('ErrorDescription');
 const inputWindowContainer:HTMLElement = getHtmlElement('InputWindowContainter');
-
+export var timeout:NodeJS.Timeout;
 
 export const inputSelect:HTMLInputElement = getHtmlElement("bsppSelect") as HTMLInputElement;
-
+export const filterableDescription:HTMLElement = getHtmlElement("filterableDescription") as HTMLInputElement;
 export class InputWindow{
 
     private previousP:string="0";
@@ -45,6 +44,7 @@ export class InputWindow{
     }
 
     private addLinetoTextArea=(s:string[])=>{
+
         this.InputTextAreaElement.value="";
         s.forEach(e => {
             this.InputTextAreaElement.value+=e+"\n";
@@ -63,6 +63,34 @@ export class InputWindow{
             await this.pWindow.refreshInputLines();
             await this.pWindow.displayInputLines();
         }
+    }
+
+    public preTranslateDefConst = (ss:string[]) =>{
+        let potentialConsts:string[]=[];
+
+        let s;
+        ss.forEach(e =>{
+           
+            s = e.match(/^_\w+(?=\s+EQU\s+([0-9]+|[A-Fa-f0-9]+h|[01]+b)\s*$)/i)
+            if(s!=null){
+                potentialConsts.push(s[0])
+            }
+        });
+        console.log(potentialConsts);
+        potentialConsts.forEach(e=>{
+            // var var1:RegExp = new RegExp('.*,(\s*|\s+)'+e+'.*');
+            var var1:RegExp = new RegExp("\\s*"+e+"\\s*,","i");
+            var var2:RegExp = new RegExp(",\\s*"+e+"\\s*","i");
+            ss.forEach(d=>{
+                if(d.match(var1)!=null){
+                    console.log(d.replace(e,`<span class"purple">${e}</span>`));
+                }
+                else if(d.match(var2)!=null){
+                    console.log(d.replace(e,`<span class"purple">${e}</span>`));
+                }
+                
+            })
+        })
     }
 
     private switchInputContent=()=>{
@@ -91,12 +119,7 @@ export class InputWindow{
                 break;
         }
         this.previousP=s;
-        // this.addLinetoTextArea()
     }
-
-    /* private getBsp=(s:string):string[]=>{
-        Object.keys
-    } */
     public openEditWindow =()=>{
         try{
             aniControl.setPaused();
@@ -141,11 +164,15 @@ export class InputWindow{
             });
         }
     }
+    public loadDescription=(s:string)=>{
+
+    }
     public filterOutputDiv=()=>{
         let s = this.filterInput.value;
         let tempElem:HTMLElement|null;
         let i= 0;
-        s = s.replace(/\s{1,}/g," ");
+        s = s.replace(/\s+/g," ");
+        s = s.replace(/,\s/g,",");
         
         tempElem = document.getElementById("filterable"+i);
         while(tempElem!=null){
@@ -190,11 +217,22 @@ export class InputWindow{
         createClickListener('CloseInputWindow',this.openEditWindow);
         inputSelect.addEventListener("change",this.switchInputContent);
         this.createFilterable();
-        document.getElementById("filterDiv")!.addEventListener("mouseenter",function(){
+        document.getElementById("filterDiv")!.addEventListener("focusin",function(){
             document.getElementById("filterOutput")!.setAttribute("filtering","true");
         })
-        document.getElementById("filterDiv")!.addEventListener("mouseleave",function(){
+        /* document.getElementById("filterDiv")!.addEventListener("mouseup",function(){
             document.getElementById("filterOutput")!.setAttribute("filtering","false");
+        }); */
+        document.getElementById("body")!.addEventListener("mouseup",(e)=>{
+            let targetElem = document.getElementById("filterDiv");
+            if(targetElem!=null){
+                if(e.target instanceof HTMLElement){
+                    if(!e.target.id.startsWith("filter")){
+                        document.getElementById("filterOutput")!.setAttribute("filtering","false");
+                    }
+                    console.log(e.target);
+                }
+            }
         });
         document.getElementById("filterDiv")!.addEventListener("touchstart",function(){
             document.getElementById("filterOutput")!.setAttribute("filtering","true");
@@ -205,18 +243,43 @@ export class InputWindow{
         this.filterInput.addEventListener("input",this.filterOutputDiv);
         this.filterOutput.addEventListener("click",(e)=>{
             let targetElem;
-            console.log(e.target);
             if(e.target instanceof HTMLElement){
                 targetElem = document.getElementById("filterInput") as HTMLInputElement
                 if(targetElem != null){
-                    // console.log(e.target.innerHTML)
-                    if(e.target.getAttribute("type")!="title"){
+                    if(e.target.getAttribute("type")=="Mnemo" || e.target.getAttribute("type")=="pseudoMnemo"){
                         targetElem.value = e.target.innerHTML;
+                        navigator.clipboard.writeText(targetElem.value);
                     }
                 }
             }
         });
-        document.getElementById("copyInputValue")!.addEventListener("click",function(){
+        this.filterOutput.addEventListener("mouseover",(e)=>{
+            let targetElem;
+            if(e.target instanceof HTMLElement){
+                targetElem = document.getElementById("filterableDescription") as HTMLInputElement;
+                if(targetElem != null){
+                    if(e.target.getAttribute("type")=="Mnemo" || e.target.getAttribute("type")=="pseudoMnemo"){
+                        descriptionLoader.loadDescription(e.target.innerHTML);
+                        if(timeout!=null){
+                            clearTimeout(timeout);
+                        }
+                        timeout = setTimeout(function(){
+                            document.getElementById("filterableDescription")!.style.visibility="visible";
+                        },1200);
+                    }
+                }
+            }
+        });
+        this.filterOutput.addEventListener("mouseout",(e)=>{
+            let targetElem;
+            if(e.target instanceof HTMLElement){
+                if(timeout!=null){
+                    clearTimeout(timeout);
+                    document.getElementById("filterableDescription")!.style.visibility="hidden";
+                }
+            }
+        });
+        document.getElementById("filtercopyInputValue")!.addEventListener("click",function(){
             var copyText = document.getElementById("filterInput") as HTMLInputElement;
             if(copyText!=null){
                 navigator.clipboard.writeText(copyText.value);
@@ -224,7 +287,7 @@ export class InputWindow{
         })
     }
     public generateDummy = ():void=>{
-        this.addLinetoTextArea(bsp1);
+        this.preTranslateDefConst(this.InputTextAreaElement.value.split("\n"));
     }
 } 
 let bsp0:string[]=[]
@@ -271,7 +334,9 @@ const bsp3:string[]=[
     ,"jp label4"
 ]
 const bsp4:string[]=[
-    "org 10101b",
-    "org 12",
-    "org ffh"
+    "_const equ 1343h",
+    "_var equ 1223",
+    "",
+    "mov a, _var",
+    "in _const , a",
 ]

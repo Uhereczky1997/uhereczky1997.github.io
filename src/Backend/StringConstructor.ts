@@ -1,3 +1,4 @@
+import { filterableDescription } from "../InputWindow";
 import { erlaubteLängeL_C } from "./Manipulator";
 
 const warningClass = "warning";
@@ -7,7 +8,6 @@ const labelClass = "labelBlue";
 export class StringConstructor{
 
     constructor(){
-
     }
     static info(s:string):string{
         return `<span class="eingeruckt">${s}<span>`;
@@ -128,3 +128,26 @@ export class StringConstructor{
         return this.info(`suche Label <span class="${labelClass}">${s}<span> ... gefunden`);
     }
 }
+
+export class DescriptionLoader{
+
+    public loadDescription = (s:string)=>{
+        if(this.magicWand[s]){
+            this.magicWand[s]();
+        }
+        else console.log("Method with name "+s+" is not implemented");
+    }
+
+    private mov_a_b =  () =>{
+        filterableDescription.innerHTML = 
+        `
+        <h2>big gay</h2>
+        <p>some text<p>
+        `;
+    }
+
+    private magicWand: { [K:string]:Function}={
+        "MOV A,B" : this.mov_a_b,
+    }
+}
+export const descriptionLoader = new DescriptionLoader();

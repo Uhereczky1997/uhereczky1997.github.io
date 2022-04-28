@@ -198,7 +198,6 @@ export class CommandMap{
         }
         return CommandMap.instance;
     }
-
     public filterableString=():string[]=>{
         let toReturn:string[]=[];
         toReturn.push("Mnemocodes");
