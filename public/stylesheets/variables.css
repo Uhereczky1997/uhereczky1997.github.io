@@ -37,13 +37,17 @@
     --red: #dd0606;
     --purple: #642cff;
     
-    --blue-light: #00b2ee;
-    --blue-dark: #009bcf;
+    /* --blue-light: #00b2ee;
+    --blue-dark: #009bcf; */
+     --blue-light: #009bcf;
+    --blue-dark: #009bcf; 
     
     --yellow-light:#ffff00ec;
     --yellow-dark:#d6d600ec;
     
-    --orange-light: #ff932d;
+    /* --orange-light: #ff932d;
+    --orange-dark: #ff7b00; */
+    --orange-light: #ff7b00;
     --orange-dark: #ff7b00;
 
     --text-light: #222;

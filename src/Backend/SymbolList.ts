@@ -20,7 +20,6 @@ export class SymbolList{
     empty():void{
         this.Labels=[];
         this.Consts=[];
-
         this.sequence=[];
     }
     pushValidLabelConst(s:Constant|Label){
@@ -38,7 +37,7 @@ export class SymbolList{
         if(/^\d/.test(addr)){
             return false;
         }
-        if(/[\w]/.test(addr)){
+        if(/^[\w]+$/.test(addr)){
             return true;
         }
         else return false;

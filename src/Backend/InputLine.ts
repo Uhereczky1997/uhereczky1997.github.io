@@ -26,10 +26,7 @@ export class InputLine{
     private type:InputLineType=InputLineType.NOTTRANSLATED;
 
     constructor(init:string,id:number){
-        // this.initialLine=init.replace(/\s+/g,' ');
         this.initialLine=init.replace(/\s{3,}/g,' ');
-        // console.log(init.replace(/\s{3,}/g,' '));
-        // this.initialLine=init.replace(/\s+/g,' ').trim();
         this.id=id;
         this.commandLine=this.setCommandLine();
         this.preemptiveValidation();
@@ -92,24 +89,6 @@ export class InputLine{
     setRest(s:string){
         this.rest=s;
     }
-    /* getWarning():string{
-        let l:string|undefined;
-        l = this.getLabelorUndefined();
-        if(l !=undefined){
-            return `Label '<span class="labelBlue">${l}</span>' ist länger als ${erlaubteLängeL_C} Zeichen!`;
-        }
-        l= this.getConstorUndefined();
-        if(l !=undefined){
-            return `Konstante '${l}' ist länger als ${erlaubteLängeL_C} Zeichen!`;
-        }
-        return "";
-    }
-    getWarningtoDescriptionLine():string{
-        if(this.getWarning() !=""){
-            return `<span class="warning">Warnung: ${this.getWarning()} </span>`
-        }
-        return "";
-    } */
     getLabelorUndefined():string|undefined{
         if(this.label != "" && this.label.length > erlaubteLängeL_C ){
             return this.label;
@@ -185,15 +164,16 @@ export class InputLine{
         if(this.initialLine.trim()=="" || this.initialLine.trim()==" "){
             return "";
         }
-        let s=Manipulator.splitStringHalf(this.initialLine,":");
-        if(s.length>1){
-            this.label=s[0];
-        }
         let ss=Manipulator.splitStringHalf(this.initialLine,";");
-        let s1:string = this.initialLine.replace(s[0]+':','').replace(';'+ss[1],'');
+        let s1:string = this.initialLine.replace(';'+ss[1],'');
         if(ss[1]!=undefined){
             this.commentary=ss[1];
         }
+        let s=Manipulator.splitStringHalf(s1,":");
+        if(s.length>1){
+            this.label=s[0];
+        }
+        s1 = s1.replace(s[0]+":","");
         return s1.trim();
     }
     getLabelOfOffset():string{

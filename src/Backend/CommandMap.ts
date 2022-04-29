@@ -239,7 +239,8 @@ export class CommandMap{
         let strings:string[] = Manipulator.splitStringHalf(i.getInitialLine(),';');
         let commandLine = strings[0];
         if(strings.length>1){
-        i.setComment(strings[1].trim());}
+            i.setComment(strings[1].trim());
+        }
         saveInput(i,1);
         this.constDefFlag
             ?i.saveDescriptionLine(this.formatErwartet(`Labeldef., Mnemocode oder Konstante (+EQU)`))
@@ -254,6 +255,8 @@ export class CommandMap{
                 i.saveDescriptionLine(StringConstructor.nameTakenForConst(strings[0])); 
                     i.setError(strings[0]);
                     i.setRest(": "+strings[1]);
+                    i.setValid(false);
+
                     return false;
             }
             else if(this.symbollist.isLabel(strings[0])){
@@ -262,6 +265,7 @@ export class CommandMap{
                     i.saveDescriptionLine(StringConstructor.errLabelDef(strings[0])); 
                     i.setError(strings[0]);
                     i.setRest(": "+strings[1]);
+                    i.setValid(false);
                     return false;
                 }
             }
@@ -269,6 +273,7 @@ export class CommandMap{
                 i.saveDescriptionLine(StringConstructor.invalidLabel(strings[0]));  
                 i.setError(strings[0]);
                 i.setRest(": "+strings[1]);
+                i.setValid(false);
                 return false;
             }
             else{

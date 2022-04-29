@@ -4,6 +4,7 @@ import { getHtmlElement, createClickListener  } from "./Tools";
 import { aniControl} from "./AnimationUtil";
 
 import { descriptionLoader } from "./Backend/StringConstructor";
+import { Manipulator } from "./Backend/Manipulator";
 
 
 const errorDescriptionDiv:HTMLElement = getHtmlElement('ErrorDescription');
@@ -71,10 +72,12 @@ export class InputWindow{
 
         let s;
         ss.forEach(e =>{
-           
-            s = e.match(/(\s*_|^_)\w+(?=\s+EQU\s+([0-9]+|[A-Fa-f0-9]+h|[01]+b)\s*$)/i)
-            if(s!=null){
-                potentialConsts.push(s[0].trim())
+            let i = Manipulator.splitStringHalf(e,";");
+            if(i[0].replace(/\s/g,"")!=""){
+                s = i[0].match(/(\s*_|^_)\w+(?=\s+EQU\s+([0-9]+|[A-Fa-f0-9]+h|[01]+b)\s*$)/i)
+                if(s!=null){
+                    potentialConsts.push(s[0].trim())
+                }
             }
         });
         // console.log(potentialConsts);
@@ -151,9 +154,6 @@ export class InputWindow{
                 }
             });
         }
-    }
-    public loadDescription=(s:string)=>{
-
     }
     public filterOutputDiv=()=>{
         let s = this.filterInput.value;

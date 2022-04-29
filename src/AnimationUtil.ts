@@ -358,6 +358,7 @@ export class AnimationControl{
         }
         if(n!=4){
             removeClassOfAll("hiddenDescriptionDiv");
+            setTranslatingDivHidden();
         }
     }
     public createEventListeners=()=>{

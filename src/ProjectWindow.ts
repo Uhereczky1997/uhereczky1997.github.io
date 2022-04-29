@@ -159,8 +159,19 @@ export class ProjectWindow{
             else{
                 if(this.symbolList.isConst(e.getFirstPart())){
                     inputLineHTML.innerHTML=`${Manipulator.formatConstandBefehlDisplay(e.getFirstPart(),e.getSecondPart(),e.commandLinetoString(true))}${e.getCommentary()==""?"":";"+e.getCommentary()}`;
+                    inputLineHTML.innerHTML = inputLineHTML.innerHTML.replace(e.getFirstPart(),`<span class="purple">${e.getFirstPart()}</span>`)
                 }
-                else inputLineHTML.innerHTML=`${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.getFirstPart(),e.commandLinetoString(true))}${e.getCommentary()==""?"":";"+e.getCommentary()}`;
+                else {
+                    inputLineHTML.innerHTML=`${Manipulator.formatLabelandBefehlDisplay(e.getLabel(),e.getFirstPart(),e.commandLinetoString(true))}${e.getCommentary()==""?"":";"+e.getCommentary()}`;
+                    if(this.symbolList.isConst(e.getSecondPart())){
+                        // console.log(e.getSecondPart()+" found!")
+                        inputLineHTML.innerHTML = inputLineHTML.innerHTML.replace(e.getSecondPart()+",",`<span class="purple">${e.getSecondPart()}</span>,`)
+                    }
+                    else if(this.symbolList.isConst(e.getThirdPart())){
+                        // console.log(e.getThirdPart()+" found!")
+                        inputLineHTML.innerHTML = inputLineHTML.innerHTML.replace(","+e.getThirdPart(),`,<span class="purple">${e.getThirdPart()}</span>&nbsp;`)
+                    }
+                }
             }
             
         }
@@ -544,6 +555,30 @@ export class ProjectWindow{
                         }
                         this.nextParseID=0;
                         currentLineLine.innerHTML=`${input.getCommandLineToCurrentLine()}`;
+                        for(let i = 0;i<this.potentialConsts.length;i++){
+                            let s = this.potentialConsts[i]
+                            if(currentLineLine.innerHTML.includes(s)){
+                                var regex1 = new RegExp('(>)'+s+'(<)');
+                                var regex2 = new RegExp('(\\s|>|,)'+s+'(<|,|\\s|\\b)');
+                                let match:RegExpMatchArray|null;
+                                // console.log("regex1:")
+                                match = currentLineLine.innerHTML.match(regex1);
+                                // console.log(match);
+                                if(match!=null){
+                                    currentLineLine.innerHTML = currentLineLine.innerHTML.replace(match[1]+s+match[2],match[1]+`<span class="purple">${s}</span>`+match[2]);
+                                    break;
+                                }
+                                // console.log("regex2:")
+                               
+                                match=currentLineLine.innerHTML.match(regex2);
+                                if(match!=null){
+                                    currentLineLine.innerHTML = currentLineLine.innerHTML.replace(match[1]+s+match[2],match[1]+`<span class="purple">${s}</span>`+match[2]);
+                                    break;
+                                }
+                                // console.log(match);
+                                break;
+                            }
+                        }
                         await this.pushDescriptionLinesOf(i);
                     }
                     await this.repushTranslationOf(i);

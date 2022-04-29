@@ -477,9 +477,9 @@ export class Animator{
             arrowJoint.style.top = arrowHorizontal.offsetTop+"px";
             arrowJoint.style.left = arrowVertical.offsetLeft+"px";
 
-            arrowHorizontal.style.width=-this.movableElem.offsetLeft+arrowJoint.offsetLeft+arrowJoint.offsetWidth/overlapdivider+this.movableElem.offsetWidth/overlapdivider+"px";
+            arrowHorizontal.style.width=-this.movableElem.offsetLeft+arrowJoint.offsetLeft-this.movableElem.offsetWidth+this.movableElem.offsetWidth/overlapdivider+this.movableElem.offsetWidth/overlapdivider+"px";
 
-            arrowVertical.style.height=-arrowHead.offsetTop+arrowJoint.offsetTop+arrowHead.offsetHeight/overlapdivider+arrowJoint.offsetHeight/overlapdivider+"px";
+            arrowVertical.style.height=-arrowHead.offsetTop+arrowJoint.offsetTop-arrowHead.offsetHeight+arrowHead.offsetHeight/overlapdivider+arrowJoint.offsetHeight/overlapdivider+"px";
             
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowHorizontalID,arrowJointID]);

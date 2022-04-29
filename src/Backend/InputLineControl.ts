@@ -89,7 +89,6 @@ export class InputLineControl{
             if(((i+1) % 2)==0){
                 addrStart = this.addressTable[i-1];
                 addrEnd = this.addressTable[i];
-                console.log(addrStart+"|"+start+" <-> "+addrEnd+"|"+end)
                 if(addrStart==addrEnd){
                     continue;
                 }
