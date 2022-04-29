@@ -92,7 +92,7 @@ export class InputLineControl{
                 if(addrStart==addrEnd){
                     continue;
                 }
-                if((addrStart<=start && addrEnd>start )||(addrStart<=end && addrEnd>end)){
+                if((addrStart<=start && addrEnd>=start )||(addrStart<=end && addrEnd>=end)){
                     return false;
                 }
             }

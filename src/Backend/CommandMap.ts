@@ -241,7 +241,9 @@ export class CommandMap{
 
     mapInputLineByCase(i:InputLine):boolean{
         let strings:string[] = Manipulator.splitStringHalf(i.getInitialLine(),';');
-        let commandLine = strings[0];
+        let commandLine = strings[0].trim();
+        // let commandLine = i.getCommandline();
+        // console.log(i.getCommandline());
         if(strings.length>1){
             i.setComment(strings[1].trim());
         }

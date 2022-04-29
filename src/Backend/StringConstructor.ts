@@ -139,12 +139,33 @@ export class DescriptionLoader{
 
     public loadDescription = (s:string)=>{
         if(this.magicWand[s]){
-            this.magicWand[s]();
+            this.magicWand[s](s);
         }
         else console.log("Method with name "+s+" is not implemented");
     }
 
-    private mov_a_b =  () =>{
+    /* private mov_a_b = () =>{
+        filterableDescription.innerHTML = 
+        `
+        <h2>MOV A,B:</h2>
+        <p>some text<p>
+        `;
+    } */
+    private mov_reg_reg = (s:string) =>{
+        filterableDescription.innerHTML = 
+        `
+        <h2>${s}:</h2>
+        <p>MOV Reg <-> Reg<p>
+        `;
+    }
+    private mov_reg_dat = (s:string) =>{
+        filterableDescription.innerHTML = 
+        `
+        <h2>${s}:</h2>
+        <p>MOV Reg <-> dat<p>
+        `;
+    }
+    private mov_a_b = ()=>{
         filterableDescription.innerHTML = 
         `
         <h2>MOV A,B:</h2>
@@ -153,7 +174,18 @@ export class DescriptionLoader{
     }
 
     private magicWand: { [K:string]:Function}={
-        "MOV A,B" : this.mov_a_b,
+        "MOV A,B" : this.mov_reg_reg,
+        "MOV B,A" : this.mov_reg_reg,
+        "MOV A,C" : this.mov_reg_reg,
+        "MOV C,A" : this.mov_reg_reg,
+        "MOV B,C" : this.mov_reg_reg,
+        "MOV C,B" : this.mov_reg_reg,
+        "MOV A,dat_8" : this.mov_reg_dat,
+        "MOV B,dat_8" : this.mov_reg_dat,
+        "MOV C,dat_8" : this.mov_reg_dat,
+        "MOV IX,dat_16" : this.mov_reg_dat,
+        "MOV SP,dat_16" : this.mov_reg_dat,
+        "MOV HL,dat_16" : this.mov_reg_dat,
     }
 }
 export const descriptionLoader = new DescriptionLoader();

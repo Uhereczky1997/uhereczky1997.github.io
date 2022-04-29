@@ -28,10 +28,14 @@
       % Im quelltext sollte sich Zahlenwerte garnicht ändern (dec bleibt dec, hex bleibt hex) // DecOrHex
       % const equ nur am Anfang von Programm erlaubt (pure label def zählt nicht), nach ersten Mnemocode "Konstanten definition nicht mehr erlaubt" -> erwarte Labeldef. oder MnemoCode -Konstante
 
-      Warnzeichen wenn addresszählerposition überschrieben wird oder andere Warnung
+      Warnzeichen wenn addresszählerposition überschrieben wird um ändern -> Keine folge Warnung;
+      Warnzeichen nicht Sehbar! wenn nicht aktiv
+      QuelltextZeilen ID hervorheben wenn sie übersetzt wird + same for: Speicherabbild,KonstantentTabelle bei linkerAuflösung ? wenn konstantegefunden wird?
+      Konstante nicht 8 oder 16 bit, -> wenn zu groß -> Fehler const 'xy' zu Groß;
+
       % const beginnt mit _
       % wenn labelname gleich hex wert ist 
-      precompiler const def mit färbung/kursiv -> einfärbung/kursiv in CurrentLine
+      % precompiler const def mit färbung/kursiv -> einfärbung/kursiv in CurrentLine
       ~ tooltip für filterable
       alphabetische ordnung dieser
       
