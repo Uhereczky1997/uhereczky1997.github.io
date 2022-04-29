@@ -200,16 +200,20 @@ export class CommandMap{
     }
     public filterableString=():string[]=>{
         let toReturn:string[]=[];
+        let toSort:string[]=[];
         toReturn.push("Mnemocodes");
         this.mnemoCommands.forEach(e=>{
-            toReturn.push(e.toFilterableString());
+            toSort.push(e.toFilterableString());
+        });
+        toSort.sort().forEach(e=>{
+            toReturn.push(e);
         });
         toReturn.push("PSEUDO-Mnemocodes");
-        toReturn.push("ORG dat_16");
-        toReturn.push("DW dat_16");
-        toReturn.push("DB dat_8");
-        toReturn.push("RS dat_8");
         toReturn.push("const EQU dat_16");
+        toReturn.push("DB dat_8");
+        toReturn.push("DW dat_16");
+        toReturn.push("ORG dat_16");
+        toReturn.push("RS dat_8");
         return toReturn;
     }
 
