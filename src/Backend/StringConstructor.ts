@@ -114,18 +114,13 @@ export class StringConstructor{
     static infoInvalidConst(s:string):string{
         return this.info(`'${s}' ist kein gültiger Konstantenname`);
     }
-    static infoNotDat8Const(s:string):string{
-        return this.info(`suche 8-Bit Konstante <span class="${labelClass}">${s}<span> ... nicht gefunden`);
+    static infoNotConst(s:string):string{
+        return this.info(`suche Konstante <span class="${labelClass}">${s}<span> ... nicht gefunden`);
     }
-    static infoNotDat16Const(s:string):string{
-        return this.info(`suche 16-Bit Konstante <span class="${labelClass}">${s}<span> ...  nicht gefunden`);
+    static infoIsConst(s:string):string{
+        return this.info(`suche Konstante <span class="${labelClass}">${s}<span> ... gefunden`);
     }
-    static infoIsDat8Const(s:string):string{
-        return this.info(`suche 8-Bit Konstante <span class="${labelClass}">${s}<span> ... gefunden`);
-    }
-    static infoIsDat16Const(s:string):string{
-        return this.info(`suche 16-Bit Konstante <span class="${labelClass}">${s}<span> ... gefunden`);
-    }
+
     
     static infoInvalidLabel(s:string):string{
         return this.info(`'${s}' ist kein gültiges Label`);

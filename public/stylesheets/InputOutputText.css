@@ -3,15 +3,13 @@
     text-align: end;
 }
 .displayText>p{
-    margin: 0;
-    margin-top: 0;
-    margin-bottom:0;
-    padding: 0;
-    padding-left: var(--var8px);
-    padding-right: var(--var3px);
-    line-height: 140%;
     display: block;
-
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0 var(--var3px) 0 var(--var8px);
+    line-height: 140%;
 }
 .displayText + .start>p{
     text-align: start;
@@ -19,6 +17,18 @@
 }
 
 .displayText + .hoverable>p:hover{
+    background-color: var(--green)!important;
+    cursor: pointer;
+}
+.extraP{
+    padding: 0 var(--var1px) 0 var(--var3px)
+}
+.currentlyTranslated{
+    background-color: var(--green);
+    color: var(--text)!important;
+    font-weight: bold;
+}
+#OutputWindowLines p:hover{
     background-color: var(--green)!important;
     cursor: pointer;
 }

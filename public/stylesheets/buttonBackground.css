@@ -324,12 +324,7 @@ button[fullscreen="on"].fullscreenBKG{
     justify-self: center;
     width: calc(var(--fontsizeVar)*26/30*1.5);
     height: calc(var(--fontsizeVar)*26/30*1.5);
-    background-position: center center;
-    background-size: contain;
-
-    background-repeat: no-repeat;
-    background-size: 85% auto;
-    background-image: url(../images/buttonSVGs/warnung_White.svg);
+    background-image: none;
 }
 [color-scheme="dark"] #warningSign[selected="true"]{
     justify-self: center;
@@ -346,12 +341,7 @@ button[fullscreen="on"].fullscreenBKG{
     justify-self: center;
     width: calc(var(--fontsizeVar)*26/30*1.5);
     height: calc(var(--fontsizeVar)*26/30*1.5);
-    background-position: center center;
-    background-size: contain;
-
-    background-repeat: no-repeat;
-    background-size: 85% auto;
-    background-image: url(../images/buttonSVGs/warnung.svg);
+    background-image: none;
 }
 #warningSign[selected="true"]{
     justify-self: center;

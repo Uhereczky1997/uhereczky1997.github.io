@@ -473,7 +473,7 @@ export class CommandMap{
                                         // i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1]));
                                         this.saveExtraInfo(i,consoletostring,strings[1]);
 
-                                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                                        i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
@@ -537,7 +537,7 @@ export class CommandMap{
                                         this.saveExtraInfo(i,consoletostring,strings[1]);
 
                                         // i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1])); //KONSTANTE ZU GROß?
-                                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                                        i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
 
                                         i.setError(strings[1]);
                                         i.setValid(false);
@@ -810,7 +810,7 @@ export class CommandMap{
                             this.saveExtraInfo(i,consoletostring,strings[1]);
                             // ??
                             // i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
-                            i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]))
+                            i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]))
                             i.setError(strings[1]);
                             return false;
                         }
@@ -881,7 +881,7 @@ export class CommandMap{
                     if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[0])!.getValue())){
                         // ??
                         // this.saveExtraInfo(i,consoletostring,strings[0]);
-                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
+                        i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[0]));
                         // i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[0]));
                         i.setError(strings[0]);
                         return false;
@@ -1044,7 +1044,7 @@ export class CommandMap{
                     if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
                         // ??
                         // this.saveExtraInfo(i,consoletostring,strings[1]);
-                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                        i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
                         // i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
                         i.setError(strings[1]);
                         return false;
@@ -1381,7 +1381,7 @@ export class CommandMap{
                     else if(this.symbollist.isConst(strings[1])){
                         if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
                             // ??
-                            i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                            i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
                             // i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
                             i.setError(strings[1]);
                             return false;
@@ -1481,7 +1481,7 @@ export class CommandMap{
                     }
                     else if(this.symbollist.isConst(strings[1])){
                         if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
-                            i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                            i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
                             // i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
                             i.setError(strings[1]);
                             return false;
@@ -1688,13 +1688,8 @@ export class CommandMap{
                     return;
                 
                 case DataType.CONSTANT:
-                    if(Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(s)!.getValue())){
-                        i.saveDescriptionLine(StringConstructor.infoNotDat8());
-                        i.saveDescriptionLine(StringConstructor.infoIsDat8Const(s));
-                        return;
-                    }
                     i.saveDescriptionLine(StringConstructor.infoNotDat8());
-                    i.saveDescriptionLine(StringConstructor.infoNotDat8Const(s));
+                    i.saveDescriptionLine(StringConstructor.infoIsConst(s));
                     // i.saveDescriptionLine(StringConstructor.notValidLabelSinceItsConst(s));
                     // return;
                     break;
@@ -1702,7 +1697,7 @@ export class CommandMap{
                 case DataType.ELLIGIBLE:
                     i.saveDescriptionLine(StringConstructor.infoNotDat8());
                     if(this.symbollist.isEligible_Const(s)){
-                        i.saveDescriptionLine(StringConstructor.infoNotDat8Const(s));
+                        i.saveDescriptionLine(StringConstructor.infoNotConst(s));
                     }
                     else i.saveDescriptionLine(StringConstructor.infoInvalidConst(s));
                     break;
@@ -1721,7 +1716,7 @@ export class CommandMap{
                     return;
                 case DataType.CONSTANT:
                     i.saveDescriptionLine(StringConstructor.infoNotDat16());
-                    i.saveDescriptionLine(StringConstructor.infoIsDat16Const(s));
+                    i.saveDescriptionLine(StringConstructor.infoIsConst(s));
                     return;
                     // i.saveDescriptionLine(StringConstructor.notValidLabelSinceItsConst(s));
                     // return;
@@ -1730,7 +1725,7 @@ export class CommandMap{
                 case DataType.ELLIGIBLE:
                     i.saveDescriptionLine(StringConstructor.infoNotDat16());
                     if(this.symbollist.isEligible_Const(s)){
-                        i.saveDescriptionLine(StringConstructor.infoNotDat16Const(s));
+                        i.saveDescriptionLine(StringConstructor.infoNotConst(s));
                     }
                     else i.saveDescriptionLine(StringConstructor.infoInvalidConst(s));
                     break;

@@ -286,21 +286,15 @@ const bsp1:string[]=[
     "ROR","CP A","JP Label1","CALL Label1","RET","HALT","NOP","DB 45h","DW 45h","RS 3","ORG 2323h",
 ]
 const bsp2:string[]=[
-    "mov hl, 0"
-    ,"mov hl, 00h"
-    ,"mov hl, 000000000000000000000000h"
-    ,"mov hl, 000000000000000000000000"
-    ,"dw 0"
-    ,"dw 00"
-    ,"dw 000"
-    ,"dw 0000"
-    ,"dw 000000000"
-    ,"org 0000"
-    ,"org 0"
-    ,"const equ 0000h"
-    ,"const2 equ 00h"
-    ,"const3 equ 0"
-    ,";org h"
+    "mov a,b",
+    "org 10",
+    "mov a,b",
+    "org 2",
+    "mov a,b",
+    "mov sp, 1000h",
+    "mov sp, 1000h",
+    "mov sp, 1000h",
+    "mov sp, 1000h"
 ]
 const bsp3:string[]=[
     "label1:"

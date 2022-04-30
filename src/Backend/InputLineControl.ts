@@ -78,26 +78,33 @@ export class InputLineControl{
     }
     public isFreeAddr=(s:string,n:string):boolean=>{
         let start:number = Manipulator.hexToDec(s);
-        let end: number = Number(n);
+        let end: number = Number(n)-1;
         let i = 0;
         let addrEnd:number;
         let addrStart:number;
-        if(start == end){
+        /* if(start == end){
             return true;
-        }
+        } */
         for(let i = 0;i<this.addressTable.length-2;i++){
             if(((i+1) % 2)==0){
                 addrStart = this.addressTable[i-1];
                 addrEnd = this.addressTable[i];
-                if(addrStart==addrEnd){
+/*                 if(addrStart==addrEnd){
                     continue;
-                }
-                if((addrStart<=start && addrEnd>=start )||(addrStart<=end && addrEnd>=end)){
+                } */
+                if((addrStart<=start && addrEnd>=start )||(addrStart<=end && addrEnd>=end)||(addrStart>=start && addrStart<=end )||(addrEnd>=start && addrEnd<=end )){
                     return false;
                 }
             }
         }
         return true;
+    }
+    displayAddressTable=()=>{
+        for(let i = 0; i<this.addressTable.length;i++){
+            if(((i+1) % 2)==0){
+                console.log("start: "+this.addressTable[i-1]+" -> end:"+this.addressTable[i]);
+            }
+        }
     }
 
     addInputLine=(inputString:string):void=>{
@@ -340,14 +347,14 @@ export class InputLineControl{
             this.addressTable.push(this.startingAddrOfTranslated);
             this.translatedIDs.push(this.IDcounter);
             this.startingAddrOfTranslated= this.startingAddrOfTranslated+e.getLength();
-            this.addressTable.push(this.startingAddrOfTranslated);
+            this.addressTable.push(this.startingAddrOfTranslated-1);
             return;
         }
         if(e.getFirstPart().toUpperCase()=='ORG'){
             e.setStartingAddr(this.fHD16(String(this.startingAddrOfTranslated)));
             this.startingAddrOfTranslated=e.getLength();
-            this.addressTable.push(this.startingAddrOfTranslated);
-            this.addressTable.push(this.startingAddrOfTranslated);
+            this.addressTable.push(-1);
+            this.addressTable.push(-1);
             return;
         }
        

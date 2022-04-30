@@ -3,6 +3,9 @@
     font-family: 'Courier New', Courier, monospace;
     text-align: center;
 }
+.gray.currentlyTranslated{
+    color: var(--text)!important
+}
 .errorRed, .pluserrRed{
   color:var(--red)!important;
 }

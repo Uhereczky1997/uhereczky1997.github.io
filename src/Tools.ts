@@ -61,6 +61,12 @@ export const removeClassOfAll=(s:string)=>{
         elem.classList.remove(s);
     }
 }
+export const removeClassOf = (id:string,cls:string) =>{
+    let elem = document.getElementById(id);
+    if(elem != null){
+        elem.classList.remove(cls);
+    }
+}
 export const addClassTo=(id:string,cls:string)=>{
     let elem = getHtmlElement(id);
     if(elem !=null || elem != undefined){

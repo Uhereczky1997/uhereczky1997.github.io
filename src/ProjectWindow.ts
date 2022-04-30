@@ -8,7 +8,7 @@ import { Constant } from "./Backend/Constant";
 import { InputLineControl } from "./Backend/InputLineControl";
 import { InputLine } from "./Backend/InputLine";
 import { InputWindow } from "./InputWindow";
-import { getHtmlElement, createClickListener, updateScroll, updateScrollOfIn_Out, removeClassOfAll, addClassTo, updateScrollOfDescriptionLines } from "./Tools";
+import { getHtmlElement, createClickListener, updateScroll, updateScrollOfIn_Out, removeClassOfAll, addClassTo, updateScrollOfDescriptionLines, removeClassOf } from "./Tools";
 import { aniControl, AnimationsTyp, checkIfPaused, playButton, resetButton, sleepFor, sleepStaticAnimation, sleepUntilNextStep } from "./AnimationUtil";
 import { Animator } from "./Animator";
 import { StringConstructor } from "./Backend/StringConstructor";
@@ -51,8 +51,12 @@ export const  setTranslatingDivVisible=()=>{
         translating.style.visibility="visible";
     }
 }
-export const setWarningSign=(b:boolean)=>{
+const setWarningSign=(b:boolean)=>{
     document.getElementById("warningSign")!.setAttribute("selected",b.toString());
+}
+export const selectTranslatingLine = (id:string) =>{
+    removeClassOfAll("currentlyTranslated");
+    addClassTo(id,"currentlyTranslated");
 }
 
 export class ProjectWindow{
@@ -216,16 +220,16 @@ export class ProjectWindow{
                     if(s instanceof Label){
                         n=s.getName();
                         p=s.getPosition()!;
-                        symbolTableLines.innerHTML+=`<h4 id="${idString}"><span class="gray">L:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} = <span id="${symboladdress}${i}">${this.inputLineControl.fHD16(p)}</span> (${this.inputLineControl.getLittleEndianOf(p)})</h4>`;
+                        symbolTableLines.innerHTML+=`<h4 id="${idString}"><span id="${i+"SymbolTID"}" class="gray extraP">L:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} = <span id="${symboladdress}${i}">${this.inputLineControl.fHD16(p)}</span> (${this.inputLineControl.getLittleEndianOf(p)})</h4>`;
                     }
                     if(s instanceof Constant){
                         n=s.getName();
                         p=s.getValue();
                         if(Manipulator.isDat_8(p)){
-                            symbolTableLines.innerHTML+=`<h4 id="${idString}"><span class="gray">K:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} = <span id="${symboladdress}${i}">&nbsp;&nbsp;${this.inputLineControl.fHD8(p)}</span></h4>`
+                            symbolTableLines.innerHTML+=`<h4 id="${idString}"><span id="${i+"SymbolTID"}" class="gray extraP">K:</span> <span class="purple">${Manipulator.formatLabelDisplaytoSymbolTable(n)}</span> = <span id="${symboladdress}${i}">&nbsp;&nbsp;${this.inputLineControl.fHD8(p)}</span></h4>`
                         }
                         else{
-                            symbolTableLines.innerHTML+=`<h4 id="${idString}"><span class="gray">K:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} = <span id="${symboladdress}${i}">${this.inputLineControl.fHD16(p)}</span></h4>`
+                            symbolTableLines.innerHTML+=`<h4 id="${idString}"><span id="${i+"SymbolTID"}" class="gray extraP">K:</span> <span class="purple">${Manipulator.formatLabelDisplaytoSymbolTable(n)}</span> = <span id="${symboladdress}${i}">${this.inputLineControl.fHD16(p)}</span></h4>`
                         }
                     }
                 }
@@ -250,23 +254,23 @@ export class ProjectWindow{
                         if(s instanceof Label){
                             n=s.getName();
                             p=s.getPosition()!;
-                            symbolTableLines.innerHTML+=`<h4><span class="gray">L:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} =&nbsp;&nbsp;<span id="${targetlabelValuePlaceholder}"> </span></h4>`;
+                            symbolTableLines.innerHTML+=`<h4><span id="${i+"SymbolTID"}" class="gray extraP">L:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} =&nbsp;&nbsp;<span id="${targetlabelValuePlaceholder}"> </span></h4>`;
                         }
                         break;
                     }
                     if(s instanceof Label){
                         n=s.getName();
                         p=s.getPosition()!;
-                        symbolTableLines.innerHTML+=`<h4><span class="gray">L:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} = ${this.inputLineControl.fHD16(p)} (${this.inputLineControl.getLittleEndianOf(p)})</h4>`;
+                        symbolTableLines.innerHTML+=`<h4><span id="${i+"SymbolTID"}" class="gray extraP">L:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} = ${this.inputLineControl.fHD16(p)} (${this.inputLineControl.getLittleEndianOf(p)})</h4>`;
                     }
                     if(s instanceof Constant){
                         n=s.getName();
                         p=s.getValue();
                         if(Manipulator.isDat_8(p)){
-                            symbolTableLines.innerHTML+=`<h4><span class="gray">K:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} = &nbsp;&nbsp;${this.inputLineControl.fHD8(p)}</h4>`
+                            symbolTableLines.innerHTML+=`<h4><span id="${i+"SymbolTID"}" class="gray extraP">K:</span> <span class="purple">${Manipulator.formatLabelDisplaytoSymbolTable(n)}</span> = &nbsp;&nbsp;${this.inputLineControl.fHD8(p)}</h4>`
                         }
                         else{
-                            symbolTableLines.innerHTML+=`<h4><span class="gray">K:</span> ${Manipulator.formatLabelDisplaytoSymbolTable(n)} = ${this.inputLineControl.fHD16(p)}</h4>`
+                            symbolTableLines.innerHTML+=`<h4><span id="${i+"SymbolTID"}" class="gray extraP">K:</span> <span class="purple">${Manipulator.formatLabelDisplaytoSymbolTable(n)}</span> = ${this.inputLineControl.fHD16(p)}</h4>`
                         }
                     }
                 }
@@ -340,6 +344,7 @@ export class ProjectWindow{
                 await this.clearMachinenbefehlandCurrentLine();
             }
         }
+        removeClassOfAll("currentlyTranslated");
     }
 
     private displaySecondPhase=async()=>{
@@ -409,7 +414,7 @@ export class ProjectWindow{
         }
         descriptionLines.appendChild(newElem);
         if(e.getTranslation().includes("????") || e.hasOffsetLabel()){
-
+            selectTranslatingLine((e.getId()+1)<10?"0"+(e.getId()+1):(e.getId()+1)+"oAddress")
             k=this.symbolList.getLabels().find(i=>{
                 if(e.hasOffsetLabel()){
                     if(i.getName().toLowerCase()==e.getLabelOfOffset().toLowerCase()){
@@ -481,9 +486,11 @@ export class ProjectWindow{
                     updateScroll(descriptionLines.id);
                     await sleepUntilNextStep();
                 }
+                addClassTo(this.symbols.indexOf(k)+"SymbolTID","currentlyTranslated");
                 if(blockAnimation){
                     await this.anim.searchEntryInSymboltablephaseTwo(this.symbols.indexOf(k),k.getPosition()!);
                 }
+                removeClassOf(this.symbols.indexOf(k)+"SymbolTID","currentlyTranslated")
                 lineBuffer.pop();
                 lineBuffer.push(`<p class="eingeruckt">Label '<span class="labelBlue">${k.getName()}</span>' in Symboltabelle gefunden, Wert: ${Manipulator.hexToDec(k.getPosition()!)+" ("+k.getPosition()!+")"}</p>`)
                 if(blockAnimation){
@@ -543,6 +550,7 @@ export class ProjectWindow{
                     input = this.inputLines[i];
                     iP= getHtmlElement(`${(i+1)<10?"0"+(i+1):(i+1)}inputP`);
                     await updateScrollOfIn_Out("InputText",`${(i+1)<10?"0"+(i+1):(i+1)}inputP`);
+                    selectTranslatingLine(`${(i+1)<10?"0"+(i+1):(i+1)}inputLineId`);
 
                     if(input.getType()==InputLineType.EMPTY){
                         if(this.checkForNoAniStep())await checkIfPaused();
@@ -590,8 +598,8 @@ export class ProjectWindow{
                     await sleepFor(1);
                 }
             }
-            
             descriptionLines.innerHTML += `<p style=" white-space: nowrap; overflow: hidden;"> -------------------------------------------------------- </p>`;
+            removeClassOfAll("currentlyTranslated");
 
             this.linkerAuflosungB=this.aufzulosendeLabel();
             await this.linkerAuflosung();
@@ -974,6 +982,7 @@ export class ProjectWindow{
             createClickListener('TranslateWindow',this.openOutputWindow);
             createClickListener('play',this.toggleStop);
             createClickListener('reset',this.reset);
+            createClickListener('credits',this.inputLineControl.displayAddressTable);
             aniControl.createEventListeners();
         }catch(e){
             console.log(e);
