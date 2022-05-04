@@ -199,7 +199,7 @@ const  main =async ()=>{
     createClickListener("OutputClip",outputClip);
     syncScroll_MachineCode_Hexadecimal();
     createClickListener("vollbild",switchToFullscreen);
-    window.addEventListener("resize",consoleWindowsize);
+    window.addEventListener("resize",resizer.resizeWindow);
     document.getElementById("vollbild")!.setAttribute("fullscreen","off");
     // testBinToHex();
 }

@@ -2,7 +2,7 @@ import { aniControl, AnimationsTyp, checkIfPaused, sleepFor, sleepForFrame, slee
 import { Manipulator } from "./Backend/Manipulator";
 import { root, rootVariables } from "./index";
 import { p2LabelValuePlaceholder, symboladdress, targetlabelValuePlaceholder, targetSymbolTableLine } from "./ProjectWindow";
-import { getHtmlElement, updateScrollOfIn_Out, updateScrollOfSymbolTable } from "./Tools";
+import { getHtmlElement, resizer, updateScrollOfIn_Out, updateScrollOfSymbolTable } from "./Tools";
 
 
 const arrowHeadID:string="arrowHead";
@@ -112,17 +112,30 @@ export class Animator{
             arrowVertical.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider+"px";
             arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
             arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight+"px";
-
+            this.roundArrowsUp();
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
             await this.turnMovableHelperVisible();
-           await sleepStaticAnimation();
+            await sleepStaticAnimation();
             await this.turnArrowElemsHidden();
             await this.turnMovableHelperHidden();
             await this.turnMovableHidden();
         }
     }
-    
+    private roundArrowsUp(){
+        let elem:HTMLElement;
+        for(let i= 0;i<this.arrowElems.length;i++){
+            elem = this.arrowElems[i];
+            elem.style.top =elem.offsetTop.toFixed(1)+"px";
+            elem.style.left = elem.offsetLeft.toFixed(1)+"px";
+            if(elem.id.startsWith("arrowHorizontal")){
+                elem.style.width=elem.offsetWidth.toFixed(1)+"px";
+            }
+            else if(elem.id.startsWith("arrowVertical")){
+                elem.style.height=elem.offsetHeight.toFixed(1)+"px";
+            }
+        }
+    }
     async moveLabeltoSymboltableALTMoveableHelper(hex:string){
         if(aniControl.isAni3()) return;
 
@@ -184,6 +197,7 @@ export class Animator{
             arrowVertical.style.height=(arrowJoint.offsetHeight/overlapdivider+arrowHead.offsetHeight/overlapdivider+arrowHead.offsetTop-arrowJoint.offsetTop)+"px";
             arrowVertical.style.top=(arrowJoint.offsetTop+arrowJoint.offsetHeight-arrowJoint.offsetHeight/overlapdivider)+"px";
 
+            this.roundArrowsUp();
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
             await this.turnMovableHelperVisible();
@@ -229,7 +243,7 @@ export class Animator{
             arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
             arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight+"px";
             
-
+            this.roundArrowsUp();
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
             await this.turnMovableHelperVisible();
@@ -293,7 +307,7 @@ export class Animator{
             arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
             arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+arrowHead.offsetTop-this.movableElem.offsetTop-this.movableElem.offsetHeight+"px";
             arrowVertical.style.top=this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider+"px";
-
+            this.roundArrowsUp();
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
             this.turnMovableHelperVisible();
@@ -318,7 +332,7 @@ export class Animator{
             arrowVertical.style.top=arrowHead.offsetTop+arrowHead.offsetHeight-arrowHead.offsetHeight/overlapdivider+"px";
             arrowVertical.style.left=arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
             arrowVertical.style.height=arrowHead.offsetHeight/overlapdivider+this.movableHelper.offsetHeight/overlapdivider-arrowHead.offsetTop-arrowHead.offsetHeight+this.movableHelper.offsetTop+"px";
-
+            this.roundArrowsUp();
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
             this.turnMovableHelperVisible();
@@ -366,6 +380,7 @@ export class Animator{
             arrowVertical.style.left=arrowJoint.offsetLeft+"px";
             arrowVertical.style.top=arrowJoint.offsetTop+arrowJoint.offsetHeight-arrowJoint.offsetHeight/overlapdivider+"px";
             arrowVertical.style.height=arrowHead.offsetTop-arrowJoint.offsetTop+arrowHead.offsetHeight/overlapdivider+arrowJoint.offsetHeight/overlapdivider+"px";
+            this.roundArrowsUp();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
 
         }
@@ -377,6 +392,7 @@ export class Animator{
             arrowVertical.style.left = arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
             arrowVertical.style.top= this.movableElem.offsetTop+this.movableElem.offsetHeight-this.movableElem.offsetHeight/overlapdivider+"px";
             arrowVertical.style.height=arrowHead.offsetTop-this.movableElem.offsetTop+arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+"px";
+            this.roundArrowsUp();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
         }
 
@@ -480,7 +496,7 @@ export class Animator{
             arrowHorizontal.style.width=-this.movableElem.offsetLeft+arrowJoint.offsetLeft-this.movableElem.offsetWidth+this.movableElem.offsetWidth/overlapdivider+this.movableElem.offsetWidth/overlapdivider+"px";
 
             arrowVertical.style.height=-arrowHead.offsetTop+arrowJoint.offsetTop-arrowHead.offsetHeight+arrowHead.offsetHeight/overlapdivider+arrowJoint.offsetHeight/overlapdivider+"px";
-            
+            this.roundArrowsUp();
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowHorizontalID,arrowJointID]);
             this.turnMovableHelperVisible();
@@ -546,8 +562,8 @@ export class Animator{
         arrowHead.style.left=this.movableHelper.offsetLeft+this.movableHelper.offsetWidth+"px";
 
         arrowHorizontal.style.top=arrowHead.offsetTop+arrowHead.offsetHeight/2-arrowHorizontal.offsetHeight/2+"px";
-        if(this.movableHelper.offsetTop+2*this.movableHelper.offsetHeight>this.movableElem.offsetTop 
-            && this.movableHelper.offsetTop+this.movableHelper.offsetHeight/2<this.movableElem.offsetTop){
+        if(this.movableHelper.offsetTop+2*this.movableHelper.offsetHeight>=this.movableElem.offsetTop 
+            && this.movableHelper.offsetTop+this.movableHelper.offsetHeight/2<=this.movableElem.offsetTop){
                 let arrowHorizontal2 = this.getArrowElem(arrowHorizontalID2);
                 let arrowJoint2 = this.getArrowElem(arrowJointID2);
 
@@ -575,11 +591,11 @@ export class Animator{
                 arrowHorizontal2.style.width = -arrowJoint2.offsetLeft-arrowJoint2.offsetWidth/overlapdivider
                     +this.movableElem.offsetLeft-arrowJoint2.offsetWidth+this.movableElem.offsetWidth/overlapdivider+"px";
 
-                
+                this.roundArrowsUp();
                 this.turnMovableVisible();
                 this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID,arrowHorizontalID2,arrowJointID2]);
                 await this.turnMovableHelperVisible();
-               await sleepStaticAnimation();
+                await sleepStaticAnimation();
                 await this.turnArrowElemsHidden();
                 await this.turnMovableHelperHidden();
                 await this.turnMovableHidden();
@@ -597,7 +613,7 @@ export class Animator{
 
         arrowVertical.style.top=arrowJoint.offsetTop+arrowJoint.offsetHeight-arrowJoint.offsetHeight/overlapdivider+"px";
 
-
+        this.roundArrowsUp();
         this.turnMovableVisible();
         this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
         await this.turnMovableHelperVisible();
@@ -660,8 +676,8 @@ export class Animator{
 
 
         arrowHorizontal.style.top=arrowHead.offsetTop+arrowHead.offsetHeight/2-arrowHorizontal.offsetHeight/2+"px";
-        if(this.movableHelper.offsetTop+2*this.movableHelper.offsetHeight>this.movableElem.offsetTop 
-            && this.movableHelper.offsetTop+this.movableHelper.offsetHeight/2<this.movableElem.offsetTop){
+        if(this.movableHelper.offsetTop+2*this.movableHelper.offsetHeight>=this.movableElem.offsetTop 
+            && this.movableHelper.offsetTop+this.movableHelper.offsetHeight/2<=this.movableElem.offsetTop){
                 let arrowHorizontal2 = this.getArrowElem(arrowHorizontalID2);
                 let arrowJoint2 = this.getArrowElem(arrowJointID2);
 
@@ -690,7 +706,7 @@ export class Animator{
                 arrowHorizontal2.style.width = arrowJoint2.offsetLeft+arrowJoint2.offsetWidth/overlapdivider
                     -this.movableElem.offsetLeft-this.movableElem.offsetWidth+this.movableElem.offsetWidth/overlapdivider+"px";
 
-            
+                this.roundArrowsUp();
                 this.turnMovableVisible();
                 this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID,arrowHorizontalID2,arrowJointID2]);
                 await this.turnMovableHelperVisible();
@@ -714,7 +730,7 @@ export class Animator{
 
         arrowVertical.style.top=arrowJoint.offsetTop+arrowJoint.offsetHeight-arrowJoint.offsetHeight/overlapdivider+"px";
 
-
+        this.roundArrowsUp();
         this.turnMovableVisible();
         this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
         await this.turnMovableHelperVisible();
@@ -833,6 +849,7 @@ export class Animator{
                 arrowHorizontal2.style.width = arrowJoint2.offsetLeft+arrowJoint2.offsetWidth/overlapdivider
                     -this.movableElem.offsetLeft-this.movableElem.offsetWidth+this.movableElem.offsetWidth/overlapdivider+"px";
 
+                this.roundArrowsUp();
                 this.turnMovableVisible();
                 this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID,arrowHorizontalID2,arrowJointID2]);
                 await this.turnMovableHelperVisible();
@@ -854,10 +871,11 @@ export class Animator{
                     +arrowHead.offsetWidth/overlapdivider+this.movableElem.offsetWidth/overlapdivider+"px";
                 arrowHorizontal.style.left = arrowHead.offsetLeft+arrowHead.offsetWidth/overlapdivider-arrowHorizontal.offsetWidth+"px";
 
+                this.roundArrowsUp();
                 this.turnMovableVisible();
                 this.turnArrowElemVisible([arrowHeadID,arrowHorizontalID]);
                 await this.turnMovableHelperVisible();
-               await sleepStaticAnimation();
+                await sleepStaticAnimation();
                 await this.turnArrowElemsHidden();
                 await this.turnMovableHelperHidden();
                 await this.turnMovableHidden();
@@ -901,7 +919,7 @@ export class Animator{
                 arrowHorizontal2.style.width = arrowJoint2.offsetLeft+arrowJoint2.offsetWidth/overlapdivider
                     -this.movableElem.offsetLeft-this.movableElem.offsetWidth+this.movableElem.offsetWidth/overlapdivider+"px";
 
-                
+                this.roundArrowsUp();
                 this.turnMovableVisible();
                 this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID,arrowHorizontalID2,arrowJointID2]);
                 await this.turnMovableHelperVisible();
@@ -932,11 +950,11 @@ export class Animator{
             arrowVertical.style.height=arrowJoint.offsetHeight/overlapdivider+arrowHead.offsetHeight/overlapdivider+arrowHead.offsetTop-arrowJoint.offsetTop-arrowJoint.offsetHeight+"px";
             arrowVertical.style.top=arrowJoint.offsetTop+arrowJoint.offsetHeight-arrowJoint.offsetHeight/overlapdivider+"px";
         }
-
+        this.roundArrowsUp();
         this.turnMovableVisible();
         this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
         await this.turnMovableHelperVisible();
-       await sleepStaticAnimation();
+        await sleepStaticAnimation();
         await this.turnArrowElemsHidden();
         await this.turnMovableHelperHidden();
         await this.turnMovableHidden();
@@ -994,7 +1012,8 @@ export class Animator{
             await sleepStopStartTime();
             await sleepStopStartTime();
             await sleepStopStartTime();
-            while(this.movableElem.offsetLeft+this.movableElem.offsetWidth>this.movableHelper.offsetLeft+this.movableHelper.offsetWidth){
+            while(this.movableElem.offsetLeft+this.movableElem.offsetWidth>this.movableHelper.offsetLeft+this.movableHelper.offsetWidth 
+                &&this.movableElem.offsetLeft>this.movableHelper.offsetLeft){
                 await this.moveSleepCheck(0,-this.getPixeljump());
             }
 
@@ -1035,7 +1054,8 @@ export class Animator{
             
             arrowVertical.style.height=(arrowJoint.offsetHeight/overlapdivider+arrowHead.offsetHeight/overlapdivider+arrowHead.offsetTop-arrowJoint.offsetTop)+"px";
             arrowVertical.style.top=(arrowJoint.offsetTop+arrowJoint.offsetHeight-arrowJoint.offsetHeight/overlapdivider)+"px";
-
+            
+            this.roundArrowsUp();
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
             await this.turnMovableHelperVisible();
@@ -1112,7 +1132,7 @@ export class Animator{
     }
 
     private getPixeljump():number{
-        return aniControl.speed+1;
+        return (aniControl.speed+1)*resizer.get1PXEquivalent();
     }
 
     async adjustWidthOfMovable(n:number,w:number){
