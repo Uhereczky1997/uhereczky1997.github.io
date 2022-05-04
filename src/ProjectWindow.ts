@@ -687,7 +687,7 @@ export class ProjectWindow{
                     else if(l.getEndAddr()!=""){
                         // machinenbefehl.innerHTML= `${this.inputLineControl.getDisplayableSpeicherabbild(l,false)}`;
                         machinenbefehl.innerHTML= `${Manipulator.formatSpeicherabbildandLabel(this.inputLineControl.getDisplayableSpeicherabbild(l,false),this.getLabelIfUnknown(l.getId(),false))}`;
-                        console.log(this.inputLineControl.isFreeAddr(l.getStartingAddr(),l.getEndAddr()));
+                        //console.log(this.inputLineControl.isFreeAddr(l.getStartingAddr(),l.getEndAddr()));
                         if(!this.inputLineControl.isFreeAddr(l.getStartingAddr(),l.getEndAddr())){
                             lineBuffer.push(`<p>${StringConstructor.warAddrOverwriten()}</p>`);
 
@@ -713,7 +713,7 @@ export class ProjectWindow{
         if(this.symbolList.isConst(l.getFirstPart())){
             if(blockAnimation){
                 await sleepUntilNextStep();
-                await this.anim.moveConstToSymbolTable(this.symbolList.getSpecificConstantByName(l.getFirstPart())!.toStringtoMovable());
+                await this.anim.moveLabeltoSymboltableALTMoveable(this.symbolList.getSpecificConstantByName(l.getFirstPart())!.toStringtoMovable());
             }
             this.rePushSymbols();
             this.repushSpeicherabbildOf(i,false);
