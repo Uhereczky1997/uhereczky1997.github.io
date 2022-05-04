@@ -622,7 +622,7 @@ export class Animator{
 
     async moveDetailToSpeicherabbild(line:string,id:number){
         if(aniControl.isAni3()) return;
-        this.setMovableParameters(this.addresszaehlerElem.offsetTop,this.descriptionTableBox.offsetLeft);
+        this.setMovableParameters(this.translatedinfoDividerDiv.offsetTop,this.descriptionTableBox.offsetLeft);
         this.movableElem.innerHTML=this.formatLineString("h3",line);
         await this.setTargetTopToSpeicherabbild(id);       
         this.targetElemLeft=this.outPutText.offsetLeft;
@@ -805,6 +805,7 @@ export class Animator{
         }
     }
     private spanStaticArrows(sTop:number,sLeft:number,sWidth:number,sHeight:number,tTop:number,tLeft:number,tWidth:number,tHeight:number,direction:string):string[]{
+        // console.log(tTop,tHeight,sTop)
         if(sLeft>tLeft){
             console.log("ERROR BRUDI");
             return ["",""];
@@ -823,11 +824,11 @@ export class Animator{
                 return this.arrowToLeftUpLeft(sTop,sLeft,sWidth,sHeight,tTop,tLeft,tWidth,tHeight);
             }
             else if(tTop+tHeight/4>=sTop 
-            && tTop<=sTop){
+            && tTop-tHeight/4<=sTop){
                 return this.arrowToLeft(sTop,sLeft,sWidth,sHeight,tTop,tLeft,tWidth,tHeight);
             }
             else if(tTop-2*tHeight<sTop 
-            && tTop+tHeight/4>sTop){
+            && tTop-tHeight/4>sTop){
                 return this.arrowToLeftDownLeft(sTop,sLeft,sWidth,sHeight,tTop,tLeft,tWidth,tHeight);
             }
             else{
@@ -838,6 +839,8 @@ export class Animator{
         return ["",""];
     }
     private arrowToUpLeft(sTop:number,sLeft:number,sWidth:number,sHeight:number,tTop:number,tLeft:number,tWidth:number,tHeight:number):string[]{
+        // console.log("arrowToUpLeft");
+        
         let arrowHead = this.getArrowElem(arrowHeadID);
         let arrowHorizontal = this.getArrowElem(arrowHorizontalID);
         let arrowJoint = this.getArrowElem(arrowJointID);
@@ -866,6 +869,8 @@ export class Animator{
         return [arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID];
     }
     private arrowToLeftUp(sTop:number,sLeft:number,sWidth:number,sHeight:number,tTop:number,tLeft:number,tWidth:number,tHeight:number):string[]{
+        // console.log("arrowToLeftUp");
+        
         let arrowHead = this.getArrowElem(arrowHeadID);
         let arrowHorizontal = this.getArrowElem(arrowHorizontalID);
         let arrowJoint = this.getArrowElem(arrowJointID);
@@ -891,6 +896,8 @@ export class Animator{
         return [arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID];
     }
     private arrowToLeftDown(sTop:number,sLeft:number,sWidth:number,sHeight:number,tTop:number,tLeft:number,tWidth:number,tHeight:number):string[]{
+        // console.log("arrowToLeftDown");
+        
         let arrowHead = this.getArrowElem(arrowHeadID);
         let arrowHorizontal = this.getArrowElem(arrowHorizontalID);
         let arrowJoint = this.getArrowElem(arrowJointID);
@@ -917,6 +924,8 @@ export class Animator{
         return [arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID];
     }
     private arrowToLeftUpLeft(sTop:number,sLeft:number,sWidth:number,sHeight:number,tTop:number,tLeft:number,tWidth:number,tHeight:number):string[]{
+        // console.log("arrowToLeftUpLeft");
+        
         let arrowHead = this.getArrowElem(arrowHeadID);
         let arrowHorizontal = this.getArrowElem(arrowHorizontalID);
         let arrowJoint = this.getArrowElem(arrowJointID);
@@ -960,6 +969,7 @@ export class Animator{
         return [arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID,arrowHorizontalID2,arrowJointID2];
     }
     private arrowToLeftDownLeft(sTop:number,sLeft:number,sWidth:number,sHeight:number,tTop:number,tLeft:number,tWidth:number,tHeight:number):string[]{
+        // console.log("arrowToLeftDownLeft");
         let arrowHead = this.getArrowElem(arrowHeadID);
         let arrowHorizontal = this.getArrowElem(arrowHorizontalID);
         let arrowJoint = this.getArrowElem(arrowJointID);
@@ -1001,6 +1011,8 @@ export class Animator{
             return [arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID,arrowHorizontalID2,arrowJointID2];
     }
     private arrowToLeft(sTop:number,sLeft:number,sWidth:number,sHeight:number,tTop:number,tLeft:number,tWidth:number,tHeight:number):string[]{
+        // console.log("arrowToLeft");
+
         let arrowHead = this.getArrowElem(arrowHeadID);
         let arrowHorizontal = this.getArrowElem(arrowHorizontalID);
         this.setClassOfHead(RIGHT);
@@ -1245,12 +1257,20 @@ export class Animator{
         }
     }
 
-    async turnArrowElemVisible(s:string[]){
-        this.arrowElems.forEach(e=>{
+    public turnArrowElemVisible=async(s:string[])=>{
+        // await this.turnArrowElemsHidden();
+        console.log(s);
+        for(let i= 0; i<this.arrowElems.length;i++){
+            if(s.includes(this.arrowElems[i].id)){
+                this.arrowElems[i].style.visibility="visible";
+            }
+        }
+        /* this.arrowElems.forEach(e=>{
             if(s.includes(e.id)){
                 e.style.visibility="visible";
             }
-        })
+        }) */
+        return;
     }
 
     async turnArrowElemsHidden(){
