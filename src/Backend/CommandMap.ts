@@ -1691,7 +1691,7 @@ export class CommandMap{
                     i.saveDescriptionLine(StringConstructor.infoNotDat8());
                     i.saveDescriptionLine(StringConstructor.infoIsConst(s));
                     // i.saveDescriptionLine(StringConstructor.notValidLabelSinceItsConst(s));
-                    // return;
+                    return;
                     break;
                 case DataType.LABEL:
                 case DataType.ELLIGIBLE:
