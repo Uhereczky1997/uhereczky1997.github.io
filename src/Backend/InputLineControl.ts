@@ -364,6 +364,7 @@ export class InputLineControl{
         let n=0;
         let rest:string[];
         let newS=addr;
+        console.log(addr);
         addr.forEach(e=>{
             if(e=="????"||undefined||""){
             }
@@ -389,6 +390,9 @@ export class InputLineControl{
                 }
             }
             else{
+                if((/d$/i).test(e)){
+                    e = e.replace(/d$/i,"");
+                }
                 n=n-Number(e);
             }
         });

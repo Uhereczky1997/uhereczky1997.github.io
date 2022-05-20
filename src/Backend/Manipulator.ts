@@ -6,18 +6,21 @@ export const speicherabbildL:number = 16;
 export class Manipulator {
     constructor(){}
     static binToHex = (addr:string):string  =>{
-        addr=addr.replace(/b$/g,"");
+        addr=addr.replace(/b$/i,"");
         return parseInt(addr,2).toString(16).toUpperCase()+"h";
     }
     static decToHex= (addr:string):string =>{
+        if((/d$/i).test(addr)){
+            addr = addr.replace(/d$/i,"");
+        }
         return parseInt(addr,10).toString(16).toUpperCase()+"h";
     }
     static binToDec=(addr:string):number=>{
-        addr=addr.replace(/b$/g,"");
+        addr=addr.replace(/b$/i,"");
         return Number(parseInt(addr,2).toString(10));
     }
     static hexToDec=(addr:string):number =>{
-        addr=addr.replace(/h$/g,"");
+        addr=addr.replace(/h$/i,"");
         return Number(parseInt(addr,16).toString(10));
     }
     static sliceString(s1:string,s2:string):string[]{
@@ -52,7 +55,6 @@ export class Manipulator {
     static isBin(s:string){
         if(s.endsWith("b")||s.endsWith("B")){
             s=s.replace(/b$/i,"");
-            // addr =addr.replace(/^0{1,}/,'0');
             if(s==""){
                 return false;
             }
@@ -80,6 +82,9 @@ export class Manipulator {
     static isDec(addr:string):boolean{
         if(addr==""){
             return false;
+        }
+        if((/d$/i).test(addr)){
+            addr = addr.replace(/d$/i,"");
         }
         if(!/[^0-9]/.test(addr)){
             return true;
@@ -185,7 +190,7 @@ export class Manipulator {
         else{
             throw new Error("Expected was Dat8 but got instead "+addr);
         }
-        return addr.replace(/h$/,"");
+        return addr.replace(/h$/i,"");
     }
     static formatHextoDat16(addr:string):string{
         addr=addr.replace(/^0{1,}/,'0');
@@ -245,7 +250,7 @@ export class Manipulator {
         else{
             throw new Error("Expected was Dat16 but got instead "+addr);
         }
-        return addr.replace(/h$/g,"");
+        return addr.replace(/h$/i,"");
     }
     static splitDat16InDat8(addr:string):string[]{
         let r:string[]=[];
