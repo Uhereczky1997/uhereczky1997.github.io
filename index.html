@@ -155,7 +155,7 @@
                         </div>
                     </button>
                 </div>
-               <button id="settings" class="settingsBKG"></button>
+               <button id="settings" class="settingsBKG" expand="off"></button>
                 <div id="settingsButtonContainer" expand="off" >
                     <button id="credits" class="tooltip expandBTN">
                         <h4 class="noMargin">INFO</h4>
@@ -229,7 +229,7 @@
                     <p>sample description text ...............................................</p>
                 </div>
                 <button id="GenerateDummy">
-                     GenerateDummy 
+                     createCode
                 </button>
                 
                 <button id="filtercopyInputValue" class="paperclip"></button>
@@ -267,22 +267,6 @@
             copyText.setSelectionRange(0, 99999);
             navigator.clipboard.writeText(copyText.value);
         }
-        document.getElementById("settings").addEventListener("click",expandDiv)
-        function expandDiv(){
-            let elem = document.getElementById("settingsButtonContainer");
-            let elem2 = document.getElementById("settings");
-            if(elem!=null){
-                if(elem.getAttribute("expand")=="off"){
-                    elem.setAttribute("expand","on");
-                    elem2.setAttribute("expand","on");
-                }
-                else{
-                    elem.setAttribute("expand","off");
-                    elem2.setAttribute("expand","off");
-                }
-            }
-        }
-
     </script>
 </body>
 </html>

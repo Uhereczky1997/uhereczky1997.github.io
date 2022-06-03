@@ -12,6 +12,7 @@ export const animationTyp2BTN= getHtmlElement("animationsTyp2") as HTMLButtonEle
 export const animationTyp3BTN= getHtmlElement("animationsTyp3") as HTMLButtonElement;
 export const playButton = getHtmlElement("play") as HTMLButtonElement;
 export const resetButton = getHtmlElement("reset") as HTMLButtonElement;
+var timeout_settingsBTN:NodeJS.Timeout;
 
 export const setCurrentLineHidden=()=>{
     if(aniControl.speed>=3 && aniControl.isAni3() &&  aniControl.play){
@@ -380,7 +381,44 @@ export class AnimationControl{
         } catch (error) {
             console.log(error)
         }
+        document.getElementById("settingsButtonContainer")!.addEventListener("mouseleave",(e)=>{
+            setting_btn_timout();
+        });
+        document.getElementById("settingsButtonContainer")!.addEventListener("mouseenter",(e)=>{
+            clearTimeout(timeout_settingsBTN);
+        });
+        document.getElementById("settings")!.addEventListener("click", (e) => {
+            let s = document.getElementById("settings")!.getAttribute("expand");
+            console.log(s);
+            if(s=="off"){
+                expand_On();
+            }
+            if(s=="on"){
+                expand_Off();
+            }
+        })
+        document.getElementById("settings")!.addEventListener("mouseleave", (e) => {
+            setting_btn_timout();
+        })
+        document.getElementById("settings")!.addEventListener("mouseenter", (e) => {
+            clearTimeout(timeout_settingsBTN);
+        })
     }
 }
-
+const expand_On = () => {
+    document.getElementById("settingsButtonContainer")!.setAttribute("expand","on");
+    document.getElementById("settings")!.setAttribute("expand","on");
+}
+const expand_Off = () => {
+    document.getElementById("settingsButtonContainer")!.setAttribute("expand","off");
+    document.getElementById("settings")!.setAttribute("expand","off");
+}
+const setting_btn_timout = () =>{
+    if(timeout_settingsBTN!=null){
+        clearTimeout(timeout_settingsBTN);
+    }
+    timeout_settingsBTN = setTimeout(function(){
+        expand_Off();
+    },2000);
+}
 export const aniControl= new AnimationControl();

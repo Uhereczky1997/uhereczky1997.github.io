@@ -21,40 +21,16 @@ export class StringConstructor{
     static plusError(s:string):string{
         return `<span class="pluserrRed eingeruckt">${s}</span>`;
     }
-    static warLabelZuLang(s:string):string{
-        return this.warning(`Label '<span class="${labelClass}">${s}</span>' >${erlaubteLängeL_C} Zeichen`);
-    }
-    static warConstZuLang(s:string):string{
-        return this.warning(`Konstante ${s} >${erlaubteLängeL_C} Zeichen`);
-    }
-    static warLabelND(s:string):string{
-        return this.warning(`Label '<span class="${labelClass}">${s}</span>' mit Hex-Zahl verwechselbar`);
-    }
-    static warAddrOverwriten():string{
-        return this.warning(`Adresse von aufgelösten Befehl ist bereits besetzt!`);
-    }
+    
 
-    static errLabelDef(s:string):string{
+/*     static errLabelDef(s:string):string{
         return this.error(`Label '<span class="${labelClass}">${s}</span>' ist bereits definiert`); 
-    }
-    static errConstDef(s:string):string{
+    } */
+/*     static errConstDef(s:string):string{
         return this.error(`Konstante ${s} ist bereits definiert`); 
-    }
-    static invalidLabel(s:string):string{
-        return this.error(`${s} kein gülitger Label`); // ungültiger Label
-    }
-    static invalidCmd(s:string):string{
-        return this.error(`${s} ungültiger Operand`); //ungültiger Befehl
-    }
-    static toofewCmd():string{
-        return this.error(`fehlender Operand`); //zu wenige Operanden
-    }
-    static tooManyCmd():string{
-        return this.error(`zu viele Operanden`);
-    }
-    static noValidLabelAfterOffset(){
-        return this.error(`gefunden wurde OFFSET aber kein gültiger label!`);
-    }
+    } */
+    
+    //Bug definitions 
     static bugNoCommand():string{
         return this.error("keine passende Befehl gefunden!");
     }
@@ -64,40 +40,61 @@ export class StringConstructor{
     static bugNoValueForConst(s:string){
         return this.error(`Wert für Konstante ${s} nicht gefunden!`);
     }
-    static expectedDat8():string{
-        return this.error("erwartet war 8-bit Wert");
+
+    // Warning definitons
+    static warLabelZuLang(s:string):string{
+        return this.warning(`Label '<span class="${labelClass}">${s}</span>' >${erlaubteLängeL_C} Zeichen`);
     }
-    static expectedDat8ConstToBig(s:string):string{
-        return this.error(`erwartet war 8-bit Wert, Konstante ${s} ist zu groß`);
+    static warConstZuLang(s:string):string{
+        return this.warning(`Konstante '${s}' >${erlaubteLängeL_C} Zeichen`);
     }
-    static expectedDat8Plus(s:string):string{
-        return this.error(`erwartet war 8-bit Wert, ${s} ist kein gültiger Operand`);
+    static warLabelND(s:string):string{
+        return this.warning(`Label '<span class="${labelClass}">${s}</span>' mit Hex-Zahl verwechselbar`);
     }
-    static expectedDat16():string{
-        return this.error("erwartet war 16-bit Wert");
+    static warAddrOverwriten():string{
+        return this.warning(`Adresse von aufgelösten Befehl ist bereits besetzt!`);
     }
-    static expectedDat16Plus(s:string):string{
-        return this.error(`erwartet war 16-bit Wert, ${s} ist kein gültiger Operand`);
+
+    // Error definitons
+    static errUnknownMnc(s:string):string{
+        return this.error(`'${s}' unbekannter Mnemocode`); //ungültiger Befehl
     }
-    static nameTakenForLabel(s:string):string{
-        return this.error(`Symbolbezeichnung ${s} bereits als Label definiert`);
+    static errInvalidCmd(s:string):string{
+        return this.error(`'${s}' ungültiger Operand`); //ungültiger Befehl
     }
-    static nameTakenForConst(s:string):string{
-        return this.error(`Symbolbezeichnung ${s} bereits als Konstante definiert`);
+    static errTooFewCmd():string{
+        return this.error(`fehlender Operand`); //zu wenige Operanden
     }
-    static noConstafterLabelDef():string{
-        return this.error(`keine Konstantendefinition nach einer Labeldefinition erlaubt`);
-    }
-    static noValidConstOrOperand(s:string){
-        return this.error(`${s} ungültiger Befehl oder Konstantendefinition`);
-    }
-    static notValidLabelSinceItsConst(s:string){
-        return this.plusError(`<span class="${labelClass}">${s}</span> ist kein gültiges Label, bereits als Konstante definiert`);
-    }
-    static noConstDefAllowed(){
-        return this.error(`Konstantendefinition nur am Anfang erlaubt`)
+    static errTooManyCmd():string{
+        return this.error(`zu viele Operanden`);
     }
     
+    static errExpectedDat8ConstToBig(s:string):string{
+        return this.error(`erwartet war 8-bit Wert, Konstante '${s}' ist zu groß`);
+    }
+    static errNameTakenForLabel(s:string):string{
+        return this.error(`Symbolbezeichnung '${s}' bereits als Label definiert`);
+    }
+    static errNameTakenForConst(s:string):string{
+        return this.error(`Symbolbezeichnung '${s}' bereits als Konstante definiert`);
+    }
+    static errNoConstafterLabelDef():string{
+        return this.error(` keine Konstantendefinition direkt nach einer Labeldefinition erlaubt`);
+    }
+    static errInvalidLabel(s:string):string{
+        return this.error(`'${s}' ist kein gültiges Label`); // ungültiger Label
+    }
+    static errInvalidConstOrMnc(s:string){
+        return this.error(`'${s}' unbekannter Mnemocode oder ungültiger Konstantendefinition`);
+    }
+    static errNoConstDefAllowed(){
+        return this.error(`Konstantendefinition nur am Anfang erlaubt`);
+    }
+    static errLabelNotRes(s:string){
+        return this.error(`Label '<span class="labelBlue">${s}</span>' konnte nicht aufgelöst werden!`);
+    }
+    
+    //Informations def.
     static infoIsDat8():string{
         return this.info("überprüfe auf 8-Bit Wert ... gefunden");
     }
@@ -110,23 +107,20 @@ export class StringConstructor{
     static infoNotDat16():string{
         return this.info("überprüfe auf 16-Bit Wert ... nicht gefunden");
     }
-    
     static infoInvalidConst(s:string):string{
         return this.info(`'${s}' ist kein gültiger Konstantenname`);
     }
     static infoNotConst(s:string):string{
-        return this.info(`suche Konstante <span class="${labelClass}">${s}<span> ... nicht gefunden`);
+        return this.info(`suche Konstante '<span class="${labelClass}">${s}<span>' ... nicht gefunden`);
     }
     static infoIsConst(s:string):string{
-        return this.info(`suche Konstante <span class="${labelClass}">${s}<span> ... gefunden`);
+        return this.info(`suche Konstante '<span class="${labelClass}">${s}<span>' ... gefunden`);
     }
-
-    
     static infoInvalidLabel(s:string):string{
         return this.info(`'${s}' ist kein gültiges Label`);
     }
     static infoIsLabel(s:string):string{
-        return this.info(`suche Label <span class="${labelClass}">${s}<span> ... gefunden`);
+        return this.info(`suche Label '<span class="${labelClass}">${s}<span>' ... gefunden`);
     }
 }
 
@@ -139,13 +133,6 @@ export class DescriptionLoader{
         else console.log("Method with name "+s+" is not implemented");
     }
 
-    /* private mov_a_b = () =>{
-        filterableDescription.innerHTML = 
-        `
-        <h2>MOV A,B:</h2>
-        <p>some text<p>
-        `;
-    } */
     private mov_reg_reg = (s:string) =>{
         filterableDescription.innerHTML = 
         `
@@ -169,15 +156,15 @@ export class DescriptionLoader{
     }
 
     private magicWand: { [K:string]:Function}={
-        "MOV A,B" : this.mov_reg_reg,
-        "MOV B,A" : this.mov_reg_reg,
-        "MOV A,C" : this.mov_reg_reg,
-        "MOV C,A" : this.mov_reg_reg,
-        "MOV B,C" : this.mov_reg_reg,
-        "MOV C,B" : this.mov_reg_reg,
-        "MOV A,dat_8" : this.mov_reg_dat,
-        "MOV B,dat_8" : this.mov_reg_dat,
-        "MOV C,dat_8" : this.mov_reg_dat,
+        "MOV A,B"       : this.mov_reg_reg,
+        "MOV B,A"       : this.mov_reg_reg,
+        "MOV A,C"       : this.mov_reg_reg,
+        "MOV C,A"       : this.mov_reg_reg,
+        "MOV B,C"       : this.mov_reg_reg,
+        "MOV C,B"       : this.mov_reg_reg,
+        "MOV A,dat_8"   : this.mov_reg_dat,
+        "MOV B,dat_8"   : this.mov_reg_dat,
+        "MOV C,dat_8"   : this.mov_reg_dat,
         "MOV IX,dat_16" : this.mov_reg_dat,
         "MOV SP,dat_16" : this.mov_reg_dat,
         "MOV HL,dat_16" : this.mov_reg_dat,

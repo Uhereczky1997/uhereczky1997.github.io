@@ -258,7 +258,7 @@ export class CommandMap{
             i.setLabelTo("");
             //Darf nicht bereits definiert label sein die in Symboltabelle ist
             if(this.symbollist.isConst(strings[0])){
-                i.saveDescriptionLine(StringConstructor.nameTakenForConst(strings[0])); 
+                i.saveDescriptionLine(StringConstructor.errNameTakenForConst(strings[0])); 
                     i.setError(strings[0]);
                     i.setRest(": "+strings[1]);
                     i.setValid(false);
@@ -268,7 +268,7 @@ export class CommandMap{
             else if(this.symbollist.isLabel(strings[0])){
                 if(this.symbollist.getPositionOfSpecificLabel(strings[0])!=undefined){
                     // i.saveDescriptionLine(this.formatErrorMassage(`Label ${strings[0]} ist schon bereits besetzt`)); 
-                    i.saveDescriptionLine(StringConstructor.errLabelDef(strings[0])); 
+                    i.saveDescriptionLine(StringConstructor.errNameTakenForLabel(strings[0])); 
                     i.setError(strings[0]);
                     i.setRest(": "+strings[1]);
                     i.setValid(false);
@@ -276,7 +276,7 @@ export class CommandMap{
                 }
             }
             if(!this.symbollist.isEligible(strings[0])){
-                i.saveDescriptionLine(StringConstructor.invalidLabel(strings[0]));  
+                i.saveDescriptionLine(StringConstructor.errInvalidLabel(strings[0]));  
                 i.setError(strings[0]);
                 i.setRest(": "+strings[1]);
                 i.setValid(false);
@@ -313,11 +313,19 @@ export class CommandMap{
 
             return this.parseToMnemoCode(i,strings);
         }//erster Term PseudoMnemoCode - mögliche ConstantenName
-        else if(this.pseudoMCodes.includes(strings[0].toUpperCase()) || this.symbollist.isEligible_Const(strings[0])){
+        else if(this.pseudoMCodes.includes(strings[0].toUpperCase()) || (this.symbollist.isEligible_Const(strings[0]) && this.constDefFlag)){
             return this.parsetoPseudoMnemoCode(i,strings);
         }
+        else if(this.symbollist.isEligible_Const(strings[0]) && !this.constDefFlag){
+            i.saveDescriptionLine(StringConstructor.errNoConstDefAllowed());
+            i.setError(strings[0]);
+            return false;
+        }
         else {
-            i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
+            if(!this.constDefFlag){
+                i.saveDescriptionLine(StringConstructor.errUnknownMnc(strings[0]));
+            }
+            else i.saveDescriptionLine(StringConstructor.errInvalidConstOrMnc(strings[0]));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
                 i.setRest(strings[1]);
@@ -344,7 +352,7 @@ export class CommandMap{
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));        //Ausgabe von erwartetten Befehlen
                 
                 if(strings.length<2){
-                    i.saveDescriptionLine(StringConstructor.toofewCmd()); //ERROR
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd()); //ERROR
                     i.setError("");
                     return false;
                 }
@@ -368,7 +376,7 @@ export class CommandMap{
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet(consoletostring));    //Ausgabe von erwartetten Befehlen
                     if(strings.length<2){
-                        i.saveDescriptionLine(StringConstructor.toofewCmd()); //ERROR
+                        i.saveDescriptionLine(StringConstructor.errTooFewCmd()); //ERROR
                         i.setError("");
                         return false;
                     }
@@ -446,7 +454,7 @@ export class CommandMap{
                                         break;
                                     }else{
                                         this.saveExtraInfo(i,consoletostring,strings[1]);
-                                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1])); //can only be [HL]
+                                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1])); //can only be [HL]
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
@@ -467,13 +475,9 @@ export class CommandMap{
                                         break;
                                     }
                                     else if(consoletostring.includes("dat_8")){
-                                        // i.saveDescriptionLine(StringConstructor.infoNotDat8());
-                                        // i.saveDescriptionLine(StringConstructor.infoNoConst(strings[1]));
-                                        // i.saveDescriptionLine(StringConstructor.infoNoLabel(strings[1]));
-                                        // i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1]));
                                         this.saveExtraInfo(i,consoletostring,strings[1]);
 
-                                        i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
+                                        i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
@@ -481,7 +485,7 @@ export class CommandMap{
                                     else{
                                         this.saveExtraInfo(i,consoletostring,strings[1]);
 
-                                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1])); //can only be [HL]
+                                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1])); //can only be [HL]
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
@@ -537,7 +541,7 @@ export class CommandMap{
                                         this.saveExtraInfo(i,consoletostring,strings[1]);
 
                                         // i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1])); //KONSTANTE ZU GROß?
-                                        i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
+                                        i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
 
                                         i.setError(strings[1]);
                                         i.setValid(false);
@@ -549,7 +553,7 @@ export class CommandMap{
                                         // }
                                         this.saveExtraInfo(i,consoletostring,strings[1]);
 
-                                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                                         i.setError(strings[1]);
                                         return false;
                                     }
@@ -557,7 +561,7 @@ export class CommandMap{
                                 case DataType.LABEL:
                                     if(!consoletostring.includes("label")){
                                         this.saveExtraInfo(i,consoletostring,strings[1]);
-                                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
@@ -581,7 +585,7 @@ export class CommandMap{
                                     if(!consoletostring.includes("label")){
                                         this.saveExtraInfo(i,consoletostring,strings[1]);
 
-                                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                                         i.setError(strings[1]);
                                         i.setValid(false);
                                         return false;
@@ -616,37 +620,19 @@ export class CommandMap{
                                 i.saveDescriptionLine(StringConstructor.bugNoCommand());
                                 return false;
                             }
-                        } //möglicher weise OFFSET Label
-                        else if(strings[1].toUpperCase().startsWith("OFFSET")){
+                        }
+                        else if(strings[1].toUpperCase().startsWith("OFFSET") && consoletostring.includes("dat_16")){  //möglicher weise OFFSET Label
+                            i.saveDescriptionLine(this.formatGefunden(`OFFSET`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET ..."));
+                            i.saveDescriptionLine(this.formatErwartet("label"));
                             let temp:string[]=Manipulator.splitStringHalf(strings[1]," ");
                             if(temp.length<2){
-                                i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                                i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                                 i.setError(strings[1]);
                                 return false;
                             }
-                            if(this.getDataType(temp[1]) == DataType.LABEL){
-                                if(!consoletostring.includes("dat_16")){
-                                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
-                                    i.setError(strings[1]);
-                                    i.setValid(false);
-                                    return false;
-                                }
-                                i.saveDescriptionLine(this.formatGefunden(`OFFSET`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
-                                matches=matches.filter(e=>{
-                                    if(e.getSource()=="dat_16"){
-                                        return e;
-                                    }
-                                })
-                            }
-                            else if(this.getDataType(temp[1]) == DataType.ELLIGIBLE){
-                                if(!consoletostring.includes("dat_16")){
-                                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
-                                    i.setError(strings[1]);
-                                    i.setValid(false);
-                                    return false;
-                                }
+                            else if(this.getDataType(temp[1]) == DataType.LABEL || this.getDataType(temp[1]) == DataType.ELLIGIBLE){
                                 this.symbollist.setLabelWithoutPosition(temp[1]);
-                                i.saveDescriptionLine(this.formatGefunden(`OFFSET`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
+                                i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${temp[1]}</span>'`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
                                 if(temp[1].length>erlaubteLängeL_C){
                                     i.saveDescriptionLine(StringConstructor.warLabelZuLang(temp[1]));
                                 }
@@ -657,7 +643,8 @@ export class CommandMap{
                                 })
                             }
                             else{
-                                i.saveDescriptionLine(StringConstructor.noValidLabelAfterOffset());
+                                this.saveExtraInfo(i,"label",temp[1]);
+                                i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                                 i.setError(strings[1]);
                                 return false;
                             }
@@ -673,18 +660,18 @@ export class CommandMap{
                                 return true;
                             }
                             else{
-                                i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                                i.saveDescriptionLine(StringConstructor.bugNoCommand());
                                 i.setError(strings[1]);
                                 return false;
                             }
                         }
                         else{
                             if(strings[1].trim()=="" || strings[1].trim()==" "){
-                                i.saveDescriptionLine(StringConstructor.toofewCmd());
+                                i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                             }
                             else{
                                 this.saveExtraInfo(i,consoletostring,strings[1]);
-                                i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                                i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                             }
                             i.setError(strings[1]);
                             return false;
@@ -710,7 +697,7 @@ export class CommandMap{
                     consoletostring=this.getScources(matches).join(", ");
                     i.saveDescriptionLine(this.formatErwartet(consoletostring));    //Ausgabe von erwartetten Befehlen
                     if(strings.length<2){
-                        i.saveDescriptionLine(StringConstructor.toofewCmd());
+                        i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                         i.setError("");
                         return false;
                     }
@@ -742,7 +729,7 @@ export class CommandMap{
                     else{
                         this.saveExtraInfo(i,consoletostring,strings[1]);
 
-                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                         i.setError(strings[1]);
                         return false;
                     }
@@ -750,7 +737,7 @@ export class CommandMap{
                 else{
                     this.saveExtraInfo(i,consoletostring,strings[0]);
 
-                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[0]));
                     i.setError(strings[0]);
                     if(strings[1]!=undefined){
                         i.setRest(","+strings[1]);
@@ -764,7 +751,7 @@ export class CommandMap{
                 // matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='PUSH'});
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 if(strings.length>1){
-                    i.saveDescriptionLine(StringConstructor.tooManyCmd());
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
                     i.setError(strings[1]);
                     return false;
                 }
@@ -787,7 +774,7 @@ export class CommandMap{
                 consoletostring=this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet("A"));
                 if(strings.length<2){
-                    i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                     i.setError("");
                     return false;
                 }
@@ -801,7 +788,7 @@ export class CommandMap{
                     i.saveDescriptionLine(this.formatErwartet("dat_8"));
                     consoletostring="dat_8"
                     if(strings.length<2){
-                        i.saveDescriptionLine(StringConstructor.toofewCmd());
+                        i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                         i.setError("");
                         return false;
                     }
@@ -809,8 +796,8 @@ export class CommandMap{
                         if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
                             this.saveExtraInfo(i,consoletostring,strings[1]);
                             // ??
-                            // i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
-                            i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]))
+                            // i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
+                            i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]))
                             i.setError(strings[1]);
                             return false;
                         }
@@ -844,7 +831,7 @@ export class CommandMap{
                     else{
                         this.saveExtraInfo(i,consoletostring,strings[1]);
 
-                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                         i.setError(strings[1]);
                         return false;
                     }
@@ -852,7 +839,7 @@ export class CommandMap{
                 else{
                     this.saveExtraInfo(i,consoletostring,strings[0]);
 
-                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[0]));
                     i.setError(strings[0]);
                     if(strings[1]!=undefined){
                         i.setRest(", "+strings[1]);
@@ -870,7 +857,7 @@ export class CommandMap{
                 i.saveDescriptionLine(this.formatErwartet("dat_8"));
                 
                 if(strings.length<2){
-                    i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                     i.setError("");
                     return false;
                 }
@@ -881,8 +868,8 @@ export class CommandMap{
                     if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[0])!.getValue())){
                         // ??
                         // this.saveExtraInfo(i,consoletostring,strings[0]);
-                        i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[0]));
-                        // i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[0]));
+                        i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[0]));
+                        // i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[0]));
                         i.setError(strings[0]);
                         return false;
                     }
@@ -892,7 +879,7 @@ export class CommandMap{
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet("A"));
                     if(strings.length<2){
-                        i.saveDescriptionLine(StringConstructor.toofewCmd());
+                        i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                         i.setError("");
                         return false;
                     }
@@ -911,7 +898,7 @@ export class CommandMap{
                     else{
                         // need?
                         // this.saveExtraInfo(i,consoletostring,strings[1]);
-                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                         i.setError(strings[1]);
                         return false;
                     }
@@ -925,7 +912,7 @@ export class CommandMap{
                     save4(i);
                     i.saveDescriptionLine(this.formatErwartet("A"));
                     if(strings.length<2){
-                        i.saveDescriptionLine(StringConstructor.toofewCmd());
+                        i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                         i.setError("");
                         return false;
                     }
@@ -942,14 +929,14 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                         i.setError(strings[1]);
                         return false;
                     }
                 }
                 else{
                     // this.saveExtraInfo(i,consoletostring,strings[0]);
-                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[0]));
                     i.setError(strings[0]);
                     return false;
                 }
@@ -963,7 +950,7 @@ export class CommandMap{
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
-                    i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                     i.setError("");
                     return false;
                 }
@@ -994,7 +981,7 @@ export class CommandMap{
                     }
                 }
                 else{
-                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                     i.setError(strings[1]);
                     return false;
                 }
@@ -1008,7 +995,7 @@ export class CommandMap{
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
-                    i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                     i.setError("");
                     return false;
                 }
@@ -1044,8 +1031,8 @@ export class CommandMap{
                     if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
                         // ??
                         // this.saveExtraInfo(i,consoletostring,strings[1]);
-                        i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
-                        // i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
+                        i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
+                        // i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
                         i.setError(strings[1]);
                         return false;
                     }
@@ -1098,7 +1085,7 @@ export class CommandMap{
                 }
                 else{
                     this.saveExtraInfo(i,consoletostring,strings[1]);
-                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                     i.setError(strings[1]);
                     return true;
                 }
@@ -1109,7 +1096,7 @@ export class CommandMap{
 
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 if(strings.length>1){
-                    i.saveDescriptionLine(StringConstructor.tooManyCmd());
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
                     i.setError(strings[1]);
                     return false;
                 }
@@ -1135,7 +1122,7 @@ export class CommandMap{
                 consoletostring = "label";
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
-                    i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                     i.setError("");
                     return false;
                 }
@@ -1171,7 +1158,7 @@ export class CommandMap{
                     }
                 }
                 else{
-                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                     i.setError(strings[1]);
                     return false;
                 }
@@ -1184,7 +1171,7 @@ export class CommandMap{
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
-                    i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                     i.setError("");
                     return false;
                 }
@@ -1241,7 +1228,7 @@ export class CommandMap{
                     }
                 }
                 else{
-                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                     i.setError(strings[1]);
                     return false;
                 }
@@ -1254,7 +1241,7 @@ export class CommandMap{
                 consoletostring = "label"
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
-                    i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                     i.setError("");
                     return false;
                 }
@@ -1288,7 +1275,7 @@ export class CommandMap{
                     }
                 }
                 else{
-                    i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                     i.setError(strings[1]);
                     return false;
                 }
@@ -1298,7 +1285,7 @@ export class CommandMap{
 
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 if(strings.length>1){
-                    i.saveDescriptionLine(StringConstructor.tooManyCmd());
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
                     i.setError(strings[1]);
                     return false;
                 }
@@ -1319,7 +1306,7 @@ export class CommandMap{
 
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()=="RET"});
                 if(strings.length>1){
-                    i.saveDescriptionLine(StringConstructor.tooManyCmd());
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
                     i.setError(strings[1]);
                     return false;
                 }
@@ -1354,7 +1341,7 @@ export class CommandMap{
             strings[0]=strings[0].toUpperCase();
             i.saveDescriptionLine(this.formatGefunden(`Pseudo-Mnemocode ${strings[0]}`,strings[0]+" ..."));
             if(strings.length<2){
-                i.saveDescriptionLine(StringConstructor.toofewCmd());
+                i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                 i.setError("");
                 return false;
             }
@@ -1381,8 +1368,8 @@ export class CommandMap{
                     else if(this.symbollist.isConst(strings[1])){
                         if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
                             // ??
-                            i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
-                            // i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
+                            i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
+                            // i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
                             i.setError(strings[1]);
                             return false;
                         }
@@ -1399,7 +1386,7 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                         // i.saveDescriptionLine(StringConstructor.expectedDat8());
                         i.setError(strings[1]);
                         return false;
@@ -1410,8 +1397,9 @@ export class CommandMap{
                     save3(i);
                     i.saveDescriptionLine(this.formatErwartet("dat_16"));
                     consoletostring="dat_16"
-                    this.saveExtraInfo(i,consoletostring,strings[1]);
+                    
                     if(Manipulator.isDat_16(strings[1])){
+                        this.saveExtraInfo(i,consoletostring,strings[1]);
                         i.saveDescriptionLine(this.formatGefunden(`16-bit Wert `+strings[1],strings[0]+" "+strings[1])); // DecOrHex
                         // i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])));
                         i.setLength(2);
@@ -1421,6 +1409,7 @@ export class CommandMap{
                         return true;
                     }
                     else if(this.symbollist.isConst(strings[1])){
+                        this.saveExtraInfo(i,consoletostring,strings[1]);
                         i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
                         i.setLength(2);
                         i.setSecondPart((strings[1]));
@@ -1429,36 +1418,39 @@ export class CommandMap{
                         return true;
                     }
                     else if(strings[1].toUpperCase().startsWith("OFFSET")){
-                            temp=Manipulator.splitStringHalf(strings[1]," ");
-                            if(temp.length<2){
-                                i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
-                                i.setError(strings[1]);
-                                return false;
-                            }
-                            if(this.symbollist.isLabel(temp[1])){ this.symbollist.isEligible(temp[1])
-                                i.saveDescriptionLine(this.formatGefunden(`OFFSET`,"DW OFFSET "+temp[1]));
-                            }
-                            else if(this.symbollist.isEligible(temp[1])){
+                        i.saveDescriptionLine(this.formatGefunden(`OFFSET`,"DW OFFSET ..."));
+                        i.saveDescriptionLine(this.formatErwartet("label"));
+
+                        temp=Manipulator.splitStringHalf(strings[1]," ");
+                        if(temp.length<2){
+                            i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                            i.setError(strings[1]);
+                            return false;
+                        }
+                        if(this.symbollist.isLabel(temp[1]) || this.symbollist.isEligible(temp[1])){ 
+                            if(this.symbollist.isEligible(temp[1])){
                                 this.symbollist.setLabelWithoutPosition(temp[1]);
-                                // if(strings[1].length>erlaubteLängeL_C){
-                                //     i.saveDescriptionLine(StringConstructor.warLabelZuLang(temp[1]));
-                                // }
-                                i.saveDescriptionLine(this.formatGefunden(`OFFSET`,"DW OFFSET "+temp[1]));
                             }
-                            else{
-                                i.saveDescriptionLine(StringConstructor.noValidLabelAfterOffset());
-                                i.setError(strings[1]);
-                                return false;
+                            i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${temp[1]}</span>'`,"DW OFFSET "+temp[1]));
+                            if(temp[1].length>erlaubteLängeL_C){
+                                i.saveDescriptionLine(StringConstructor.warLabelZuLang(temp[1]));
                             }
-                            i.setType(InputLineType.TRANSLATED);
-                            i.setLength(2);
-                            i.setSecondPart((strings[1]));
-                            i.setOffsetLabel(true);
-                            i.setValid(true);
-                            return true;
+                        }
+                        else{
+                            this.saveExtraInfo(i,"label",temp[1]);
+                            i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                            i.setError(strings[1]);
+                            return false;
+                        }
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setLength(2);
+                        i.setSecondPart((strings[1]));
+                        i.setOffsetLabel(true);
+                        i.setValid(true);
+                        return true;
                     }
                     else{
-                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                         // i.saveDescriptionLine(StringConstructor.expectedDat16Plus(strings[1]));
                         i.setError(strings[1]);
                         return false;
@@ -1481,8 +1473,8 @@ export class CommandMap{
                     }
                     else if(this.symbollist.isConst(strings[1])){
                         if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
-                            i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
-                            // i.saveDescriptionLine(StringConstructor.expectedDat8ConstToBig(strings[1]));
+                            i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
+                            // i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
                             i.setError(strings[1]);
                             return false;
                         }
@@ -1494,7 +1486,7 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                         // i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1]));
                         i.setError(strings[1]);
                         return false;
@@ -1525,7 +1517,7 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(StringConstructor.invalidCmd(strings[1]));
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                         // i.saveDescriptionLine(StringConstructor.expectedDat16Plus(strings[1]));
                         i.setError(strings[1]);
                         return false;
@@ -1548,7 +1540,7 @@ export class CommandMap{
             
         }
         else if(!this.constDefFlag){
-            i.saveDescriptionLine(StringConstructor.noConstDefAllowed());
+            i.saveDescriptionLine(StringConstructor.errNoConstDefAllowed());
             i.setError(strings[0]);
             return false;
         }
@@ -1557,7 +1549,7 @@ export class CommandMap{
             save2(i);
             i.saveDescriptionLine(this.formatErwartet(`EQU`));
             if(strings.length<2){
-                i.saveDescriptionLine(StringConstructor.toofewCmd());
+                i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                 i.setError("");
                 // i.setError(strings[0]);
                 return false;
@@ -1590,25 +1582,25 @@ export class CommandMap{
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(StringConstructor.invalidCmd(new_commands[1]));
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(new_commands[1]));
                         i.setError(new_commands[1]);
                         return false;
                     }
                 }else{
-                    i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
                     i.setError("");
                     return false;
                 }
             }
             else{
-                i.saveDescriptionLine(StringConstructor.invalidCmd(new_commands[0]));
+                i.saveDescriptionLine(StringConstructor.errInvalidCmd(new_commands[0]));
                 i.setError(new_commands[0]);
                 i.setRest(new_commands[1]);
                 return false;
             }
         }
         else if(this.symbollist.isConst(strings[0])){
-            i.saveDescriptionLine(StringConstructor.errConstDef(strings[0]));
+            i.saveDescriptionLine(StringConstructor.errNameTakenForConst(strings[0]));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
                 i.setRest(" "+strings[1]);
@@ -1617,19 +1609,11 @@ export class CommandMap{
         }
         else if(this.symbollist.isLabel(strings[0])){
             if((this.symbollist.getPositionOfSpecificLabel(strings[0])=="????")){
-                i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
+                i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[0]));
                 i.setError(strings[0]);
                 return false;
             }
-            i.saveDescriptionLine(StringConstructor.nameTakenForLabel(strings[0]));
-            i.setError(strings[0]);
-            if(strings[1]!=undefined){
-                i.setRest(" "+strings[1]);
-            }
-            return false;
-        }
-        else if(!this.symbollist.isEligible_Const(strings[0])){
-            i.saveDescriptionLine(StringConstructor.noValidConstOrOperand(strings[0]));
+            i.saveDescriptionLine(StringConstructor.errNameTakenForLabel(strings[0]));
             i.setError(strings[0]);
             if(strings[1]!=undefined){
                 i.setRest(" "+strings[1]);
@@ -1637,7 +1621,7 @@ export class CommandMap{
             return false;
         }
         else if(i.getLabel() !=""){
-            i.saveDescriptionLine(StringConstructor.noConstafterLabelDef());
+            i.saveDescriptionLine(StringConstructor.errNoConstafterLabelDef());
             i.setError(strings[0]);
             if(strings[1]!=undefined){
                 i.setRest(" "+strings[1]);
@@ -1645,16 +1629,16 @@ export class CommandMap{
             return false;
         }
         else{
-            i.saveDescriptionLine(StringConstructor.invalidCmd(strings[0]));
+            i.saveDescriptionLine(StringConstructor.errInvalidConstOrMnc(strings[0]));
             i.setError(strings[0]);
             return false;
         }
     }
 
     getDataType(addr:string):DataType{
-        if(this.Regs.includes(addr)||this.pseudoMCodes.includes(addr)||this.mCodes.includes(addr)){
+        /* if(this.Regs.includes(addr)||this.pseudoMCodes.includes(addr)||this.mCodes.includes(addr)){
             return DataType.NONE;
-        }
+        } */
         if(addr.trim()==" " ||addr.trim()==""){
             return DataType.NONE;
         }
@@ -1739,7 +1723,7 @@ export class CommandMap{
         if(consoleString.includes("label")){
             switch(typeData){
                 case DataType.CONSTANT:
-                    i.saveDescriptionLine(StringConstructor.notValidLabelSinceItsConst(s));
+                    //i.saveDescriptionLine(StringConstructor.notValidLabelSinceItsConst(s));
                     break;
                 case DataType.ELLIGIBLE:
                 case DataType.LABEL:

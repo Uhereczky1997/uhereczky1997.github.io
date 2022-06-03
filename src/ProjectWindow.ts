@@ -455,10 +455,10 @@ export class ProjectWindow{
                     await this.anim.searchEntryInSymboltablephaseOne(`${searchEntryLabel}${e.getId()}`,k.getName(),this.symbols.indexOf(k));
                 }
                 currentLineLine.innerHTML=`${e.getStartingAddr()}: ${this.inputLineControl.getDisplayableSpeicherabbild(e,false)} <span class="crInvert bkError">${this.getLabelIfUnknown(e.getId(),false)}</span>`
-                lineBuffer.push(`<p><span class="errorRed eingeruckt">Label '<span class="labelBlue">${k.getName()}</span>' konnte nicht aufgelöst werden!</span></p>`)
+                lineBuffer.push(`<p>${StringConstructor.errLabelNotRes(k.getName())}</p>`)
                 if(blockAnimation){
                     await sleepUntilNextStep();
-                    newElem.innerHTML +=`<p><span class="errorRed eingeruckt">Label '<span class="labelBlue">${k.getName()}</span>' konnte nicht aufgelöst werden!</span></p>`;
+                    newElem.innerHTML +=`<p>${StringConstructor.errLabelNotRes(k.getName())}</p>`;
                     updateScroll(descriptionLines.id);
                 }
                 if(!blockAnimation){

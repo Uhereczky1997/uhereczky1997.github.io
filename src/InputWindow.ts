@@ -274,7 +274,22 @@ export class InputWindow{
         })
     }
     public generateDummy = ():void=>{
-        this.preTranslateDefConst(this.InputTextAreaElement.value.split("\n"));
+        //this.preTranslateDefConst(this.InputTextAreaElement.value.split("\n"));
+        // this.createCode(this.InputTextAreaElement.value.split("\n"))
+        this.listInstructionLibrary();
+    }
+    private listInstructionLibrary = ():void =>{
+        let consolestring:string= "";
+        consolestring = this.inputcontrol.filterables().join("\n");
+        console.log(consolestring);
+    }
+    private createCode = (s:string[])=>{
+        let consolestring:string = "[\n";
+        s.forEach(e =>{
+            consolestring = consolestring +"\""+e.trim()+"\","+"\n";
+        })
+        consolestring = consolestring +"]";
+        console.log(consolestring);
     }
 } 
 let bsp0:string[]=[]
