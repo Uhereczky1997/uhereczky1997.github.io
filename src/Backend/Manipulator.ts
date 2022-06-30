@@ -19,6 +19,15 @@ export class Manipulator {
         addr=addr.replace(/b$/i,"");
         return Number(parseInt(addr,2).toString(10));
     }
+    static convertToDec(addr:string):number{
+        if(this.isHex(addr)){
+            return this.hexToDec(addr);
+        }
+        else if(this.isBin(addr)){
+            return this.binToDec(addr);
+        }
+        else return this.hexToDec(this.decToHex(addr));
+    }
     static hexToDec=(addr:string):number =>{
         addr=addr.replace(/h$/i,"");
         return Number(parseInt(addr,16).toString(10));

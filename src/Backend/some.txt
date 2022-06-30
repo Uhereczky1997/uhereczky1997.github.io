@@ -1,0 +1,191 @@
+/* if(Manipulator.isDat_16(strings[1])){
+        this.saveExtraInfo(i,consoletostring,strings[1]);
+        i.saveDescriptionLine(this.formatGefunden(`16-bit Wert `+strings[1],strings[0]+" "+strings[1])); // DecOrHex
+        // i.saveDescriptionLine(this.formatGefunden(`16-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat16(strings[1])));
+        i.setLength(2);
+        i.setSecondPart((strings[1]));
+        i.setType(InputLineType.TRANSLATED);
+        i.setValid(true);
+        return true;
+    }
+    else if(this.symbollist.isConst(strings[1])){
+        this.saveExtraInfo(i,consoletostring,strings[1]);
+        
+        i.setLength(2);
+        i.setSecondPart((strings[1]));
+        i.setType(InputLineType.TRANSLATED);
+        i.setValid(true);
+        return true;
+    }
+    else if(strings[1].toUpperCase().startsWith("OFFSET")){
+        i.saveDescriptionLine(this.formatGefunden(`OFFSET`,"DW OFFSET ..."));
+        i.saveDescriptionLine(this.formatErwartet("label"));
+
+        temp=Manipulator.splitStringHalf(strings[1]," ");
+        if(temp.length<2){
+            i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+            i.setError(strings[1]);
+            return false;
+        }
+        if(this.symbollist.isLabel(temp[1]) || this.symbollist.isEligible(temp[1])){ 
+            if(this.symbollist.isEligible(temp[1])){
+                this.symbollist.setLabelWithoutPosition(temp[1]);
+            }
+            i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${temp[1]}</span>'`,"DW OFFSET "+temp[1]));
+            if(temp[1].length>erlaubteLängeL_C){
+                i.saveDescriptionLine(StringConstructor.warLabelZuLang(temp[1]));
+            }
+        }
+        else{
+            this.saveExtraInfo(i,"label",temp[1]);
+            i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+            i.setError(strings[1]);
+            return false;
+        }
+        i.setType(InputLineType.TRANSLATED);
+        i.setLength(2);
+        i.setSecondPart((strings[1]));
+        i.setOffsetLabel(true);
+        i.setValid(true);
+        return true;
+    }
+    else{
+        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+        // i.saveDescriptionLine(StringConstructor.expectedDat16Plus(strings[1]));
+        i.setError(strings[1]);
+        return false;
+    } */
+
+if(Manipulator.isDat_8(strings[1])){
+    // i.saveDescriptionLine(this.formatGefunden(`8-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
+    i.saveDescriptionLine(this.formatGefunden(`8-bit Wert `+strings[1],strings[0]+" "+strings[1])); // DecOrHex
+    i.setSecondPart((strings[1]));
+    i.setLength(strings[1]); // DecOrHex ??
+    i.setType(InputLineType.TRANSLATED);
+    let Hcode="";
+    for(let i=0;i<Manipulator.hexToDec(Manipulator.formatHextoDat8(strings[1]));i++){
+        Hcode+='00';
+    }
+    i.setHCode(Hcode);
+    i.setValid(true);
+    return true;
+}
+else if(this.symbollist.isConst(strings[1])){
+    if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
+        // ??
+        i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
+        // i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
+        i.setError(strings[1]);
+        return false;
+    }
+    i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
+    i.setSecondPart((strings[1])); //KONST ??
+    i.setType(InputLineType.TRANSLATED);
+    i.setLength(Manipulator.formatHextoDat8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue()));
+    for(let i=0;i<Manipulator.hexToDec(this.symbollist.getSpecificConstantByName(strings[1])!.getValue());i++){
+        Hcode+='00';
+    }
+    i.setHCode(Hcode);
+    i.setValid(true);
+    return true;
+}
+else{
+    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+    // i.saveDescriptionLine(StringConstructor.expectedDat8());
+    i.setError(strings[1]);
+    return false;
+}
+
+this.saveExtraInfo(i,consoletostring,strings[1]);
+                    if(Manipulator.isDat_8(strings[1])){
+                        // i.saveDescriptionLine(this.formatGefunden(`8-bit Wert`,strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
+                        i.saveDescriptionLine(this.formatGefunden(`8-bit Wert `+strings[1],strings[0]+" "+strings[1])); // DecOrHex
+                        i.setLength(1);
+                        i.setSecondPart((strings[1]));
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setValid(true);
+                        return true;
+                    }
+                    else if(this.symbollist.isConst(strings[1])){
+                        if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
+                            i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
+                            // i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
+                            i.setError(strings[1]);
+                            return false;
+                        }
+                        i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
+                        i.setLength(1);
+                        i.setSecondPart(strings[1]);
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setValid(true);
+                        return true;
+                    }
+                    else{
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                        // i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1]));
+                        i.setError(strings[1]);
+                        return false;
+                    }
+                    break;
+
+
+_dat8 equ 12h
+_dat16 equ 1234h
+start:
+
+;mov a,b
+;mov a,
+;mov ,_dat8
+;mov a,12d
+;mov a,_dat8
+;mov a,_dat16
+;mov hl,_dat16
+;mov hl,offset start
+;mov hl,offset ...
+;mov c,d
+;
+;pop asd
+;push asd
+;
+;in a,_dat8
+;in a,_dat16
+in ,_dat8
+in a,
+in adf, _dat8
+in a,asdf
+
+out _dat8,a
+out _dat16,a
+out adfa,a
+out _dat8, adf
+out ,a
+out _dat8,
+
+inc c
+inc asdf
+inc
+
+add a
+add 
+add _dat8
+add _dat16
+add adsfa
+
+shl asdf
+
+jpnz label
+jpnz ...
+jpnz
+
+jp [ix]
+jp label
+jp ...
+jp
+
+call label
+call ...
+call
+
+halt adf
+
+ret adsf

@@ -29,14 +29,14 @@ export const checkIfPaused= async():Promise <any> => {
         return true;
     }
     while (true) {
-        if (aniControl.play){
-            return true;
-        }
         if (aniControl.reset){
             throw Error('Reset pressed');
         }
         if(aniControl.stop){
             throw Error('Stop pressed');
+        }
+        if (aniControl.play){
+            return true;
         }
         await sleepFor(100);
     }
@@ -100,7 +100,7 @@ export const sleepForFrame = async():Promise<any>=>{
         await checkIfPaused();
     }
 }
-export enum AnimationsTyp{
+export enum AnimationType{
     Typ1="Typ1",
     Typ2="Typ2",
     Typ3="Typ3"
@@ -117,7 +117,7 @@ export class AnimationControl{
 
     public speed:number;
     public baseFrameTime:number;
-    public animationType:AnimationsTyp=AnimationsTyp.Typ1;
+    public animationType:AnimationType=AnimationType.Typ1;
     public frames:number;
 
     constructor(){
@@ -184,7 +184,7 @@ export class AnimationControl{
             setTranslatingDivHidden();
             setCurrentLineVisible();
         }
-        this.animationType=AnimationsTyp.Typ1;
+        this.animationType=AnimationType.Typ1;
         this.setSmoothIfNecessery();
         
         try{
@@ -202,7 +202,7 @@ export class AnimationControl{
             setCurrentLineVisible();
             removeClassOfAll("hiddenDescriptionDiv");
         }
-        this.animationType=AnimationsTyp.Typ2;
+        this.animationType=AnimationType.Typ2;
         this.setSmoothIfNecessery();
 
         try{
@@ -215,7 +215,7 @@ export class AnimationControl{
         }
     }
     setAnimationTyp3=()=>{
-        this.animationType=AnimationsTyp.Typ3;
+        this.animationType=AnimationType.Typ3;
         this.removeSmoothScroll();
         
         try{
@@ -271,12 +271,12 @@ export class AnimationControl{
         this.changePlayButtonBKG();
     }
     setSmoothIfNecessery(){
-        if(this.play && this.animationType!=AnimationsTyp.Typ3 && this.speed<3){
+        if(this.play && this.animationType!=AnimationType.Typ3 && this.speed<3){
             inputText.classList.add("scrollSmooth");
             outputText.classList.add("scrollSmooth");
             descriptionLines.classList.add("scrollSmooth");
         }
-        if(this.play && this.animationType!=AnimationsTyp.Typ3 && this.speed==4){
+        if(this.play && this.animationType!=AnimationType.Typ3 && this.speed==4){
             descriptionLines.classList.remove("scrollSmooth");
         }
         else{
@@ -289,13 +289,13 @@ export class AnimationControl{
         outputText.classList.remove("scrollSmooth");
     }
     isAni1=()=>{
-        return this.animationType==AnimationsTyp.Typ1;
+        return this.animationType==AnimationType.Typ1;
     }
     isAni2=()=>{
-        return this.animationType==AnimationsTyp.Typ2;
+        return this.animationType==AnimationType.Typ2;
     }
     isAni3=()=>{
-        return this.animationType==AnimationsTyp.Typ3;
+        return this.animationType==AnimationType.Typ3;
     }
     changePlayButtonBKG=()=>{
         let elem = getHtmlElement("play");
@@ -326,7 +326,7 @@ export class AnimationControl{
             descriptionLines.classList.add("scrollDisabled");
             symbolTableLines.classList.add("scrollDisabled");
             
-            if(this.speed<3 && this.animationType!=AnimationsTyp.Typ3){
+            if(this.speed<3 && this.animationType!=AnimationType.Typ3){
                 inputText.classList.add("scrollSmooth");
                 outputText.classList.add("scrollSmooth");
                 descriptionLines.classList.add("scrollSmooth");

@@ -9,7 +9,7 @@ import { InputLineControl } from "./Backend/InputLineControl";
 import { InputLine } from "./Backend/InputLine";
 import { InputWindow } from "./InputWindow";
 import { getHtmlElement, createClickListener, updateScroll, updateScrollOfIn_Out, removeClassOfAll, addClassTo, updateScrollOfDescriptionLines, removeClassOf } from "./Tools";
-import { aniControl, AnimationsTyp, checkIfPaused, playButton, resetButton, sleepFor, sleepStaticAnimation, sleepUntilNextStep } from "./AnimationUtil";
+import { aniControl, AnimationType, checkIfPaused, playButton, resetButton, sleepFor, sleepStaticAnimation, sleepUntilNextStep } from "./AnimationUtil";
 import { Animator } from "./Animator";
 import { StringConstructor } from "./Backend/StringConstructor";
 
@@ -35,7 +35,6 @@ export const OutputWindowMachineCode:HTMLElement = getHtmlElement("OutputWindowM
 export const targetSymbolTableLine:string="bufferTargetSymbolTable";
 export const targetlabelValuePlaceholder:string="labelValuePlaceholder"
 export const p2LabelValuePlaceholder:string="p2LabelValuePlaceholder";
-let skipped:boolean=false;
 
 
 export const searchEntryLabel:string="searchEntryLabel";
@@ -62,7 +61,7 @@ export const selectTranslatingLine = (id:string) =>{
 export class ProjectWindow{
 
     private inputLineControl:InputLineControl=InputLineControl.getInstance();
-    private symbolList=SymbolList.getInstance();
+    private symbolList:SymbolList=SymbolList.getInstance();
     private iWindow:InputWindow = new InputWindow(this);
     private anim:Animator;
     private linkerAuflosungB:boolean=false;
@@ -125,17 +124,20 @@ export class ProjectWindow{
                 
                 this.potentialConsts.forEach(e=>{
                     // var var1:RegExp = new RegExp('.*,(\s*|\s+)'+e+'.*');
-                    var var1:RegExp = new RegExp("\\s*"+e+"\\s*,","i");
-                    var var2:RegExp = new RegExp(",\\s*"+e+"\\s*","i");
-                    var var3:RegExp = new RegExp("(\\s+|^\\s*)"+e+"\\s+","i");
+                    var var1:RegExp = new RegExp("\\s+"+e+"\\s*,","ig");
+                    var var2:RegExp = new RegExp(",\\s*"+e+"(\\s*$|\\s+)","ig");
+                    var var3:RegExp = new RegExp("(\\s+|^\\s*)"+e+"(\\s+|\\s*$)","ig");
+                    // var var4:RegExp = new RegExp("(\\s+|\\s*)"+e+"\\s+","i");
                     if(inputstring.match(var1)!=null){
-                        inputstring = inputstring.replace(e,`<span class="purple">${e}</span>`);
+                        // inputstring = inputstring.replace(e,`<span class="purple">${e}</span>`);
+                        inputstring = inputstring.replace(var1,` <span class="purple">${e}</span>,`);
                     }
-                    else if(inputstring.match(var2)!=null){
-                        inputstring = inputstring.replace(e,`<span class="purple">${e}</span>`);
+                    if(inputstring.match(var2)!=null){
+                        inputstring = inputstring.replace(var2,`,<span class="purple">${e}</span> `);
                     }
-                    else if(inputstring.match(var3)!=null){
-                        inputstring = inputstring.replace(e,`<span class="purple">${e}</span>`);
+                    if(inputstring.match(var3)!=null){
+                        inputstring = inputstring.replace(var3,` <span class="purple">${e}</span> `);
+                        
                     }
                 })
                
@@ -206,7 +208,7 @@ export class ProjectWindow{
         }
     }
 
-    private rePushSymbols=()=>{
+    public rePushSymbols=()=>{
         this.symbols=this.symbolList.getSequence();
         let s:Constant|Label;
         let n,p;
@@ -239,7 +241,7 @@ export class ProjectWindow{
         updateScroll("symbolTableLines");
     }
 
-    private rePushLastSymbolEmpty(){
+    public rePushLastSymbolEmpty(){
         this.symbols=this.symbolList.getSequence();
         let s:Constant|Label;
         let n,p;
@@ -347,7 +349,7 @@ export class ProjectWindow{
         removeClassOfAll("currentlyTranslated");
     }
 
-    private displaySecondPhase=async()=>{
+    public displaySecondPhase=async()=>{
         let sleeptime = 400;
         let newElem:HTMLDivElement;
         let lineBuffer:string[]=[];
@@ -362,10 +364,10 @@ export class ProjectWindow{
         descriptionLines.appendChild(newElem);
         for(let i =0;i<7;i++){
             if(i<2 || i>4){
-                lineBuffer.push(`<p>&nbsp;&nbsp;&nbsp;</p>`);
+                lineBuffer.push(`<p>&nbsp;</p>`);
                 if(blockAnimation){
                     await sleepUntilNextStep();
-                    newElem.innerHTML += `<p>&nbsp;&nbsp;&nbsp;</p>`;
+                    newElem.innerHTML += `<p>&nbsp;</p>`;
                     updateScroll(descriptionLines.id);
                 }
             }
@@ -378,10 +380,10 @@ export class ProjectWindow{
                 }
             }
             if(i==3){
-                lineBuffer.push(`<p>2.Phase LinkerAuflösung</p>`);
+                lineBuffer.push(`<p>2.Phase ... Labelauflösung</p>`);
                 if(blockAnimation){
                     await sleepUntilNextStep();
-                    newElem.innerHTML +=`<p>2.Phase LinkerAuflösung</p>`;
+                    newElem.innerHTML +=`<p>2.Phase ... Labelauflösung</p>`;
                     updateScroll(descriptionLines.id);
                 }
             }
@@ -531,17 +533,17 @@ export class ProjectWindow{
             if(blockAnimation){
                 await sleepUntilNextStep();
             }
-            if(this.checkForSkip()){ //bufferZeit für AnimationsTyp3 mit speed==3
+            if(this.checkForSkip()){ //bufferZeit für AnimationType3 mit speed==3
                 await sleepFor(40);
             }
         }
         
     }
 
-    private pushLines=async(isSkipped:boolean)=>{
+    public pushLines=async()=>{
         let input:InputLine;
         let iP:HTMLElement;
-        skipped=isSkipped;
+        // skipped=isSkipped;
         if(this.inputstrings.length>0){
             for(let i=0;i<this.inputstrings.length;i++){
                 this.translateInputStringOfId(i);
@@ -557,7 +559,7 @@ export class ProjectWindow{
                         continue;
                     }
                     else{
-                        if(aniControl.start && aniControl.speed<3 && aniControl.animationType!=AnimationsTyp.Typ3) await sleepFor(1200-(aniControl.speed)*200);
+                        if(aniControl.start && aniControl.speed<3 && aniControl.animationType!=AnimationType.Typ3) await sleepFor(1200-(aniControl.speed)*200);
                         if(this.checkForNoAniStep()){
                             await this.anim.animationInputLineToCurrentLine(i,this.inputstrings[i].split(";")[0]);
                         }
@@ -593,7 +595,7 @@ export class ProjectWindow{
                     
                 }
                 if(aniControl.singleStepFlag) await this.pause();
-                if(!skipped)await checkIfPaused();
+                await checkIfPaused();
                 if(!this.checkForSkip()){
                     await sleepFor(1);
                 }
@@ -608,7 +610,7 @@ export class ProjectWindow{
         }
     }
 
-    private pushDescriptionLinesOf=async(i:number)=>{
+    public pushDescriptionLinesOf=async(i:number)=>{
         let e:string;
         let ss:string[];
         let l:InputLine;
@@ -737,7 +739,7 @@ export class ProjectWindow{
             }
             addresszahler.innerHTML= `${Manipulator.formatHextoDat16(l.getEndAddr())}`;
         }
-        if(this.checkForSkip()){ //bufferZeit für AnimationsTyp3 mit speed==3
+        if(this.checkForSkip()){ //bufferZeit für AnimationType3 mit speed==3
             await sleepFor(30);
         }
 
@@ -761,7 +763,7 @@ export class ProjectWindow{
         })
     }
 
-    private getLabelIfUnknown(i:number,b:boolean):string{
+    public getLabelIfUnknown(i:number,b:boolean):string{
         let e:InputLine;
 
         let addr:string,spa:string,l:string="";
@@ -807,7 +809,7 @@ export class ProjectWindow{
         return "";
     }
 
-    private aufzulosendeLabel=():boolean=>{
+    public aufzulosendeLabel=():boolean=>{
         let b=false;
         this.inputLines.forEach(e=>{
             if(e.getTranslation().includes("????")){
@@ -820,7 +822,7 @@ export class ProjectWindow{
         return b;
     }
 
-    private translateInputStringOfId=(n:number):boolean=>{
+    public translateInputStringOfId=(n:number):boolean=>{
         if(n<this.inputstrings.length){
             this.inputLineControl.addInputLine(this.inputstrings[n]);
             this.refreshInputLines();
@@ -872,19 +874,19 @@ export class ProjectWindow{
         }
     }
 
-    checkForSkip():boolean{
-        if(skipped)return false;
+    public checkForSkip():boolean{
+        // if(skipped)return false;
         
         return !(aniControl.speed==4 && aniControl.isAni3())
     }
 
-    checkForNoAniStep():boolean{
-        if(skipped)return false;
+    public checkForNoAniStep():boolean{
+        // if(skipped)return false;
         
         return !(aniControl.speed>=3 && aniControl.isAni3())
     }
     
-    private clearMachinenbefehlandCurrentLine(){
+    public clearMachinenbefehlandCurrentLine(){
         machinenbefehl.innerHTML="&nbsp;";
         currentLineLine.innerHTML="&nbsp;";
     }
@@ -893,7 +895,7 @@ export class ProjectWindow{
         if(aniControl.stop || aniControl.reset || aniControl.end) throw new Error("Reset was pressed recently!");
         if(this.inputstrings.length>0){
             let date = Date.now();
-            await this.pushLines(false);
+            await this.pushLines();
             await this.clearMachinenbefehlandCurrentLine();
             aniControl.setEnd();
             console.log(Date.now()-date);
@@ -904,7 +906,8 @@ export class ProjectWindow{
     }
 
     public toggleStop=async()=>{
-        if(this.inputstrings.length>0){
+        try{
+            if(this.inputstrings.length>0){
             
                 if(aniControl.end || aniControl.stop){
                     throw new Error("Stop has been pressed or animation Finished!");
@@ -926,9 +929,13 @@ export class ProjectWindow{
                         await aniControl.setPlaying();
                     }
                 }
-        }else{
-            console.log("no Input");
+            }else{
+                console.log("no Input");
+            }
+        }catch(e){
+            console.log(e);
         }
+        
     }
 
     public pause=()=>{

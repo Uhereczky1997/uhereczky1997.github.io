@@ -1,4 +1,4 @@
-import { aniControl, AnimationsTyp, checkIfPaused, sleepFor, sleepForFrame, sleepStaticAnimation, sleepStaticAnimationHalf, sleepStopStartTime, sleepUntilNextStep } from "./AnimationUtil";
+import { aniControl, AnimationType, checkIfPaused, sleepFor, sleepForFrame, sleepStaticAnimation, sleepStaticAnimationHalf, sleepStopStartTime, sleepUntilNextStep } from "./AnimationUtil";
 import { Manipulator } from "./Backend/Manipulator";
 import { root, rootVariables } from "./index";
 import { p2LabelValuePlaceholder, symboladdress, targetlabelValuePlaceholder, targetSymbolTableLine } from "./ProjectWindow";

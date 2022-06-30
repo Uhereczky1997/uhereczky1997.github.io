@@ -24,7 +24,8 @@
     visibility: hidden;
     width: max-content;
     background-color: var(--green)!important;
-    padding: var(--var5px) 0;                                       
+    padding: var(--var5px) 0;       
+    border: var(--var1_5px) solid;             
     border-radius: var(--var10px);                 
     bottom: 105%;
     left: 50%;
@@ -42,6 +43,7 @@
 }
 .tooltip:hover >.tooltiptext {
     visibility: visible;
+    transition: 0.1s visibility 1s;
 }
 .tooltiptext>h3,.tooltiptext>p{
     text-align: start;

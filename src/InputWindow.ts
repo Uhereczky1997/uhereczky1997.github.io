@@ -5,6 +5,7 @@ import { aniControl} from "./AnimationUtil";
 
 import { descriptionLoader } from "./Backend/StringConstructor";
 import { Manipulator } from "./Backend/Manipulator";
+import { InputLine } from "./Backend/InputLine";
 
 
 const errorDescriptionDiv:HTMLElement = getHtmlElement('ErrorDescription');
@@ -16,7 +17,7 @@ export const filterableDescription:HTMLElement = getHtmlElement("filterableDescr
 export class InputWindow{
 
     private previousP:string="0";
-    private inputcontrol:InputLineControl=InputLineControl.getInstance();
+    private inputLineControl:InputLineControl=InputLineControl.getInstance();
     private InputTextAreaElement:HTMLTextAreaElement;
     private pWindow:ProjectWindow;
     private filterOutput:HTMLElement;
@@ -34,8 +35,8 @@ export class InputWindow{
             let s:string[]=this.InputTextAreaElement.value.split("\n");
             if(!(s.length<1)){
                 this.pWindow.refreshInputStrings(s);
-                this.pWindow.setPotentialConsts(this.preTranslateDefConst(s));
-                this.inputcontrol.addInputLines(s);
+                this.pWindow.setPotentialConsts(this.preDefineConst(s));
+                //this.inputLineControl.addInputLines(s);
             }
             else{
                 throw new Error('No InputLines!');
@@ -67,14 +68,14 @@ export class InputWindow{
         }
     }
 
-    public preTranslateDefConst = (ss:string[]):string[] =>{
+    public preDefineConst = (ss:string[]):string[] =>{
         let potentialConsts:string[]=[];
 
         let s;
         ss.forEach(e =>{
             let i = Manipulator.splitStringHalf(e,";");
             if(i[0].replace(/\s/g,"")!=""){
-                s = i[0].match(/(\s*_|^_)\w+(?=\s+EQU\s+([0-9]+|[A-Fa-f0-9]+h|[01]+b)\s*$)/i)
+                s = i[0].match(/(\s*_|^_)\w+(?=\s+EQU\s+([0-9]+d{0,1}|[A-Fa-f0-9]+h|[01]+b)\s*$)/i)
                 if(s!=null){
                     potentialConsts.push(s[0].trim())
                 }
@@ -127,7 +128,7 @@ export class InputWindow{
     }
 
     public createFilterable = () =>{
-        let filterables:string[] = this.inputcontrol.filterables();
+        let filterables:string[] = this.inputLineControl.filterables();
         let elem:HTMLElement;
         let type:string=""
         if(this.filterOutput != null){
@@ -181,7 +182,6 @@ export class InputWindow{
         console.log(s);
     }
     
-    
     public createEventListeners=()=>{
         try{
             
@@ -201,8 +201,9 @@ export class InputWindow{
             console.log(e);
         }
         // createClickListener('Preview',this.previewTranslation);
-        createClickListener('GenerateDummy',this.generateDummy);
+        createClickListener('GenerateDummy',this.createCode);
         createClickListener('CloseInputWindow',this.openEditWindow);
+        document.getElementById("GenerateDummy")!.addEventListener("dblclick",this.testInputLines)
         inputSelect.addEventListener("change",this.switchInputContent);
         this.createFilterable();
         document.getElementById("filterDiv")!.addEventListener("focusin",function(){
@@ -274,22 +275,38 @@ export class InputWindow{
         })
     }
     public generateDummy = ():void=>{
-        //this.preTranslateDefConst(this.InputTextAreaElement.value.split("\n"));
+        //this.preDefineConst(this.InputTextAreaElement.value.split("\n"));
         // this.createCode(this.InputTextAreaElement.value.split("\n"))
-        this.listInstructionLibrary();
+        // this.listInstructionLibrary();
+        this.testInputLines();
     }
     private listInstructionLibrary = ():void =>{
         let consolestring:string= "";
-        consolestring = this.inputcontrol.filterables().join("\n");
+        consolestring = this.inputLineControl.filterables().join("\n");
         console.log(consolestring);
     }
-    private createCode = (s:string[])=>{
+    private createCode = ()=>{
+        let s =  this.InputTextAreaElement.value.split("\n");
         let consolestring:string = "[\n";
         s.forEach(e =>{
             consolestring = consolestring +"\""+e.trim()+"\","+"\n";
         })
         consolestring = consolestring +"]";
         console.log(consolestring);
+    }
+    //testing
+    private testInputLines=()=>{
+        this.inputLineControl.addInputLines(this.InputTextAreaElement.value.split("\n"));
+        let lines:InputLine[]= this.inputLineControl.getInputLines();
+        lines.forEach(e=>{
+            if(!e.getValid()){
+                console.log("ERROR -> ID :"+e.getId());
+                console.log("error -> "+e.getError());
+                console.log("line  -> "+e.getCommandLineToCurrentLine());
+                console.log("errordescription ->\n"+e.getErrorLine());
+                console.log("-----------")
+            }
+        })
     }
 } 
 let bsp0:string[]=[]
@@ -301,6 +318,86 @@ const bsp1:string[]=[
     "ROR","CP A","JP Label1","CALL Label1","RET","HALT","NOP","DB 45h","DW 45h","RS 3","ORG 2323h",
 ]
 const bsp2:string[]=[
+    "_dat8 equ 12h",
+    "_dat16 equ 1234h",
+    ";start:",
+    "",
+    "mov a,b",
+    "mov a,",
+    "mov ,_dat8",
+    "mov a,12d",
+    "mov a,_dat8",
+    "mov a,_dat16",
+    "mov hl,_dat16",
+    "mov hl,offset start",
+    "mov hl,offset ...",
+    "mov c,d",
+    "",
+    "pop asd",
+    "push asd",
+    "",
+    "in a,_dat8",
+    "in a,_dat16",
+    "in ,_dat8",
+    "in a,",
+    "in adf, _dat8",
+    "in a,asdf",
+    "",
+    "out _dat8,a",
+    "out _dat16,a",
+    "out adfa,a",
+    "out _dat8, adf",
+    "out ,a",
+    "out _dat8,",
+    "",
+    "inc c",
+    "inc asdf",
+    "inc",
+    "inc ,sadf",
+    "inc a,asdf",
+    "",
+    "add a",
+    "add",
+    "add _dat8",
+    "add _dat16",
+    "add adsfa",
+    "add ,adf",
+    "add a,asdf",
+    "add a,",
+    "add _dat8,adsf",
+    "add _dat8,",
+    "",
+    "",
+    "shl asdf",
+    "",
+    "jpnz label",
+    "jpnz ...",
+    "jpnz",
+    "jpnz ,asdf",
+    "jpnz label,asdf",
+    "",
+    "jp [ix]",
+    "jp label",
+    "jp ...",
+    "jp",
+    "jp ,asd",
+    "jp label,asdf",
+    "jp [ix],",
+    "jp [ix],asdf",
+    "",
+    "call label",
+    "call ...",
+    "call",
+    "call ,asdf",
+    "call label, asdf",
+    "",
+    "halt adf",
+    "",
+    "ret adsf",
+    "",
+    ]
+
+/* [
     "mov a,b",
     "org 10",
     "mov a,b",
@@ -310,8 +407,43 @@ const bsp2:string[]=[
     "mov sp, 1000h",
     "mov sp, 1000h",
     "mov sp, 1000h"
-]
+] */
 const bsp3:string[]=[
+    "_dat8 equ 12h",
+    "_dat16 equ 1234h",
+    "start:",
+    "",
+    "rs _dat8",
+    "rs _dat16",
+    "rs start",
+    "rs 2d",
+    "rs 0101b",
+    "rs 3h",
+    "rs",
+    "",
+    "dw offset start",
+    "dw offset ...",
+    "dw _dat16",
+    "dw _dat8",
+    "dw asdf",
+    "dw 23h",
+    "dw",
+    "",
+    "db _dat8",
+    "db _dat16",
+    "db 23h",
+    "db 23232h",
+    "db wasd",
+    "",
+    "org _dat16",
+    "org",
+    "org 234234h",
+    "org asdf",
+    "org _dat8",
+    "org ...",
+    "",
+    ]
+/* [
     "label1:"
     ,"label2:"
     ,"label3:"
@@ -328,7 +460,7 @@ const bsp3:string[]=[
     ,"jp label4"
     ,"jp label5"
     ,"jp label4"
-]
+] */
 const bsp4:string[]=[
     "_const equ 1343h",
     "_var equ 12",

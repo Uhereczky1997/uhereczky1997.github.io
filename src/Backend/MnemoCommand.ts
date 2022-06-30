@@ -4,7 +4,6 @@ export class MnemoCommand {
     private mCode:string ="";
     private destination:string ="";
     private source:string ="";
-    private binaryCode:string ="";
     private hexCode:string="";
     private size:number = 0;
     
@@ -12,7 +11,6 @@ export class MnemoCommand {
         this.mCode=c.toUpperCase();
         this.destination=d;
         this.source=addr;
-        this.binaryCode=bC.replace(/\s/g,"");
         this.hexCode=Manipulator.binToHex(bC.replace(/\s/g,""));
         this.size=l;
     }

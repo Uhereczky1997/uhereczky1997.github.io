@@ -8,7 +8,6 @@ import { Label } from "./Label";
 
 export class InputLineControl{
     private static instance:InputLineControl;
-    private inputstrings:string[] =[];
     private inputlines:InputLine[]=[];
     private symbolliste:SymbolList=SymbolList.getInstance();
     private map:CommandMap= CommandMap.getInstance();
@@ -19,14 +18,14 @@ export class InputLineControl{
     private addressTable:number[]=[];
     private constructor(){}
 
-    public static getInstance(){
+    static getInstance(){
         if(!InputLineControl.instance){
             InputLineControl.instance = new InputLineControl();
         }
         return InputLineControl.instance;
     }
 
-    public filterables =():string[]=>{
+    filterables =():string[]=>{
         return this.map.filterableString();
     }
 
@@ -35,20 +34,6 @@ export class InputLineControl{
             return false;
         }
         else return true;
-    }
-
-    getInvalidIDs=():number[]=>{
-        return this.invalidIDs;
-    }
-
-    getInvalidInputLines=():InputLine[]=>{
-        let invalidInputllines:InputLine[]=[];
-        this.inputlines.forEach(e=>{
-            if(this.invalidIDs.includes(e.getId())){
-                invalidInputllines.push(e);
-            }
-        })
-        return invalidInputllines;
     }
 
     reset=():void=>{
@@ -62,21 +47,13 @@ export class InputLineControl{
         this.addressTable=[];
     }
 
-    setInputStrings(s:string[]){
-        this.inputstrings=s;
-    }
-
-    getInputStrings():string[]{
-        return this.inputstrings;
-    }
-
     addInputLines=(inputStrings:string[]):void=>{
         this.reset();
         inputStrings.forEach(e=>{
             this.addInputLine(e);
         });
     }
-    public isFreeAddr=(s:string,n:string):boolean=>{
+    isFreeAddr=(s:string,n:string):boolean=>{
         let start:number = Manipulator.hexToDec(s);
         let end: number = Number(n)-1;
         let i = 0;
@@ -132,6 +109,7 @@ export class InputLineControl{
         }
         this.map.mapInputLineByCase(i);
         this.inputlines.push(i);
+        // console.log(i);
         if(i.getValid()){
             this.createSummary(i);
             this.calculateStartingAddr(i);
@@ -153,15 +131,6 @@ export class InputLineControl{
 
     getLittleEndianOf(h:string):string{
         return Manipulator.splitDat16InDat8(h).join("");
-    }
-
-    checkTranslationForUnknownLabel(i:InputLine){
-        if(i.getType()==InputLineType.TRANSLATED){
-            if(i.getTranslation().includes("????")){
-                return true;
-            }
-        }
-        return false;
     }
 
     fHD16(h:string){
@@ -364,7 +333,7 @@ export class InputLineControl{
         let n=0;
         let rest:string[];
         let newS=addr;
-        console.log(addr);
+        // console.log(addr);
         addr.forEach(e=>{
             if(e=="????"||undefined||""){
             }
@@ -590,8 +559,4 @@ export class InputLineControl{
     getInputLines=()=>{
         return this.inputlines;
     }
-    getTranslatedIDs=():number[]=>{
-        return this.translatedIDs;
-    }
-
 }

@@ -3,8 +3,8 @@ import { Constant } from "./Constant";
 import { Manipulator } from "./Manipulator";
 export class SymbolList{
 
-    public Labels:Label[]=[];
-    public Consts:Constant[]=[];
+    private Labels:Label[]=[];
+    private Consts:Constant[]=[];
     private sequence:Array<Label|Constant>=[]
 
     private static instance:SymbolList;
@@ -119,9 +119,6 @@ export class SymbolList{
     }
     getLabels():Label[]{
         return this.Labels;
-    }
-    getConsts():Constant[]{
-        return this.Consts;
     }
     getSpecificConstantByName(addr:string):Constant|undefined{
         return this.Consts.find(e=>e.getName().toLowerCase()==addr.toLowerCase());

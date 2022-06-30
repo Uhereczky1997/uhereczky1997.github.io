@@ -48,7 +48,9 @@ export const onscrollIn_Out = () =>{
 export const root = document.documentElement;
 export const rootVariables = getComputedStyle(root);
 export let contentloaded:boolean= false;
-
+let preferedTheme = "light";
+let fullscreened:boolean = false;
+let p = new ProjectWindow();
 declare global {
     interface Document {
       mozCancelFullScreen?: () => Promise<void>;
@@ -93,16 +95,6 @@ const switchToFullscreen=()=>{
             fullscreened=false;
         }
     }
-}
-
-const consoleWindowsize=()=>{
-    let s:number = Number(rootVariables.getPropertyValue("--arrowBodyW").replace("px",""));
-    console.log("Innerwidth: "+window.innerWidth);
-    console.log("Innerheight: "+window.innerHeight);
-
-    console.log("Outerwidth: "+window.outerWidth);
-    console.log("Outerheight: "+window.outerHeight);
-
 }
 
 const outputClip = () =>{
@@ -164,12 +156,6 @@ const changeTheme = () =>{
     const root = document.querySelector(':root');
     root!.setAttribute('color-scheme', `${theme}`);
 }
-
-
-let preferedTheme = "dark";
-let fullscreened:boolean = false;
-
-let p = new ProjectWindow();
 
 window.addEventListener('DOMContentLoaded', async() =>{
     const root1 = document.querySelector(':root');

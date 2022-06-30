@@ -1,66 +1,7 @@
-??
 
-      % dropdown für bsp programme im EingabeFenster
-
-      % dropdown biblothek im EingabeFenster
-
-      mov a,b
-      org 2
-      mov a,b
-      org 2
-      mov a,b
-
-!!!!!!!!
-
-
-      % Für 2. Phase Typ3 Animation auch anpassen.
-      
-      % lookupSymboltableentry !!
-      %       1. Suche Label xy in  ..
-      %       - Animation zur suche in Symboltabelle -
-      %       2.a) Label xy in Symboltabelle gefunden <span id="p2LabelValuePlaceholder"><span>
-      %       - Animation zu Bewegung von gefundenen Wert zur Stelle von p2LabelValuePlaceholder -
-      %       2.b) Label xy in Symobltabelle gefunden, Wert: $dec$ ($hex$) 
-      %       3. Ersetzung ...
-      
-      % org je nach zahlenwert sollte es in der form mit =<Zahlenwert> die adresserhöhung stattfinden - 
-      
-      % Im quelltext sollte sich Zahlenwerte garnicht ändern (dec bleibt dec, hex bleibt hex) // DecOrHex
-      % const equ nur am Anfang von Programm erlaubt (pure label def zählt nicht), nach ersten Mnemocode "Konstanten definition nicht mehr erlaubt" -> erwarte Labeldef. oder MnemoCode -Konstante
-
-      % Warnzeichen wenn addresszählerposition überschrieben wird um ändern -> Keine folge Warnung;
-      % Warnzeichen nicht Sehbar! wenn nicht aktiv
-      % QuelltextZeilen ID hervorheben wenn sie übersetzt wird + same for: Speicherabbild,KonstantentTabelle bei linkerAuflösung ? wenn konstantegefunden wird?
-      % Konstante nicht 8 oder 16 bit, -> wenn zu groß -> Fehler const 'xy' zu Groß;
-
-      % const beginnt mit _
-      % wenn labelname gleich hex wert ist 
-      % precompiler const def mit färbung/kursiv -> einfärbung/kursiv in CurrentLine
-      ~ tooltip für filterable
-      % alphabetische ordnung dieser
-      
-      % bewegteText maximal länge festlegen
-      % binare nummer akzeptiert
-      
-      ??          ->    // ??
-      // need?
-      
-      Alle Texts zusammenschreiben (und in KonstantenSpeichern ((zum Wiederverwendung)))
-      damit Prof einmal darüberschauen kann.
-      % //Wenn zu Wenige Operand -> Erroranzeige ändern NICHT AN AKZEPTIERTEN STOPPEN -> i.setError("");
       
       Ausführliches testen von randfällen
+
+      too many operands
+      no start with empty lines only
       
-      dokumentation:
-      ~ 40 Seiten - 
-      Titel : 
-      Anfang: kurzfassung 3/4
-      
-      Inhaltsverzeichnis: 
-      Einleitung:
-      Anforderungen:
-      
-      
-      
-      %'''''''''''''hauptbestandteile auf flex umstellen
-      %''''''''''''' dynamische Bildeinteilung? mittels relative position  - NOPE

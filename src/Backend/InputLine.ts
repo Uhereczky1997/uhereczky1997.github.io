@@ -47,9 +47,6 @@ export class InputLine{
         this.errorBool=true;
         this.error=s;
     }
-    hasError():boolean{
-        return this.errorBool;
-    }
     hasOffsetLabel():boolean{
         return this.offsetLabel;
     }
@@ -119,7 +116,13 @@ export class InputLine{
         }
         return undefined;
     }
-    
+    getError():string{
+        return this.error;
+    }
+    getErrorLine():string{
+        let toReturn:string|undefined = this.description.find(e => e.includes("error:"))
+        return toReturn!=undefined?toReturn:"";
+    }
     setValid(b:boolean){this.valid=b;}
     setType(t:InputLineType){this.type=t;}
     saveDescriptionLine(s:string){

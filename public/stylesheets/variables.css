@@ -1,17 +1,4 @@
 :root{
-/*     --maxheight1680: 1680px;
-    --maxwidth920: 920px;
-    --maxfontsize32:32px;
-    --maxfontsize30:30px;
-    --maxfontsize28:28px;
-    --maxfontsize26:26px;
-    --maxfontsize24:24px;
-    --maxfontsize22:22px;
-    --maxfontsize20:20px;
-    --maxfontsize18:18px;
-    --maxfontsize16:16px;
-    --maxfontsize14:14px;
- */
     --bottomHeight: calc(70/894*100%);
     --hBorderRadius: 4px;
     --btnEXPspeed: 0.2s;
@@ -31,7 +18,7 @@
     --green-light: #bbf125;
     --green-dark: #8fc400;
 
-    --gray-light: grey;
+    --gray-light: #808080;
     --gray-dark: #c4c4c4;
     
     --red: #dd0606;
@@ -39,7 +26,7 @@
     
     /* --blue-light: #00b2ee;
     --blue-dark: #009bcf; */
-     --blue-light: #009bcf;
+    --blue-light: #009bcf;
     --blue-dark: #009bcf; 
     
     --yellow-light:#ffff00ec;

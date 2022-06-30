@@ -2,6 +2,36 @@
     //KONSTANTE ZU GROß? 
 2.
     Folgefehler bei warnung? (Nehmen an nein);
+
+
+Possible errors:
+_dat8 equ 12h
+_dat16 equ 1234h
+label:
+; General ERROR
+lab: _var equ 1234      ; errNoConstafterLabelDef
+-adsf                   ; errInvalidConstOrMnc
+-asdf                   ; errUnknownMnc
+_var2 equ 123h          ; errNoConstDefAllowed
+
+; CONST ERROR   
+c1 equ 21h              ; errInvalidConstOrMnc
+c2 eqqu 21h             ; errUnknownMnc
+c2 equ                  ; errTooFewCmd
+c2 equ 12123h           ; errInvalidCmd
+
+; LABEL ERROR   
+_dat8:                  ; errNameTakenForConst
+label:                  ; errNameTakenForLabel
+1l:                     ; errInvalidLabel
+
+; MOV ERROR 
+mov                     ;<- errTooFewCmd
+mov asd,                ;<- errTooFewCmd 
+mov  ,asdf              ;<- errTooFewCmd 
+mov -adf, 123           ;<- errInvalidCmd
+mov a,_dat16            ;<- errExpectedDat8ConstToBig
+
 x-----------------------------------------------------------------------
 Label1:Mov d,95h
 Lab1:Mob d,95h

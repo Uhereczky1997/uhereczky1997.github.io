@@ -1,19 +1,680 @@
-
-                //COMMENTED BECAUSE SAME FUNCTIONALITY
-
-            /*
-            case 'OR':case'XOR':case'CP':
-                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+switch(strings[0]){
+            case 'MOV':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
 
                 save3(i);
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='MOV'}); //Alle treffer auf MOV Codes filtriert
+                consoletostring=this.getDests(matches).join(", ");
+                i.saveDescriptionLine(this.formatErwartet(consoletostring));        //Ausgabe von erwartetten Befehlen
+                
+                if(strings.length<2){
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd()); //ERROR
+                    i.setError("");
+                    return false;
+                }
+                strings=Manipulator.splitStringHalfUnfiltered(strings[1],",");
+                // strings = this.filterForEmtpyStrings(strings);
+                // 2. Term Register
+                if(this.getDests(matches).includes(strings[0].toUpperCase())
+                    &&this.Regs.includes(strings[0].toUpperCase())){ // A || B || C || IX || HL || SP
+
+                    toSave=strings[0];
+                    i.setSecondPart(toSave);
+                    strings[0] = strings[0].toUpperCase();
+                    i.saveDescriptionLine(this.formatGefunden("Register "+strings[0],i.getFirstPart().toUpperCase()+" "+strings[0]+" ..."));
+                    
+                    matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
+                        if(e.getDestination() ==strings[0]){
+                            return e;
+                        }
+                    });
+                    consoletostring=this.getScources(matches).join(", ");
+                    save4(i);
+                    i.saveDescriptionLine(this.formatErwartet(consoletostring));    //Ausgabe von erwartetten Befehlen
+                    if(strings.length<2){
+                        i.saveDescriptionLine(StringConstructor.errTooFewCmd()); //ERROR
+                        i.setError("");
+                        return false;
+                    }
+                    // 3. Term Register
+                    if(this.getScources(matches).includes(strings[1].toUpperCase())&&this.Regs.includes(strings[1].toUpperCase())){ // A || B || C || [HL]
+
+                        toSave=strings[1];
+                        strings[1] = strings[1].toUpperCase();
+                        i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+strings[1]));
+                        
+                        matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
+                            if(e.getSource() ==strings[1]){
+                                return e;
+                            }
+                        });
+                        if(matches.length==1){
+                            i.setThirdPart(toSave);
+                            if(strings[0] == "[HL]" || strings[1]=="[HL]"){
+                                i.saveDescriptionLine(this.formatErkannt(indirekteRegAdressierung));
+                            }
+                            else{
+                                i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
+                            }
+                            i.setType(InputLineType.TRANSLATED);
+                            i.setLength(matches[0].getSize());
+                            i.setHCode(matches[0].getHexCode());
+                            i.setValid(true);
+                            return true;
+                        }
+                        else{
+                            //Bug aufgetrenten oder unbeachtetter fall
+                            i.saveDescriptionLine(StringConstructor.bugNoCommand());
+                            return false;
+                        }
+                    }
+                    else{
+                        // 3. Term nicht Register -> OFFSET Label || dat || const || label
+                        // console.log(strings[1]+" "+this.getDataType(strings[1]))
+                        if(this.getDataType(strings[1]) != DataType.NONE){
+                            let type:DataType=this.getDataType(strings[1]);
+                            switch(type){
+
+                                case DataType.dat_8:
+                                    if(consoletostring.includes("dat_8")){
+                                        //i.saveDescriptionLine(`Gefunden -> 'dat_8'`);
+                                        // i.saveDescriptionLine(StringConstructor.infoIsDat8());
+                                        this.saveExtraInfo(i,consoletostring,strings[1]);
+                                        // i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat8(strings[1])));
+                                        i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+strings[1],"MOV "+strings[0]+", "+strings[1])); // DecOrHex
+    
+                                        matches=matches.filter(e=>{
+                                            if(e.getSource()=="dat_8"){
+                                                return e;
+                                            }
+                                        });
+                                        // Änderung
+                                        // i.setThirdPart(Manipulator.formatHextoDat8(strings[1]));
+                                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
+                                        i.setThirdPart((strings[1]));
+                                        break;
+                                    }else if(consoletostring.includes("dat_16")){
+                                        //i.saveDescriptionLine(`Gefunden -> 'dat_16'`);
+                                        // i.saveDescriptionLine(StringConstructor.infoIsDat16());
+                                        this.saveExtraInfo(i,consoletostring,strings[1]);
+                                        i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+strings[1],"MOV "+strings[0]+", "+strings[1])); // DecOrHex
+                                        // i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
+                                        matches=matches.filter(e=>{
+                                            if(e.getSource()=="dat_16"){
+                                                return e;
+                                            }
+                                        });
+                                        // Änderung
+                                        i.setThirdPart((strings[1]));
+                                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
+                                        break;
+                                    }else{
+                                        this.saveExtraInfo(i,consoletostring,strings[1]);
+                                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1])); //can only be [HL]
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    }
+                                case DataType.dat_16:
+                                    if(consoletostring.includes("dat_16") && ['HL','SP','IX'].includes(strings[0])){
+                                        this.saveExtraInfo(i,consoletostring,strings[1]);
+                                        // i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+Manipulator.formatHextoDat16(strings[1]),"MOV "+strings[0]+", "+Manipulator.formatHextoDat16(strings[1])));
+                                        i.saveDescriptionLine(this.formatGefunden("16-bit Wert "+strings[1],"MOV "+strings[0]+", "+strings[1])); // DecOrHex
+                                        matches=matches.filter(e=>{
+                                            if(e.getSource()=="dat_16"){
+                                                return e;
+                                            }
+                                        });
+                                        i.setThirdPart((strings[1]));
+                                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
+
+                                        break;
+                                    }
+                                    else if(consoletostring.includes("dat_8")){
+                                        this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                                        i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    }
+                                    else{
+                                        this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1])); //can only be [HL]
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    }
+                                    break;
+                                case DataType.CONSTANT:
+    
+                                    let value = this.symbollist.getSpecificConstantByName(strings[1])?.getValue();
+                                    if(value==undefined){ //bug Aufgetreten oder Konstante nicht angelegt
+                                        i.saveDescriptionLine(StringConstructor.bugNoValueForConst(strings[1]));
+                                        i.setError(strings[1]);
+                                        return false;
+                                    }
+                                    type = this.getDataType(value);
+                                    if(consoletostring.includes("dat_8") && type==DataType.dat_8){ //Konstante hat Datentyp 'dat_8' und ist erwartet
+                                        matches=matches.filter(e=>{
+                                            if(e.getSource()=="dat_8"){
+                                                return e;
+                                            }
+                                        });
+                                        // i.saveDescriptionLine(StringConstructor.infoNotDat8());
+                                        // i.saveDescriptionLine(StringConstructor.infoIsDat8Const(strings[1])); //CONST ANIMATION????
+                                        this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                                        i.saveDescriptionLine(this.formatGefunden("Konstante "+`<span class="labelBlue">${strings[1]}</span>`+" mit dem Wert "+value,i.getFirstPart().toUpperCase()+" "+strings[0]+", "+strings[1]));
+
+                                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
+                                        break;
+                                    }
+                                    else if(consoletostring.includes("dat_16")){ //Konstante hat Datentyp 'dat_16' und ist erwartet
+                                        matches=matches.filter(e=>{
+                                        if(e.getSource()=="dat_16"){
+                                            return e;
+                                        }
+                                        });
+                                        // i.saveDescriptionLine(StringConstructor.infoNotDat16());
+                                        // i.saveDescriptionLine(StringConstructor.infoIsDat16Const(strings[1])); //CONST ANIMATION????
+                                        this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                                        i.saveDescriptionLine(this.formatGefunden("Konstante "+`<span class="labelBlue">${strings[1]}</span>`+" mit dem Wert "+value,i.getFirstPart().toUpperCase()+" "+strings[0]+", "+strings[1]));
+
+                                        i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
+
+                                        break;
+                                    }
+                                    else if(consoletostring.includes("dat_8")){
+
+                                        // i.saveDescriptionLine(StringConstructor.infoNotDat8());
+                                        // i.saveDescriptionLine(StringConstructor.infoNotDat8Const(strings[1]));
+                                        // if(consoletostring.includes("label")){
+                                        //     i.saveDescriptionLine(StringConstructor.notValidLabelSinceItsConst(strings[1]));
+                                        // }
+                                        this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                                        // i.saveDescriptionLine(StringConstructor.expectedDat8Plus(strings[1])); //KONSTANTE ZU GROß?
+                                        i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
+
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    }
+                                    else{
+                                        // if(consoletostring.includes("label")){
+                                        //     i.saveDescriptionLine(StringConstructor.notValidLabelSinceItsConst(strings[1]));
+                                        // }
+                                        this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                                        i.setError(strings[1]);
+                                        return false;
+                                    }
+                                    break;
+                                case DataType.LABEL:
+                                    if(!consoletostring.includes("label")){
+                                        this.saveExtraInfo(i,consoletostring,strings[1]);
+                                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    }
+
+                                    let value1 = this.symbollist.getSpecificLabelByName(strings[1]);
+                                    this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                                    i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${value1?.getName()}</span>'`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+value1?.getName()));
+                                    // WARNING EINSETZEN?
+                                    i.setThirdPart(strings[1]);
+                                    matches=matches.filter(e=>{
+                                        if(e.getSource()=="label"){
+                                            return e;
+                                        }
+                                    })
+                                    i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
+
+                                    break;
+                                case DataType.ELLIGIBLE:
+                                    if(!consoletostring.includes("label")){
+                                        this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                                        i.setError(strings[1]);
+                                        i.setValid(false);
+                                        return false;
+                                    }
+
+                                    this.symbollist.setLabelWithoutPosition(strings[1]);
+                                    this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                                    i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[1]}</span>'`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", "+strings[1]));
+                                    i.setThirdPart(strings[1]);
+                                    matches=matches.filter(e=>{
+                                        if(e.getSource()=="label"){
+                                            return e;
+                                        }
+                                    })
+                                    i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
+    
+                                    break;
+                                default: 
+                                    i.saveDescriptionLine(StringConstructor.bugSwitchDefault());
+                                    return false;
+                            }
+                            if(matches.length==1){
+                                i.setThirdPart(strings[1]);
+                                i.setType(InputLineType.TRANSLATED);
+                                i.setLength(matches[0].getSize());
+                                i.setHCode(matches[0].getHexCode());
+                                i.setValid(true);
+                                return true;
+                            }
+                            else{
+                                i.saveDescriptionLine(StringConstructor.bugNoCommand());
+                                return false;
+                            }
+                        }
+                        else if(strings[1].toUpperCase().startsWith("OFFSET") && consoletostring.includes("dat_16")){  //möglicher weise OFFSET Label
+                            i.saveDescriptionLine(this.formatGefunden(`OFFSET`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET ..."));
+                            i.saveDescriptionLine(this.formatErwartet("label"));
+                            let temp:string[]=Manipulator.splitStringHalf(strings[1]," ");
+                            if(temp.length<2){
+                                i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                                i.setError(strings[1]);
+                                return false;
+                            }
+                            else if(this.getDataType(temp[1]) == DataType.LABEL || this.getDataType(temp[1]) == DataType.ELLIGIBLE){
+                                this.symbollist.setLabelWithoutPosition(temp[1]);
+                                i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${temp[1]}</span>'`,i.getFirstPart().toUpperCase()+" "+i.getSecondPart().toUpperCase()+", OFFSET "+temp[1]));
+                                if(temp[1].length>erlaubteLängeL_C){
+                                    i.saveDescriptionLine(StringConstructor.warLabelZuLang(temp[1]));
+                                }
+                                matches=matches.filter(e=>{
+                                    if(e.getSource()=="dat_16"){
+                                        return e;
+                                    }
+                                })
+                            }
+                            else{
+                                this.saveExtraInfo(i,"label",temp[1]);
+                                i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                                i.setError(strings[1]);
+                                return false;
+                            }
+                            if(matches.length==1){
+                                i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
+
+                                i.setThirdPart(strings[1]);
+                                i.setType(InputLineType.TRANSLATED);
+                                i.setLength(matches[0].getSize());
+                                i.setHCode(matches[0].getHexCode());
+                                i.setOffsetLabel(true);
+                                i.setValid(true);
+                                return true;
+                            }
+                            else{
+                                i.saveDescriptionLine(StringConstructor.bugNoCommand());
+                                i.setError(strings[1]);
+                                return false;
+                            }
+                        }
+                        else{
+                            if(strings[1].trim()=="" || strings[1].trim()==" "){
+                                i.saveDescriptionLine(StringConstructor.errTooFewCmd());
+                            }
+                            else{
+                                this.saveExtraInfo(i,consoletostring,strings[1]);
+                                i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                            }
+                            i.setError(strings[1]);
+                            return false;
+                        }
+                    } 
+                }
+                else if(this.symbollist.isLabel(strings[0]) || this.symbollist.isEligible(strings[0])){ // MUSS label sein
+                    this.saveExtraInfo(i,consoletostring,strings[0]);
+
+                    i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[0]}</span>'`,i.getFirstPart().toUpperCase()+" "+strings[0]+" ..."))
+                    // WARNING EINSETZEN?
+                    matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
+                        if(e.getDestination() =="label"){
+                            return e;
+                        }
+                    });
+                    i.setSecondPart(strings[0]);
+                    if(!this.symbollist.isLabel(strings[0])){ //Wenn label unbekannt dann neue Ansetzen
+                        this.symbollist.setLabelWithoutPosition(strings[0]);
+
+                    }
+                    save4(i);
+                    consoletostring=this.getScources(matches).join(", ");
+                    i.saveDescriptionLine(this.formatErwartet(consoletostring));    //Ausgabe von erwartetten Befehlen
+                    if(strings.length<2){
+                        i.saveDescriptionLine(StringConstructor.errTooFewCmd());
+                        i.setError("");
+                        return false;
+                    }
+                    if(this.getScources(matches).includes(strings[1].toUpperCase())){
+                        toSave=strings[1];
+                        strings[1] = strings[1].toUpperCase();
+                        this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                        i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],i.getFirstPart().toUpperCase()+" "+i.getSecondPart()+","+strings[1]))
+                        matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
+                            if(e.getSource() ==strings[1]){
+                                return e;
+                            }
+                        });
+                        if(matches.length==1){
+                            i.setThirdPart(toSave);
+                            i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
+                            i.setType(InputLineType.TRANSLATED);
+                            i.setLength(matches[0].getSize());
+                            i.setHCode(matches[0].getHexCode());
+                            i.setValid(true);
+                            return true;
+                        }
+                        else{
+                            i.saveDescriptionLine(StringConstructor.bugNoCommand());
+                            return false;
+                        }
+                    }
+                    else{
+                        this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                        i.setError(strings[1]);
+                        return false;
+                    }
+                }
+                else{
+                    this.saveExtraInfo(i,consoletostring,strings[0]);
+
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[0]));
+                    i.setError(strings[0]);
+                    if(strings[1]!=undefined){
+                        i.setRest(","+strings[1]);
+                    }
+                    return false;
+                }
+                break;
+            case 'POP':case 'PUSH':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
+
+                // matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='PUSH'});
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
+                if(strings.length>1){
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
+                    i.setError(strings[1]);
+                    return false;
+                }
+                else{
+                    // i.saveDescriptionLine(this.formatErkannt(stackBefehl));
+
+                    i.setType(InputLineType.TRANSLATED);
+                    i.setLength(matches[0].getSize());
+                    i.setHCode(matches[0].getHexCode());
+                    i.setValid(true);
+                    return true;
+                    }
+                break;
+            
+            case 'IN':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
+                save3(i);
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='IN'});
+                consoletostring=this.getDests(matches).join(", ");
+                i.saveDescriptionLine(this.formatErwartet("A"));
+                if(strings.length<2){
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
+                    i.setError("");
+                    return false;
+                }
+                strings = Manipulator.splitStringHalf(strings[1],",");
+                strings = this.filterForEmtpyStrings(strings);
+                if(strings[0].toUpperCase() =="A"){
+
+                    i.saveDescriptionLine(this.formatGefunden("Register A","IN A ..."));
+                    i.setSecondPart(strings[0]);
+                    save4(i);
+                    i.saveDescriptionLine(this.formatErwartet("dat_8"));
+                    consoletostring="dat_8"
+                    if(strings.length<2){
+                        i.saveDescriptionLine(StringConstructor.errTooFewCmd());
+                        i.setError("");
+                        return false;
+                    }
+                    if(this.symbollist.isConst(strings[1])){
+                        if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
+                            this.saveExtraInfo(i,consoletostring,strings[1]);
+                            // ??
+                            // i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
+                            i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]))
+                            i.setError(strings[1]);
+                            return false;
+                        }
+                        this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                        i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],"IN A, "+strings[1]));
+                        i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
+
+                        // WARNING EINSETZEN?
+                        i.setThirdPart(strings[1]);
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setLength(matches[0].getSize());
+                        i.setHCode(matches[0].getHexCode());
+                        i.setValid(true);
+                        return true;
+                    }
+                    else if(Manipulator.isDat_8(strings[1])){
+                        this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                        i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+strings[1],"IN A, "+strings[1])); // DecOrHex
+                        // i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),"IN A, "+Manipulator.formatHextoDat8(strings[1])));
+                        i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
+                        
+                        i.setThirdPart((strings[1]));
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setLength(matches[0].getSize());
+                        i.setHCode(matches[0].getHexCode());
+                        i.setValid(true);
+                        return true;
+                    }
+                    else{
+                        this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                        i.setError(strings[1]);
+                        return false;
+                    }
+                }
+                else{
+                    this.saveExtraInfo(i,consoletostring,strings[0]);
+
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[0]));
+                    i.setError(strings[0]);
+                    if(strings[1]!=undefined){
+                        i.setRest(", "+strings[1]);
+                    }
+                    return false;
+                }
+                break;
+            case 'OUT':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
+                save3(i);
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='OUT'});
+                consoletostring="dat_8"
+                
+                i.saveDescriptionLine(this.formatErwartet("dat_8"));
+                
+                if(strings.length<2){
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
+                    i.setError("");
+                    return false;
+                }
+                strings = Manipulator.splitStringHalf(strings[1],",");
+                if(strings.length>1){
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
+                    i.setError(strings[1]);
+                    return false;
+                }
+                strings = this.filterForEmtpyStrings(strings);
+                this.saveExtraInfo(i,consoletostring,strings[0]);
+                if(this.symbollist.isConst(strings[0])){
+                    if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[0])!.getValue())){
+                        // ??
+                        // this.saveExtraInfo(i,consoletostring,strings[0]);
+                        i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[0]));
+                        // i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[0]));
+                        i.setError(strings[0]);
+                        return false;
+                    }
+                    i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[0],i.getFirstPart().toUpperCase()+" "+strings[0]+" ..."))
+                    // WARNING EINSETZEN?
+                    i.setSecondPart(strings[0]);
+                    save4(i);
+                    i.saveDescriptionLine(this.formatErwartet("A"));
+                    if(strings.length<2){
+                        i.saveDescriptionLine(StringConstructor.errTooFewCmd());
+                        i.setError("");
+                        return false;
+                    }
+                    if(strings[1].toUpperCase() =="A"){
+                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+strings[0]+", A"));
+                        i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
+
+                        //ÄNDERUNG
+                        i.setThirdPart(strings[1])
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setLength(matches[0].getSize());
+                        i.setHCode(matches[0].getHexCode());
+                        i.setValid(true);
+                        return true;
+                    }
+                    else{
+                        // need?
+                        // this.saveExtraInfo(i,consoletostring,strings[1]);
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                        i.setError(strings[1]);
+                        return false;
+                    }
+                }
+                else if(Manipulator.isDat_8(strings[0])){
+                    // this.saveExtraInfo(i,consoletostring,strings[0]);
+                    i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+strings[0],i.getFirstPart().toUpperCase()+" "+strings[0]+" ...")); // DecOrHex
+                    // i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[0]),i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+" ..."));
+                    
+                    i.setSecondPart((strings[0]));
+                    save4(i);
+                    i.saveDescriptionLine(this.formatErwartet("A"));
+                    if(strings.length<2){
+                        i.saveDescriptionLine(StringConstructor.errTooFewCmd());
+                        i.setError("");
+                        return false;
+                    }
+                    if(strings[1].toUpperCase() =="A"){
+                        // i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+Manipulator.formatHextoDat8(strings[0])+", A"));
+                        i.saveDescriptionLine(this.formatGefunden("Register A",i.getFirstPart().toUpperCase()+" "+strings[0]+", A")); // DecOrHex
+                        i.saveDescriptionLine(this.formatErkannt(ioAdressierung));
+
+                        i.setThirdPart(strings[1])
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setLength(matches[0].getSize());
+                        i.setHCode(matches[0].getHexCode());
+                        i.setValid(true);
+                        return true;
+                    }
+                    else{
+                        i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                        i.setError(strings[1]);
+                        return false;
+                    }
+                }
+                else{
+                    // this.saveExtraInfo(i,consoletostring,strings[0]);
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[0]));
+                    i.setError(strings[0]);
+                    return false;
+                }
+                break;
+            case 'INC':case'DEC':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
+                save3(i);
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
+
+                consoletostring = this.getDests(matches).join(", ");
+                i.saveDescriptionLine(this.formatErwartet(consoletostring));
+                if(strings.length<2){
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
+                    i.setError("");
+                    return false;
+                }
+                temp = Manipulator.splitStringHalf(strings[1],",");
+                if(temp.length>1){ //TooMany
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
+                    i.setError(temp[1]);
+                    return false;
+                }
+                toSave=strings[1];
+                if(this.getDests(matches).includes(strings[1])){
+                    strings[1] = strings[1].toUpperCase();
+                    i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],strings[0]+" "+strings[1]));
+                    matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
+                        if(e.getDestination() ==strings[1]){
+                            return e;
+                        }
+                    });
+                    if(matches.length==1){
+                        // i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
+
+                        //ÄNDERUNG
+                        i.setSecondPart(toSave);
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setLength(matches[0].getSize());
+                        i.setHCode(matches[0].getHexCode());
+                        i.setValid(true);
+                        //console.log(matches[0].toString());
+                        return true;
+                    }
+                    else{
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
+                        return false;
+                    }
+                }
+                else{
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                    i.setError(strings[1]);
+                    return false;
+                }
+                break;
+            case 'ADD':case'SUB':case'AND':case 'OR':case'XOR':case'CP':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
+                save3(i);
+                //ÄNDERUNG
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 consoletostring = this.getDests(matches).join(", ");
                 i.saveDescriptionLine(this.formatErwartet(consoletostring));
                 if(strings.length<2){
-                    i.saveDescriptionLine(StringConstructor.toofewCmd());
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
+                    i.setError("");
                     return false;
                 }
+                temp = Manipulator.splitStringHalf(strings[1],",");
+                if(temp.length>1){ //TooMany
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
+                    i.setError(temp[1]);
+                    return false;
+                }
+
                 if(this.getDests(matches).includes(strings[1].toUpperCase())){
+                    //ÄNDERUNG
                     toSave=strings[1];
                     strings[1]=strings[1].toUpperCase()
                     i.saveDescriptionLine(this.formatGefunden("Register "+strings[1],strings[0]+" "+strings[1]));
@@ -25,6 +686,7 @@
                     if(matches.length==1){
                         i.saveDescriptionLine(this.formatErkannt(registerAdressierung));
 
+                        //ÄNDERUNG
                         i.setSecondPart(toSave);
                         i.setType(InputLineType.TRANSLATED);
                         i.setLength(matches[0].getSize());
@@ -34,12 +696,20 @@
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
                         return false;
                     }
                 }
                 else if(this.symbollist.isConst(strings[1])){
-                    
+                    this.saveExtraInfo(i,consoletostring,strings[1]);
+                    if(!Manipulator.isDat_8(this.symbollist.getSpecificConstantByName(strings[1])!.getValue())){
+                        // ??
+                        // this.saveExtraInfo(i,consoletostring,strings[1]);
+                        i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
+                        // i.saveDescriptionLine(StringConstructor.errExpectedDat8ConstToBig(strings[1]));
+                        i.setError(strings[1]);
+                        return false;
+                    }
                     i.saveDescriptionLine(this.formatGefunden("Konstante "+strings[1],strings[0]+" "+strings[1]));
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="dat_8"){
@@ -58,20 +728,21 @@
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
                         return false;
                     }
                 }
                 else if(Manipulator.isDat_8(strings[1])){
-                    i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
+                    this.saveExtraInfo(i,consoletostring,strings[1]);
+
+                    // i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+Manipulator.formatHextoDat8(strings[1]),strings[0]+" "+Manipulator.formatHextoDat8(strings[1])));
+                    i.saveDescriptionLine(this.formatGefunden("8-bit Wert "+strings[1],strings[0]+" "+strings[1])); // DecOrHex
                     matches =matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
                         if(e.getDestination() =="dat_8"){
                             return e;
                         }
                     });
                     if(matches.length==1){
-                        // Änderung
-                        // i.setSecondPart(Manipulator.formatHextoDat8(strings[1]));
                         i.saveDescriptionLine(this.formatErkannt(immediateAdressierung));
 
                         i.setSecondPart((strings[1]));
@@ -79,30 +750,27 @@
                         i.setLength(matches[0].getSize());
                         i.setHCode(matches[0].getHexCode());
                         i.setValid(true);
-                        //console.log(matches[0].toString());
                         return true;
                     }
                     else{
-                        i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
                         return false;
                     }
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErrorMassage(strings[1]+" ist kein gültiger Operand!"));
+                    this.saveExtraInfo(i,consoletostring,strings[1]);
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                     i.setError(strings[1]);
                     return true;
                 }
-                break; */
-                //Bruv PLS
+                break;
 
-                //COMMENTED BECAUSE SAME FUNCTIONALITY
-
-            /* case 'SHL':case'SHR':
+            case 'SHL':case'SHR':case 'RCL':case'ROL':case'RCR':case'ROR':
                 i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
 
                 matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
                 if(strings.length>1){
-                    i.saveDescriptionLine(this.formatErrorMassage("zu viel Operanden!"));
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
                     i.setError(strings[1]);
                     return false;
                 }
@@ -113,25 +781,229 @@
                     i.setLength(matches[0].getSize());
                     i.setHCode(matches[0].getHexCode());
                     i.setValid(true);
-                    //console.log(matches[0].toString());
                     return true;
                 }
                 else{
-                    i.saveDescriptionLine(this.formatErrorMassage("keine passende Befehl gefunden!"));
+                    i.saveDescriptionLine(StringConstructor.bugNoCommand());
                     return false;
                 }
-                break; */
+                break;
+            case 'JPNZ':case'JPZ':case'JPNC':case'JPC':case'JPNO':case'JPO':case'JPNS':case'JPS':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
 
-                /* case 'POP':
-                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
+                save3(i);
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
+                consoletostring = "label";
+                i.saveDescriptionLine(this.formatErwartet(consoletostring));
+                if(strings.length<2){
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
+                    i.setError("");
+                    return false;
+                }
+                temp = Manipulator.splitStringHalf(strings[1],",");
+                if(temp.length>1){ //TooMany
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
+                    i.setError(temp[1]);
+                    return false;
+                }
+                this.saveExtraInfo(i,consoletostring,strings[1]);
+                if(this.symbollist.isLabel(strings[1]) || (this.symbollist.isEligible(strings[1]) && !this.symbollist.isConst(strings[1]))){ // MUSS label sein
+                    // WARNING EINSETZEN?
+                    i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[0]}</span>'`,strings[0]+" "+strings[1]));
+                    matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
+                        if(e.getDestination() =="label"){
+                            return e;
+                        }
+                    });
+                    if(!this.symbollist.isLabel(strings[1])){
+                        this.symbollist.setLabelWithoutPosition(strings[1]);
+                        // if(strings[1].length>erlaubteLängeL_C){
+                        //     i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
+                        // }
+                    }
+                    if(matches.length==1){
+                        // i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
 
-                matches=this.mnemoCommands.filter(e=>{return e.getMCode()=='POP'});
-                if(strings.length>1){
-                    i.saveDescriptionLine(StringConstructor.tooManyCmd());
+                        i.setSecondPart(strings[1]);
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setLength(matches[0].getSize());
+                        i.setHCode(matches[0].getHexCode());
+                        i.setValid(true);
+                        return true;
+
+                    }
+                    else{
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
+                        return false;
+                    }
+                }
+                else{
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
                     i.setError(strings[1]);
                     return false;
                 }
+                break;
+            case 'JP':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
+                save3(i);
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()=="JP"});
+                consoletostring = this.getDests(matches).join(", ");
+                i.saveDescriptionLine(this.formatErwartet(consoletostring));
+                if(strings.length<2){
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
+                    i.setError("");
+                    return false;
+                }
+                temp = Manipulator.splitStringHalf(strings[1],",");
+                if(temp.length>1){ //TooMany
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
+                    i.setError(temp[1]);
+                    return false;
+                }
+                this.saveExtraInfo(i,consoletostring,strings[1]);
+                if(this.symbollist.isLabel(strings[1]) || (this.symbollist.isEligible(strings[1]) && !this.symbollist.isConst(strings[1]))){ // MUSS label sein
+                    // WARNING EINSETZEN?
+                    i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[1]}</span>'`,strings[0]+" "+strings[1]));
+                    matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
+                        if(e.getDestination() =="label"){
+                            return e;
+                        }
+                    });
+                    if(!this.symbollist.isLabel(strings[1])){
+                        this.symbollist.setLabelWithoutPosition(strings[1]);
+                        // if(strings[1].length>erlaubteLängeL_C){
+                        //     i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
+                        // }
+                    }
+                    if(matches.length==1){
+                        i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
+
+                        i.setSecondPart(strings[1]);
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setLength(matches[0].getSize());
+                        i.setHCode(matches[0].getHexCode());
+                        i.setValid(true);
+                        return true;
+                    }
+                    else{
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
+                        return false;
+                    }
+                }
+                else if(strings[1].toUpperCase()=="[IX]"){
+                    matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
+                        if(e.getDestination() =="[IX]"){
+                            return e;
+                        }
+                    });
+                    if(matches.length==1){
+                        i.saveDescriptionLine(this.formatGefunden(`Register [IX]`,"JP [IX]"));
+                        i.saveDescriptionLine(this.formatErkannt(indirekteRegAdressierung));
+                        i.setSecondPart(strings[1]);
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setLength(matches[0].getSize());
+                        i.setHCode(matches[0].getHexCode());
+                        i.setValid(true);
+                        return true;
+                    }
+                    else{
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
+                        i.setError(strings[1]);
+                        return false;
+                    }
+                }
                 else{
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                    i.setError(strings[1]);
+                    return false;
+                }
+                break;
+            case 'CALL':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]+" ..."))
+
+                save3(i);
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()=="CALL"});
+                consoletostring = "label"
+                i.saveDescriptionLine(this.formatErwartet(consoletostring));
+                if(strings.length<2){
+                    i.saveDescriptionLine(StringConstructor.errTooFewCmd());
+                    i.setError("");
+                    return false;
+                }
+                temp = Manipulator.splitStringHalf(strings[1],",");
+                if(temp.length>1){ //TooMany
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
+                    i.setError(temp[1]);
+                    return false;
+                }
+                this.saveExtraInfo(i,consoletostring,strings[1]);
+                if(this.symbollist.isLabel(strings[1]) || (this.symbollist.isEligible(strings[1]) && !this.symbollist.isConst(strings[1]))){ // MUSS label sein
+                    // WARNING EINSETZEN?
+                    i.saveDescriptionLine(this.formatGefunden(`Label '<span class="labelBlue">${strings[1]}</span>'`,strings[0]+" "+strings[1]));
+                    matches=matches.filter(e=>{                                     //Alle treffer auf zutreffende Register filtriert
+                        if(e.getDestination() =="label"){
+                            return e;
+                        }
+                    });
+                    
+                    if(!this.symbollist.isLabel(strings[1])){
+                        this.symbollist.setLabelWithoutPosition(strings[1]);
+                        // if(strings[1].length>erlaubteLängeL_C){
+                        //     i.saveDescriptionLine(StringConstructor.warLabelZuLang(strings[1]));
+                        // }
+                    }
+                    if(matches.length==1){
+                        // i.saveDescriptionLine(this.formatErkannt(absoluteAdressierung));
+                        i.setSecondPart(strings[1]);
+                        i.setType(InputLineType.TRANSLATED);
+                        i.setLength(matches[0].getSize());
+                        i.setHCode(matches[0].getHexCode());
+                        i.setValid(true);
+                        return true;
+                    }
+                    else{
+                        i.saveDescriptionLine(StringConstructor.bugNoCommand());
+                        return false;
+                    }
+                }
+                else{
+                    i.saveDescriptionLine(StringConstructor.errInvalidCmd(strings[1]));
+                    i.setError(strings[1]);
+                    return false;
+                }
+                break;
+            case 'HALT':case 'NOP':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
+
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()==strings[0]});
+                if(strings.length>1){
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
+                    i.setError(strings[1]);
+                    return false;
+                }
+                if(matches.length==1){
+                    i.setType(InputLineType.TRANSLATED);
+                    i.setLength(matches[0].getSize());
+                    i.setHCode(matches[0].getHexCode());
+                    i.setValid(true);
+                    return true;
+                }
+                else{
+                    i.saveDescriptionLine(StringConstructor.bugNoCommand());
+                    return false;
+                }
+                break;
+            case 'RET':
+                i.saveDescriptionLine(this.formatGefunden("Mnemocode "+strings[0],strings[0]))
+
+                matches=this.mnemoCommands.filter(e=>{return e.getMCode()=="RET"});
+                if(strings.length>1){
+                    i.saveDescriptionLine(StringConstructor.errTooManyCmd());
+                    i.setError(strings[1]);
+                    return false;
+                }
+                if(matches.length==1){
                     i.saveDescriptionLine(this.formatErkannt(stackBefehl));
 
                     i.setType(InputLineType.TRANSLATED);
@@ -139,231 +1011,14 @@
                     i.setHCode(matches[0].getHexCode());
                     i.setValid(true);
                     return true;
-                    }
-                break; */
-
-
-
-
-
-
-
-
-
-
-
-
-    if(!isSuccessful){
-        return;
-    }
-    //setup return value
-    this.movableElem.innerHTML=this.formatLineString("h3",valueToReturn);
-    this.movableHelper.innerHTML=this.formatLineString("h3",valueToReturn);
-
-    fromElem=getHtmlElement("symboladdress"+(idToFind));
-    n =updateScrollOfSymbolTable(fromElem.id);
-
-    this.movableElem.style.left=fromElem.offsetLeft+fromElem.offsetWidth/2-this.movableElem.offsetWidth/2+"px";
-    this.movableElem.style.top=fromElem.offsetTop-(n>0?n:0)+fromElem.offsetHeight/2-this.movableElem.offsetHeight/2+"px";
-
-    this.movableHelper.style.left=this.movableElem.offsetLeft+"px";
-    this.movableHelper.style.top=this.descriptionTableBox.offsetTop+this.descriptionTableBox.offsetHeight-this.movableHelper.offsetHeight+"px";
-
-
-
-    if(aniControl.isAni1()){
-        this.turnMovableVisible();
-        await sleepStopStartTime();
-        while(this.movableElem.offsetTop>this.movableHelper.offsetTop){
-            await this.moveSleepCheck(-this.getPixeljump(),0);
+                }
+                else{
+                    i.saveDescriptionLine(StringConstructor.bugNoCommand());
+                    return false;
+                }
+                break;
+                
+            default: //BUG
+                i.saveDescriptionLine(StringConstructor.bugSwitchDefault());
+                return false;
         }
-        this.movableElem.style.top=this.movableHelper.offsetTop+"px";
-        await sleepStopStartTime();
-        this.turnMovableHidden();
-        return;
-    }
-    else{
-        this.setClassOfHead(UP);
-        //arrowHead+ArrowVertical
-        arrowHead.style.top=this.movableHelper.offsetTop+this.movableHelper.offsetHeight+"px";
-        arrowHead.style.left= this.movableHelper.offsetLeft+this.movableHelper.offsetWidth/2-arrowHead.offsetWidth/2+"px";
-
-        arrowVertical.style.top= arrowHead.offsetTop+arrowHead.offsetHeight-arrowHead.offsetHeight/overlapdivider+"px";
-        arrowVertical.style.left = arrowHead.offsetLeft+arrowHead.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
-        arrowVertical.style.height=-arrowHead.offsetTop+this.movableElem.offsetTop+arrowHead.offsetHeight/overlapdivider+this.movableElem.offsetHeight/overlapdivider+"px";
-        
-        this.turnMovableVisible();
-        this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
-        this.turnMovableHelperVisible();
-
-        await sleepStaticAnimation();
-
-        await this.turnArrowElemsHidden();
-        await this.turnMovableHelperHidden();
-        await this.turnMovableHidden();
-        return;
-    }
-
-    /* .arrowU{
-    background-image: var(--arrowUp);
-}
-.arrowD{
-    background-image: var(--arrowDown);
-}
-.arrowLeft{
-    background-image: var(--arrowLeft);
-}
-.arrowRight{
-    background-image: var(--arrowRight);
-}
-.jointQ1{
-    background-image: var(--jq1);
-}
-.jointQ2{
-    background-image: var(--jq2);
-}
-.jointQ3{
-    background-image: var(--jq3);
-}
-.jointQ4{
-    background-image: var(--jq4);
-}
-.bgI_C_C{
-    background-color: transparent !important;
-    position: absolute;
-    background-position: center center;
-    background-size: contain;
-}
-
-.arrowUP_Down{
-    width: var(--arrowHeadH);
-    height: var(--arrowHeadW);
-    background-repeat: no-repeat;
-}
-.arrowLeft_Right{
-    width: var(--arrowHeadW);
-    height: var(--arrowHeadH);
-    background-repeat: no-repeat;
-}
-
-.verticalBody{
-    width: var(--arrowWidth);
-    background-image: var(--verticalBackground);
-    background-repeat: repeat-y;
-    background-size: 100% auto;
-}
-.horizontalBody{
-    height: var(--arrowHeight);
-    background-image: var(--horizontalBackground);
-    background-repeat: repeat-x;
-    background-size: auto 100%;
-}
-.jointBody{
-    width: var(--arrowWidth);
-    height: var(--arrowHeight);
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-}
-
-
-.pausedBKG{
-    background-position: center center;
-    background-repeat: no-repeat;
-    
-    background-image: var(--pauseBKG);
-    background-size: auto 50%;
-}
-.playingBKG{
-    background-position: center center;
-    background-repeat: no-repeat;
-    
-    background-image: var(--playBKG);
-    background-size: auto 50%;
-}
-.resetBKG{
-    background-position: center center;
-    background-repeat: no-repeat;
-    
-    background-image: var(--resetBKG);
-    background-size: auto 50%;
-}
-.skipBKG{
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: auto 50%;
-    
-    background-image: var(--skipBKG);
-}
-.slowerBKG{
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: auto 90%;
-    
-    background-image: var(--slowerBKG);
-}
-.fasterBKG{
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: auto 90%;
-    
-    background-image: var(--fasterBKG);
-}
-.noAnimationBKG{
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: auto 90%;
-    
-    background-image: var(--noAnimationBKG);
-}
-.lightButton{
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: auto 60%;
-    background-image: var(--lightBKG);
-}
-.singleStepBKG{
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: auto 100%;
-    background-image: var(--singleStep);
-}
-[color-scheme="light"] .settingsBKG{
-    background-image: url(../images/buttonSVGs/settings_button.svg);
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: auto 60%;
-}
-[color-scheme="dark"] .settingsBKG{
-    background-image: url(../images/buttonSVGs/settingsWhite_button.svg);
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: auto 60%;
-}
-button[fullscreen="off"].fullscreenBKG{
-    background-image: var(--fullscreenBKG_ON);
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: auto 60%;
-}
-button[fullscreen="on"].fullscreenBKG{
-    background-image: var(--fullscreenBKG_OFF);
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: auto 60%;
-}
-#singleStep.selected{
-    background-image: var(--singleStepActive)!important;
-}
-#speedDecrease{
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: 50% auto;
-    background-image: var(--decreaseBKG);
-}
-#speedIncrease{
-    background-position: center center;
-    background-repeat: no-repeat;
-    background-size: 50% auto;
-    background-image: var(--increaseBKG);
-}
-*/

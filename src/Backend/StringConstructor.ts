@@ -13,10 +13,10 @@ export class StringConstructor{
         return `<span class="eingeruckt">${s}<span>`;
     }
     static warning(s:string):string{
-        return `<span class="${warningClass} eingeruckt">Achtung : ${s}<span>`;
+        return `<span class="${warningClass} eingeruckt">Warnung : ${s}<span>`;
     }
     static error(s:string):string{
-        return `<span class="errorRed ">error: ${s}</span>`;
+        return `<span class="${errClass} ">error: ${s}</span>`;
     }
     static plusError(s:string):string{
         return `<span class="pluserrRed eingeruckt">${s}</span>`;
@@ -46,7 +46,7 @@ export class StringConstructor{
         return this.warning(`Label '<span class="${labelClass}">${s}</span>' >${erlaubteLängeL_C} Zeichen`);
     }
     static warConstZuLang(s:string):string{
-        return this.warning(`Konstante '${s}' >${erlaubteLängeL_C} Zeichen`);
+        return this.warning(`Konstante '${s}' > ${erlaubteLängeL_C} Zeichen`);
     }
     static warLabelND(s:string):string{
         return this.warning(`Label '<span class="${labelClass}">${s}</span>' mit Hex-Zahl verwechselbar`);
@@ -118,9 +118,6 @@ export class StringConstructor{
     }
     static infoInvalidLabel(s:string):string{
         return this.info(`'${s}' ist kein gültiges Label`);
-    }
-    static infoIsLabel(s:string):string{
-        return this.info(`suche Label '<span class="${labelClass}">${s}<span>' ... gefunden`);
     }
 }
 
