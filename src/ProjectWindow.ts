@@ -688,7 +688,7 @@ export class ProjectWindow{
                     }
                     else if(l.getEndAddr()!=""){
                         // machinenbefehl.innerHTML= `${this.inputLineControl.getDisplayableSpeicherabbild(l,false)}`;
-                        machinenbefehl.innerHTML= `${Manipulator.formatSpeicherabbildandLabel(this.inputLineControl.getDisplayableSpeicherabbild(l,false),this.getLabelIfUnknown(l.getId(),false))}`;
+                        machinenbefehl.innerHTML= `${this.inputLineControl.getDisplayableSpeicherabbild(l,false)+this.getLabelIfUnknown(l.getId(),false)}`;
                         //console.log(this.inputLineControl.isFreeAddr(l.getStartingAddr(),l.getEndAddr()));
                         if(!this.inputLineControl.isFreeAddr(l.getStartingAddr(),l.getEndAddr())){
                             lineBuffer.push(`<p>${StringConstructor.warAddrOverwriten()}</p>`);

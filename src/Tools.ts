@@ -148,8 +148,9 @@ class Resizer{
         this.arrowHead  = 100*this.arrowHead/1920;
     }
     private setParameterstoPX=()=>{
-        let n:number;
+        let n:number,m:number;
         n =this.outerWidth>this.outerHeight?window.innerWidth/1920:window.innerHeight/937;
+        m =this.outerWidth<this.outerHeight?window.innerWidth/1920:window.innerHeight/937;
         this.var1px     = 1*Number(n.toFixed(2));
         this.var1_5px   = 1.5*Number(n.toFixed(2));
         this.var2px     = 2*Number(n.toFixed(2));
@@ -159,7 +160,7 @@ class Resizer{
         this.var6px     = 6*Number(n.toFixed(2));
         this.var8px     = 8*Number(n.toFixed(2));
         this.var10px    = 10*Number(n.toFixed(2));
-        this.arrowBody  = Math.ceil(20*Number(n.toFixed(2)));
+        this.arrowBody  = Math.ceil(20*Number(m.toFixed(2)));
         if(this.arrowBody%2!=0){
             this.arrowBody=this.arrowBody+1;
         }

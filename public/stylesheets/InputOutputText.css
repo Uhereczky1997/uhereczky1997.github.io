@@ -8,7 +8,7 @@
     -moz-box-sizing: border-box;
     box-sizing: border-box;
     margin: 0;
-    padding: 0 var(--var3px) 0 var(--var8px);
+    padding: 0 var(--var3px) 0 var(--var5px);
     line-height: 140%;
 }
 .displayText + .start>p{

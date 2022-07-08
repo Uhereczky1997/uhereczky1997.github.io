@@ -1,33 +1,4 @@
-/* h1
-{
-    font-size: calc(3vmin*30/30);
-}
-h2 
-{
-    font-size: calc(3vmin*28/30);
-}
 
-h3 
-{
-    font-size: calc(3vmin*26/30);
-}
-
-h4 
-{
-    font-size: calc(3vmin*22/30);
-}
-h5{
-    font-size: calc(3vmin*16/30);
-}
-p,p>span,textarea
-{
-    font-size: calc(3vmin*22/30);
-} 
-#descriptionLines>* p,#descriptionLines>p>span,#descriptionLines>p{
-    margin: calc(3vmin*2/30);
-    font-size: calc(3vmin*19/30);
-}
-*/
 h1
 {
     font-size: calc(var(--fontsizeVar)*30/30);
@@ -60,27 +31,11 @@ body{
     margin: 0 0;
     width: 100%;
     height:100%;
-/*     width: 2000px;
-    height:1000px; */
 }
-/* #body{
-    position: absolute;
-    top: 2.5vh;
-    left: 2.5vw;
-
-    max-width: 95vw;
-    max-height: 95vh; 
-
-    min-width: 95vw;
-    min-height: 95vh;
-} */
-
 #body{
     position: absolute;
     top: 2.5%;
     left: 2.5%;
     width: 95%;
     height: 95%; 
-    /* width: var(--bodyWidth);
-    height: var(--bodyHeight); */
 }
