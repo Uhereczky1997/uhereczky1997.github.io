@@ -50,7 +50,7 @@ export const  setTranslatingDivVisible=()=>{
         translating.style.visibility="visible";
     }
 }
-const setWarningSign=(b:boolean)=>{
+export const setWarningSign=(b:boolean)=>{
     document.getElementById("warningSign")!.setAttribute("selected",b.toString());
 }
 export const selectTranslatingLine = (id:string) =>{
@@ -746,7 +746,7 @@ export class ProjectWindow{
         if(blockAnimation){
             await sleepUntilNextStep();
         }
-        if(newElem.innerHTML.includes("Achtung")){
+        if(newElem.innerHTML.includes("warning")){
             setWarningSign(true);
         }
         removeClassOfAll("crInvert");

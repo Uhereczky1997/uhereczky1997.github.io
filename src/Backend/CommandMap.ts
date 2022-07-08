@@ -1541,7 +1541,7 @@ export class CommandMap{
                     consoletostring="dat_8"
                     let Hcode="";
                     returnValue = this.saveExtraInfoWithError(i,consoletostring,strings[1])
-                    console.log(returnValue);
+                    //console.log(returnValue);
                     if(returnValue=="dat_8"){
                         i.saveDescriptionLine(this.formatGefunden(`8-bit Wert `+strings[1],strings[0]+" "+strings[1])); // DecOrHex
                         i.setLength(Manipulator.convertToDec(strings[1])); // DecOrHex ??

@@ -74,7 +74,7 @@
         <div id="buttonLeiste" class="MiddleLowerBox"> <!-- 4/1 -> 5/1 -->
 
 
-            <button id="inputClip" onclick="inputClip()"></button>
+            <div></div>
             <div></div>
             <button id="EditWindowOpenButton" class="leftBorderpRadius rightBorderpRadius dividerdivSpan2 tooltip">
                 <h4 class="noMargin titel">Edit</h4>
@@ -260,13 +260,6 @@
     </div>
     <script src="public\bundle.js"></script>
     <script>
-              
-        function inputClip() {
-            var copyText = document.getElementById("InputTextArea");
-            copyText.select();
-            copyText.setSelectionRange(0, 99999);
-            navigator.clipboard.writeText(copyText.value);
-        }
     </script>
 </body>
 </html>

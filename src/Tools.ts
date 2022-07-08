@@ -165,6 +165,8 @@ class Resizer{
         }
         // this.arrowHead  = Math.ceil(40*Number(n.toFixed(2)));
         this.arrowHead  = 2*this.arrowBody;
+        console.log(this.arrowBody)
+        console.log(this.arrowHead)
     }
     private calculateValues=()=>{
         root.style.setProperty("--var1px",`${this.var1px}vmax`);
