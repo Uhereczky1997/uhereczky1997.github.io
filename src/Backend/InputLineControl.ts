@@ -287,6 +287,8 @@ export class InputLineControl{
             else{
                 i.saveDescriptionLine(`<span class="eingeruckt">Addresszähler = <span id="addressbyte${i.getId()}">`+i.getSecondPart()+`</span></span>`);
             }
+            i.saveDescriptionLine(`<span class="eingeruckt">Setze Adresszähler</span>`);
+
         }
         else if(i.getType()==InputLineType.TRANSLATED){
             saveInput(i,5);

@@ -8,7 +8,6 @@ import { Manipulator } from "./Backend/Manipulator";
 import { InputLine } from "./Backend/InputLine";
 
 
-const errorDescriptionDiv:HTMLElement = getHtmlElement('ErrorDescription');
 const inputWindowContainer:HTMLElement = getHtmlElement('InputWindowContainter');
 export var timeout:NodeJS.Timeout;
 

@@ -1,6 +1,5 @@
-import { contentloaded } from "./index";
 import { currentLineLine, descriptionLines, inputText, outputText, setTranslatingDivHidden, setTranslatingDivVisible, symbolTableLines } from "./ProjectWindow";
-import { createClickListener, getHtmlElement, removeClassOfAll } from "./Tools";
+import { createClickListener,getHtmlElement,removeClassOfAll } from "./Tools";
 
 export const sleepFor = (ms:number):Promise <any> => new Promise(resolve => setTimeout(resolve,ms));
 
@@ -13,6 +12,7 @@ export const animationTyp3BTN= getHtmlElement("animationsTyp3") as HTMLButtonEle
 export const playButton = getHtmlElement("play") as HTMLButtonElement;
 export const resetButton = getHtmlElement("reset") as HTMLButtonElement;
 var timeout_settingsBTN:NodeJS.Timeout;
+export var timeout_PauseAndDisableBTN:NodeJS.Timeout;
 
 export const setCurrentLineHidden=()=>{
     if(aniControl.speed>=3 && aniControl.isAni3() &&  aniControl.play){

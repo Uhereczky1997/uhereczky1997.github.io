@@ -1,6 +1,5 @@
-import { aniControl, AnimationType, checkIfPaused, sleepFor, sleepForFrame, sleepStaticAnimation, sleepStaticAnimationHalf, sleepStopStartTime, sleepUntilNextStep } from "./AnimationUtil";
+import { aniControl,checkIfPaused,sleepForFrame, sleepStaticAnimation, sleepStaticAnimationHalf, sleepStopStartTime} from "./AnimationUtil";
 import { Manipulator } from "./Backend/Manipulator";
-import { root, rootVariables } from "./index";
 import { p2LabelValuePlaceholder, symboladdress, targetlabelValuePlaceholder, targetSymbolTableLine } from "./ProjectWindow";
 import { getHtmlElement, resizer, updateScrollOfIn_Out, updateScrollOfSymbolTable } from "./Tools";
 
@@ -24,18 +23,12 @@ const JQ3:string ="jq3";
 const JQ4:string ="jq4";
 export const addressbyte:string="addressbyte";
 const overlapdivider:number=50;
-const aniTp2TimeAdjuster:number=8;
-
-const bodyElem = getHtmlElement("body");
-
 export class Animator{
-
     currentLineElem:HTMLElement;
     descriptionLineElem:HTMLElement;
     descriptionTableBox:HTMLElement;
     frameSleepTime:number = 10;
-    movingElementFlag:boolean;
-    movableElem:HTMLDivElement;
+    movableElem:HTMLDivElement ;
     movableHelper:HTMLDivElement;
     outPutLinesElem:HTMLElement;
     outPutText:HTMLElement;
@@ -51,7 +44,6 @@ export class Animator{
     translatedinfoDividerDiv:HTMLElement;
 
     constructor(){
-        this.movingElementFlag = false;
         this.movableElem = this.createMovable();
         this.movableHelper= this.createMovableHelper();
         this.inputText =getHtmlElement("InputText");
@@ -68,7 +60,6 @@ export class Animator{
     }
 
     reset(){
-        this.movingElementFlag=false;
         this.turnMovableHidden();
         this.turnMovableHelperHidden();
         this.turnArrowElemsHidden();
@@ -117,6 +108,7 @@ export class Animator{
         
         if(aniControl.isAni1()){
             this.turnMovableHelperVisible();
+            
             await sleepStopStartTime();
             while(placeholder.offsetLeft>this.movableHelper.offsetLeft){
                 await this.moveHelperSleepCheck(0,this.getPixeljump());
@@ -130,6 +122,7 @@ export class Animator{
     
             await sleepStopStartTime();
             this.turnMovableHelperHidden();
+            
             return;
 
         }
@@ -151,10 +144,13 @@ export class Animator{
             this.turnMovableVisible();
             this.turnArrowElemVisible(temp);
             await this.turnMovableHelperVisible();
+            
             await sleepStaticAnimation();
             await this.turnArrowElemsHidden();
             await this.turnMovableHelperHidden();
             await this.turnMovableHidden();
+            
+            return;
         }
     }
 
@@ -168,6 +164,7 @@ export class Animator{
         this.targetElemTop=targetElem.offsetTop-n+targetElem.offsetHeight/2-this.movableElem.offsetHeight/2;
 
         if(aniControl.isAni1()){
+            
             this.turnMovableVisible();
             await sleepStopStartTime();
             while(this.targetElemTop>this.movableElem.offsetTop){
@@ -176,6 +173,7 @@ export class Animator{
             this.movableElem.style.top=this.targetElemTop+"px";
             await sleepStopStartTime();
             this.turnMovableHidden();
+            
             return;
         }
         else{
@@ -198,10 +196,12 @@ export class Animator{
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
             await this.turnMovableHelperVisible();
+            
             await sleepStaticAnimation();
             await this.turnArrowElemsHidden();
             await this.turnMovableHelperHidden();
             await this.turnMovableHidden();
+            
         }
     }
 
@@ -221,6 +221,7 @@ export class Animator{
         }
         if(aniControl.isAni1()){
             this.turnMovableVisible();
+            
             await sleepStopStartTime();
             while(this.targetElemTop>this.movableElem.offsetTop){
                 await this.moveSleepCheck(this.getPixeljump(),0);
@@ -243,6 +244,7 @@ export class Animator{
     
             await sleepStopStartTime();
             this.turnMovableHidden();
+            
             return;
         }
         else{
@@ -265,12 +267,13 @@ export class Animator{
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
             this.turnMovableHelperVisible();
-
+            
             await sleepStaticAnimation();
 
             await this.turnArrowElemsHidden();
             await this.turnMovableHelperHidden();
             await this.turnMovableHidden();
+            
             if(id<0){
                 return;
             }
@@ -291,12 +294,14 @@ export class Animator{
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID]);
             this.turnMovableHelperVisible();
-
-           await sleepStaticAnimation();
+            
+            await sleepStaticAnimation();
 
             await this.turnArrowElemsHidden();
             await this.turnMovableHelperHidden();
             await this.turnMovableHidden();
+            
+            return;
         }
     }
     async searchEntryInSymboltablephaseOne(idToSearch:string,entryName:string,idToFind:number){
@@ -422,6 +427,7 @@ export class Animator{
 
         if(aniControl.isAni1()){
             this.turnMovableVisible();
+            
             await sleepStopStartTime();
             while(this.movableElem.offsetLeft<this.movableHelper.offsetLeft){
                 await this.moveSleepCheck(0,this.getPixeljump());
@@ -434,6 +440,7 @@ export class Animator{
             this.movableElem.style.top=this.movableHelper.offsetTop+"px";
             await sleepStopStartTime();
             this.turnMovableHidden();
+            
             return;
         }
         else{
@@ -450,12 +457,13 @@ export class Animator{
             this.turnMovableVisible();
             this.turnArrowElemVisible(temp);
             this.turnMovableHelperVisible();
-
+            
             await sleepStaticAnimation();
 
             await this.turnArrowElemsHidden();
             await this.turnMovableHelperHidden();
             await this.turnMovableHidden();
+            
             return;
         }
     }
@@ -472,6 +480,7 @@ export class Animator{
         this.targetElemLeft = this.currentLineElem.offsetLeft;
         if(aniControl.isAni1()){
             this.turnMovableVisible();
+            
             if(this.targetElemTop>this.movableElem.offsetTop){
                 while(this.targetElemTop>this.movableElem.offsetTop){
                     await this.moveSleepCheck(this.getPixeljump(),0);
@@ -493,6 +502,7 @@ export class Animator{
             this.movableElem.style.left=this.targetElemLeft+"px";
             await sleepStopStartTime();
             this.turnMovableHidden();
+            
             return;
         }
         this.movableHelper.innerHTML=this.formatLineString("h3",line);
@@ -557,10 +567,12 @@ export class Animator{
                 this.turnMovableVisible();
                 this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID,arrowHorizontalID2,arrowJointID2]);
                 await this.turnMovableHelperVisible();
+                
                 await sleepStaticAnimation();
                 await this.turnArrowElemsHidden();
                 await this.turnMovableHelperHidden();
                 await this.turnMovableHidden();
+                
                 return;
         }
         arrowVertical.style.left=this.movableElem.offsetLeft+this.movableElem.offsetWidth/2-arrowVertical.offsetWidth/2+"px";
@@ -587,10 +599,13 @@ export class Animator{
         this.turnMovableVisible();
         this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
         await this.turnMovableHelperVisible();
+        
         await sleepStaticAnimation();
         await this.turnArrowElemsHidden();
         await this.turnMovableHelperHidden();
         await this.turnMovableHidden();
+        
+        return
 
     }
 
@@ -603,9 +618,9 @@ export class Animator{
         await this.setStartTopToInputLine(id);
         this.targetElemTop  = this.currentLineElem.offsetTop+this.currentLineElem.offsetHeight-this.movableElem.offsetHeight;
         this.targetElemLeft = this.currentLineElem.offsetLeft;
-        this.turnMovableVisible();
         if(aniControl.isAni1()){
-
+            this.turnMovableVisible();
+            
             await sleepStopStartTime();
             if(this.targetElemTop>this.movableElem.offsetTop){
                 while(this.targetElemTop>this.movableElem.offsetTop){
@@ -628,6 +643,7 @@ export class Animator{
             this.movableElem.style.left=this.targetElemLeft+"px";
             await sleepStopStartTime();
             this.turnMovableHidden();
+            
             return;
         }
         
@@ -648,10 +664,13 @@ export class Animator{
         this.turnMovableVisible();
         this.turnArrowElemVisible(temp);
         await this.turnMovableHelperVisible();
+        
         await sleepStaticAnimation();
         await this.turnArrowElemsHidden();
         await this.turnMovableHelperHidden();
         await this.turnMovableHidden();
+        
+        return;
         
     }
 
@@ -664,6 +683,7 @@ export class Animator{
         if(aniControl.isAni1()){
 
             this.turnMovableVisible();
+            
             await sleepStopStartTime();
             // await sleepStopStartTime();
             while(this.targetElemLeft>this.movableElem.offsetLeft){
@@ -691,6 +711,7 @@ export class Animator{
             }
             await sleepStopStartTime();
             this.turnMovableHidden();
+            
             return;
         }
         this.movableHelper.innerHTML=this.formatLineString("h3",line);
@@ -710,10 +731,13 @@ export class Animator{
         this.turnMovableVisible();
         this.turnArrowElemVisible(temp);
         await this.turnMovableHelperVisible();
+        
         await sleepStaticAnimation();
         await this.turnArrowElemsHidden();
         await this.turnMovableHelperHidden();
         await this.turnMovableHidden();
+        
+        return;
     }
 
     async displayAddresserhoehung(id:number,i:string,pre:string,hex:string){
@@ -739,6 +763,7 @@ export class Animator{
             this.movableHelper.style.left = this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetWidth/2-this.movableHelper.offsetWidth/2+"px";
             this.movableHelper.style.top = this.translatedinfoDividerDiv.offsetTop+"px";
             this.turnMovableVisible();
+            
     
             await sleepStopStartTime();
     
@@ -769,6 +794,7 @@ export class Animator{
             await sleepStopStartTime();
 
             this.turnMovableHelperHidden();
+            
             return;
         }
         else{
@@ -780,7 +806,7 @@ export class Animator{
             this.setClassOfHead(DOWN);
             this.setClassOfJoint(1,JQ2);
             this.toggleToUp(true);
-            this.movableHelper.innerHTML=this.formatLineString("h1","+"+i);
+            this.movableHelper.innerHTML=this.formatLineString("h1",pre+i);
             this.movableHelper.style.left = this.targetElemLeft+"px";
             this.movableHelper.style.top = this.targetElemTop+"px";
             
@@ -813,9 +839,11 @@ export class Animator{
             this.turnMovableVisible();
             this.turnArrowElemVisible([arrowHeadID,arrowVerticalID,arrowJointID,arrowHorizontalID]);
             await this.turnMovableHelperVisible();
+            
             await sleepStaticAnimation();
             await this.turnArrowElemsHidden();
             await this.turnMovableHidden();
+            
 
 
             this.movableElem.innerHTML=this.formatLineString("h1",endaddr);
@@ -823,6 +851,7 @@ export class Animator{
             this.movableElem.style.top  = this.translatedinfoDividerDiv.offsetTop+"px";
 
             await this.turnMovableVisible();
+            
             await sleepStopStartTime();
             await sleepStopStartTime();
             await sleepStopStartTime();
@@ -834,6 +863,7 @@ export class Animator{
             await sleepStopStartTime();
             await sleepStopStartTime();
             this.turnMovableHidden();
+            
             return;
         }
     }

@@ -1,7 +1,18 @@
-import { root, rootVariables } from "./index";
-import { inputText, outputText, symbolTableLines } from "./ProjectWindow";
+import { aniControl } from "./AnimationUtil";
+import { p } from "./index";
+import { inputText, outputText, OutputTextAreaElement, OutputWindowMachineCode, symbolTableLines } from "./ProjectWindow";
 
-export const getHtmlElement = (id:string)=> document.getElementById(id)!;
+
+export const root = document.documentElement;
+export const rootVariables = getComputedStyle(root);
+export let preferedTheme = "light";
+export let fullscreened:boolean = false;
+
+
+export const getHtmlElement = (id:string)=> {
+    return document.getElementById(id)!;
+}
+
 export const createClickListener = (id:string,f: (this: HTMLElement, ev: MouseEvent) => any) =>{
     try{
         const a= document.getElementById(id);
@@ -82,10 +93,150 @@ export const updateScrollOfDescriptionLines=(id:string,targetID:string)=>{
     var targetElem = getHtmlElement(targetID);
     targetElem.scrollTop=elem.offsetTop-targetElem.offsetTop;
 }
+declare global {
+    interface Document {
+      mozCancelFullScreen?: () => Promise<void>;
+      msExitFullscreen?: () => Promise<void>;
+      webkitExitFullscreen?: () => Promise<void>;
+      mozFullScreenElement?: Element;
+      msFullscreenElement?: Element;
+      webkitFullscreenElement?: Element;
+    }
+  
+    interface HTMLElement {
+      msRequestFullscreen?: () => Promise<void>;
+      mozRequestFullscreen?: () => Promise<void>;
+      webkitRequestFullscreen?: () => Promise<void>;
+    }
+}
+
+export const switchToFullscreen=()=>{
+    var elem = document.documentElement;
+    const elem2 = document.getElementById("vollbild");
+    if(elem!=null && elem2 !=null){
+        if(!fullscreened){
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) { /* Safari */
+                elem.webkitRequestFullscreen();
+            } else if (elem.msRequestFullscreen) { /* IE11 */
+                elem.msRequestFullscreen();
+            }
+            elem2.setAttribute("fullscreen","on");
+            fullscreened =true;
+        }
+        else{
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+            elem2.setAttribute("fullscreen","off");
+            fullscreened=false;
+        }
+    }
+}
+
+export const outputClip = () =>{
+    var copyText = document.getElementById("OutputTextArea") as HTMLTextAreaElement;
+    if(copyText!=null){
+        navigator.clipboard.writeText(copyText.value);
+    }
+}
+
+export const syncScroll_MachineCode_Hexadecimal = () =>{
+    var ignoreScrollEvents2 = false;
+    // console.log(OutputWindowMachineCode.scrollTop);
+    // console.log(OutputTextAreaElement.scrollTop);
+    try{
+        if(OutputWindowMachineCode!=null && OutputTextAreaElement!=null){
+            OutputWindowMachineCode.onscroll = function(){
+                var ignore = ignoreScrollEvents2
+                ignoreScrollEvents2 = false
+                if (ignore) return
+                
+                ignoreScrollEvents2 = true 
+                OutputTextAreaElement.scrollTop=OutputWindowMachineCode.scrollTop;
+
+            }
+            OutputTextAreaElement.onscroll = function (){
+                var ignore = ignoreScrollEvents2
+                ignoreScrollEvents2 = false
+                if (ignore) return
+                
+                ignoreScrollEvents2 = true
+                OutputWindowMachineCode.scrollTop=OutputTextAreaElement.scrollTop;
+            }
+        }
+        else throw new Error("Element OutputWindowMachineCode oder OutputTextAreaElement ist null!");
+    
+    }catch(e){
+        console.log(e);
+    }
+}
+
+export const setCurrentlyHovered = async (e: any) =>{ //Eventbubbling is f-ing sick!
+    let id:string;
+    if(e.target instanceof HTMLElement){
+        removeClassOfAll("highlighted");
+        id=getIDOfSelected(e.target.id);
+        // console.log(id);
+        addClassTo(id+"inputP","highlighted");
+        addClassTo(id+"outputP","highlighted");
+        
+    }
+    return false;
+}
+export const onscrollIn_Out = () =>{
+    var ignoreScrollEvents = false
+    try{
+        if(inputText!=null && outputText!=null){
+            inputText.onscroll = function(){
+                if(aniControl.play) return;
+                var ignore = ignoreScrollEvents
+                ignoreScrollEvents = false
+                if (ignore) return
+
+                ignoreScrollEvents = true
+                if(inputText!=null && outputText!=null){
+                    outputText.scrollTop=inputText.scrollTop;
+                }
+            }
+            outputText.onscroll = function (){
+                if(aniControl.play) return;
+
+                var ignore = ignoreScrollEvents
+                ignoreScrollEvents = false
+                if (ignore) return
+
+                ignoreScrollEvents = true
+                if(inputText!=null && outputText!=null){
+
+                    inputText.scrollTop=outputText.scrollTop;
+                }
+            }
+        }
+        else throw new Error("Element InputText oder OutputText ist null!");
+    
+    }catch(e){
+        console.log(e);
+    }
+}
+
+export const changeTheme = () =>{
+    let theme:string = preferedTheme==="light" ? 'dark' : 'light';
+    preferedTheme = theme;
+    const root = document.querySelector(':root');
+    root!.setAttribute('color-scheme', `${theme}`);
+}
 class Resizer{
 
     private outerHeight:number  = 100;
     private outerWidth:number   = 100;
+    private prevbodyInnerH:number   = 100;
+    private prevbodyInnerW:number   = 100;
     private arrowHead:number    = 40;
     private arrowBody:number    = 20;
     private var10px:number      = 10;
@@ -99,6 +250,7 @@ class Resizer{
     private var1px:number       = 1;
 
     constructor(){}
+    
     private getInitialValues =()=>{
         this.var1px     =   Number(rootVariables.getPropertyValue("--var1px").replace("px",""));
         this.var1_5px   =   Number(rootVariables.getPropertyValue("--var1_5px").replace("px",""));
@@ -111,41 +263,20 @@ class Resizer{
         this.var10px    =   Number(rootVariables.getPropertyValue("--var10px").replace("px",""));
         this.arrowHead  =   Number(rootVariables.getPropertyValue("--arrowHeadlrW").replace("px",""));
         this.arrowBody  =   Number(rootVariables.getPropertyValue("--arrowBodyW").replace("px",""));
-
     }
     private getWidthAndHeightOfWindow = () =>{
         this.outerHeight = window.outerHeight;
         this.outerWidth  = window.outerWidth;
+        
     }
     public get1PXEquivalent = ():number =>{
-        console.log(this.var1px);
-        /* if(this.outerWidth>this.outerHeight){
-            return (this.var1px*this.outerWidth)/100;
-        }
-        else{
-            return (this.var1px*this.outerHeight)/100;
-        } */
         return this.var1px;
-        
     }
     public initialResize = () =>{
         this.getInitialValues();
         this.getWidthAndHeightOfWindow();
         this.setParameterstoPX();
         this.calculateValuestoPX();
-    }
-    private setParameters=()=>{
-        this.var1px     = 100*this.var1px/1920;
-        this.var1_5px   = 100*this.var1_5px/1920;
-        this.var2px     = 100*this.var2px/1920;
-        this.var3px     = 100*this.var3px/1920;
-        this.var4px     = 100*this.var4px/1920;
-        this.var5px     = 100*this.var5px/1920;
-        this.var6px     = 100*this.var6px/1920;
-        this.var8px     = 100*this.var8px/1920;
-        this.var10px    = 100*this.var10px/1920;
-        this.arrowBody  = 100*this.arrowBody/1920;
-        this.arrowHead  = 100*this.arrowHead/1920;
     }
     private setParameterstoPX=()=>{
         let n:number,m:number;
@@ -164,10 +295,7 @@ class Resizer{
         if(this.arrowBody%2!=0){
             this.arrowBody=this.arrowBody+1;
         }
-        // this.arrowHead  = Math.ceil(40*Number(n.toFixed(2)));
         this.arrowHead  = 2*this.arrowBody;
-        console.log(this.arrowBody)
-        console.log(this.arrowHead)
     }
     private calculateValues=()=>{
         root.style.setProperty("--var1px",`${this.var1px}vmax`);
@@ -202,8 +330,6 @@ class Resizer{
         this.setParameterstoPX();
         console.log("Innerwidth: "+window.innerWidth);
         console.log("Innerheight: "+window.innerHeight);
-        console.log(this.var1px);
-        console.log(this.var1_5px);
         this.calculateValuestoPX();
     }
 }

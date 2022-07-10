@@ -9,7 +9,7 @@ import { InputLineControl } from "./Backend/InputLineControl";
 import { InputLine } from "./Backend/InputLine";
 import { InputWindow } from "./InputWindow";
 import { getHtmlElement, createClickListener, updateScroll, updateScrollOfIn_Out, removeClassOfAll, addClassTo, updateScrollOfDescriptionLines, removeClassOf } from "./Tools";
-import { aniControl, AnimationType, checkIfPaused, playButton, resetButton, sleepFor, sleepStaticAnimation, sleepUntilNextStep } from "./AnimationUtil";
+import { aniControl, AnimationType, checkIfPaused,sleepFor, sleepUntilNextStep } from "./AnimationUtil";
 import { Animator } from "./Animator";
 import { StringConstructor } from "./Backend/StringConstructor";
 
@@ -935,7 +935,6 @@ export class ProjectWindow{
         }catch(e){
             console.log(e);
         }
-        
     }
 
     public pause=()=>{
