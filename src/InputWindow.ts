@@ -66,23 +66,33 @@ export class InputWindow{
             await this.pWindow.displayInputLines();
         }
     }
+    
+
+
+
+
 
     public preDefineConst = (ss:string[]):string[] =>{
         let potentialConsts:string[]=[];
-
-        let s;
+        let s,i;
         ss.forEach(e =>{
-            let i = Manipulator.splitStringHalf(e,";");
+            i = Manipulator.splitStringHalf(e,";");
             if(i[0].replace(/\s/g,"")!=""){
-                s = i[0].match(/(\s*_|^_)\w+(?=\s+EQU\s+([0-9]+d{0,1}|[A-Fa-f0-9]+h|[01]+b)\s*$)/i)
+                s = i[0].match(
+                        /(\s*_|^_)\w+(?=\s+EQU\s+([0-9]+d{0,1}|[A-Fa-f0-9]+h|[01]+b)\s*$)/i
+                    )
                 if(s!=null){
                     potentialConsts.push(s[0].trim())
                 }
             }
         });
-        // console.log(potentialConsts);
         return potentialConsts;
     }
+
+
+
+
+
 
     private switchInputContent=()=>{
         let s:string = inputSelect.value;
@@ -200,9 +210,9 @@ export class InputWindow{
             console.log(e);
         }
         // createClickListener('Preview',this.previewTranslation);
-        createClickListener('GenerateDummy',this.createCode);
+        // createClickListener('GenerateDummy',this.createCode);
         createClickListener('CloseInputWindow',this.openEditWindow);
-        document.getElementById("GenerateDummy")!.addEventListener("dblclick",this.testInputLines)
+        // document.getElementById("GenerateDummy")!.addEventListener("dblclick",this.testInputLines)
         inputSelect.addEventListener("change",this.switchInputContent);
         this.createFilterable();
         document.getElementById("filterDiv")!.addEventListener("focusin",function(){

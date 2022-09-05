@@ -97,7 +97,9 @@ export class Animator{
 
         this.movableHelper.innerHTML=this.formatLineString("h3",hex);
         this.movableHelper.style.top=this.addresszaehlerElem.offsetTop+this.addresszaehlerElem.offsetHeight/2-this.movableHelper.offsetHeight/2+"px";
-        this.movableHelper.style.left=this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetLeft/2-this.movableHelper.offsetLeft/2+"px";
+        this.movableHelper.style.left=this.addresszaehlerElem.offsetLeft+this.addresszaehlerElem.offsetWidth/2-this.movableHelper.offsetWidth/2+"px";
+        console.log(this.movableHelper.offsetTop);
+        console.log(this.movableHelper.offsetLeft);
         let placeholder:HTMLSpanElement = document.getElementById(targetlabelValuePlaceholder) as HTMLSpanElement;
         if(placeholder==null){
             throw new Error("BRUV");
@@ -742,7 +744,6 @@ export class Animator{
 
     async displayAddresserhoehung(id:number,i:string,pre:string,hex:string){
         if(aniControl.isAni3()) return;
-        console.log(addressbyte+id);
         let targetelem = document.getElementById(addressbyte+id);
         this.movableElem.innerHTML=this.formatLineString("h1",pre+i);
         let endaddr:string = this.addresszaehlerElem.innerHTML;
@@ -1365,24 +1366,16 @@ export class Animator{
         let childElem=document.getElementById(`${(id+1)<10?"0"+(id+1):(id+1)}outputP`);
         if(childElem!=null){
             let n= updateScrollOfIn_Out(this.outPutText.id,childElem.id);
-            console.log(n);
             this.targetElemTop = childElem.offsetTop-n-1/2*this.movableElem.offsetHeight+1/2*childElem.offsetHeight;
         }
     }
 
     public turnArrowElemVisible=async(s:string[])=>{
-        // await this.turnArrowElemsHidden();
-        console.log(s);
         for(let i= 0; i<this.arrowElems.length;i++){
             if(s.includes(this.arrowElems[i].id)){
                 this.arrowElems[i].style.visibility="visible";
             }
         }
-        /* this.arrowElems.forEach(e=>{
-            if(s.includes(e.id)){
-                e.style.visibility="visible";
-            }
-        }) */
         return;
     }
 
