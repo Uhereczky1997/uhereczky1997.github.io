@@ -243,7 +243,6 @@ export class CommandMap{
         let strings:string[] = Manipulator.splitStringHalf(i.getInitialLine(),';');
         let commandLine = strings[0].trim();
         // let commandLine = i.getCommandline();
-        console.log(i.getId()+" -> "+i.getCommandline());
         if(strings.length>1){
             i.setComment(strings[1].trim());
         }
@@ -307,7 +306,6 @@ export class CommandMap{
         strings = Manipulator.splitStringHalfUnfiltered(commandLine," ");
         strings = this.filterForEmtpyStrings(strings);
         //erster Term MnemoCode
-        console.log(strings)
         if(this.mCodes.includes(strings[0].toUpperCase())){
             i.setFirstPart(strings[0]);
             strings[0] = strings[0].toUpperCase();
