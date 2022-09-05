@@ -87,6 +87,7 @@ export class InputLineControl{
     addInputLine=(inputString:string):void=>{
         let i:InputLine= new InputLine(inputString,this.IDcounter);
         if(i.getType()==InputLineType.EMPTY){
+            console.log(i);
             this.inputlines.push(i);
             this.IDcounter=this.IDcounter +1;
             return;
@@ -109,7 +110,6 @@ export class InputLineControl{
         }
         this.map.mapInputLineByCase(i);
         this.inputlines.push(i);
-        // console.log(i);
         if(i.getValid()){
             this.createSummary(i);
             this.calculateStartingAddr(i);
@@ -126,7 +126,7 @@ export class InputLineControl{
             this.invalidIDs.push(this.IDcounter);
         }
         this.IDcounter=this.IDcounter +1;
-        // console.log(i);
+        console.log(i);
     }
 
     getLittleEndianOf(h:string):string{

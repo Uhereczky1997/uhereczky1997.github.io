@@ -35,7 +35,7 @@ export class InputLine{
         return this.commandLine;
     }
     preemptiveValidation(){
-        if(this.commandLine=="" && this.label==""){
+        if(this.commandLine=="" && this.label=="" && (this.initialLine.replace(/\;.*$/,"").trim() == "")){
             this.valid=true;
             this.type=InputLineType.EMPTY;
         }
@@ -171,6 +171,10 @@ export class InputLine{
         let s1:string = this.initialLine.replace(';'+ss[1],'');
         if(ss[1]!=undefined){
             this.commentary=ss[1];
+        }
+        if(ss[0]=="" || ss[0] ==" "){
+            console.log("empty")
+            return "";
         }
         let s=Manipulator.splitStringHalf(s1,":");
         if(s.length>1){

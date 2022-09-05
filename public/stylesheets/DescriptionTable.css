@@ -53,7 +53,7 @@
   }
 #Machinenbefehl{
     border-left: var(--var1px) solid;
-    padding: var(--var3px) var(--var6px) ; 
+    padding: var(--var5px) var(--var6px) ; 
     font-family: 'Courier New', Courier, monospace;
 
 }
