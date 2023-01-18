@@ -272,6 +272,7 @@ export class InputLine{
                 second = temp[1];
                 third = temp[2];
             }
+
             if(second.toUpperCase()=="EQU"){
                 // this.secondPart = "EQU";
                 return(`${first} ${second} ${third}`);
@@ -300,10 +301,10 @@ export class InputLine{
         else{
             first=first.toUpperCase();
             temp = Manipulator.splitStringHalf(second," ");
-            if(!SymbolL.isLabel(second) && !SymbolL.isConst(second) && !Manipulator.isDat_16(second) &&!(temp[0].toUpperCase()=="OFFSET" )){
+            if(!SymbolL.isLabel(second) && !SymbolL.isConst(second) && !Manipulator.isDat_16(second) && !(temp[0].toUpperCase()=="OFFSET" )){
                 second=second.toUpperCase();
             }
-            if(this.hasOffsetLabel()){
+            else if(this.hasOffsetLabel()){
                 second="OFFSET "+this.getLabelOfOffset();
             }
             else if(second !=""){

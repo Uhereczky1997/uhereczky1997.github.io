@@ -326,7 +326,7 @@ const bsp1:string[]=[
     "OUT 46, A","INC A","DEC A","ADD A","SUB A","AND A","OR A","XOR A","SHL","SHR","RCL","ROL","RCR",
     "ROR","CP A","JP Label1","CALL Label1","RET","HALT","NOP","DB 45h","DW 45h","RS 3","ORG 2323h",
 ]
-const bsp2:string[]=[
+/* [
     "_dat8 equ 12h",
     "_dat16 equ 1234h",
     ";start:",
@@ -403,9 +403,9 @@ const bsp2:string[]=[
     "halt adf",
     "",
     "ret adsf",
-    "",
-    ]
-
+    "", 
+]*/
+const bsp2:string[]=[]
 /* [
     "mov a,b",
     "org 10",
@@ -417,7 +417,7 @@ const bsp2:string[]=[
     "mov sp, 1000h",
     "mov sp, 1000h"
 ] */
-const bsp3:string[]=[
+/* [
     "_dat8 equ 12h",
     "_dat16 equ 1234h",
     "start:",
@@ -451,7 +451,8 @@ const bsp3:string[]=[
     "org _dat8",
     "org ...",
     "",
-    ]
+    ] */
+const bsp3:string[]=[]
 /* [
     "label1:"
     ,"label2:"
@@ -470,7 +471,8 @@ const bsp3:string[]=[
     ,"jp label5"
     ,"jp label4"
 ] */
-const bsp4:string[]=[
+/* 
+[
     "_const equ 1343h",
     "_var equ 12",
     "",
@@ -478,4 +480,5 @@ const bsp4:string[]=[
     "in a,_var",
     "in a,_const",
     "label: mov hl,_var",
-]
+] */
+const bsp4:string[]=[]
